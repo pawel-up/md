@@ -1,8 +1,8 @@
 {
   "$schema": "https://unpkg.com/knip@6/schema.json",
   "tags": ["-lintignore"],
-  "entry": ["web-dev-server.config.js", "vite.config.ts", "lupa.config.ts", "tests/**/*.{js,ts,tsx}"],
-  "ignore": ["demo/**/*"],
+  "entry": ["lupa.config.ts", "tests/**/*.{js,ts,tsx}"],
+  "ignore": ["demo/**/*", ".agents/**/*"],
   "ignoreDependencies": ["vue"],
   "ignoreBinaries": ["playwright"],
   "playwright": true

@@ -37,5 +37,5 @@
     "types": ["mocha"]
   },
   "include": ["src/**/*.ts", "demo/**/*.ts", "demo/.vitepress/**/*.ts", "test/**/*.ts", "lupa.config.ts", "tests/**/*.ts", "vite.config.ts"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", ".agents/**/*"]
 }

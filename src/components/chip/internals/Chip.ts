@@ -1,4 +1,3 @@
-import { cancelEvent } from '@api-client/core/lib/events/Utils.js'
 import { html, nothing, PropertyValues, TemplateResult } from 'lit'
 import { property, query, state } from 'lit/decorators.js'
 import { classMap } from 'lit/directives/class-map.js'
@@ -8,6 +7,7 @@ import { close, arrowDropDown, check } from '../../icons/Icons.js'
 import { setDisabled } from '../../../lib/disabled.js'
 import { BeginPressConfig, EndPressConfig } from '../../../controllers/ActionController.js'
 import '../../ripple/ui-ripple.js'
+import { cancelEvent } from '../../../lib/events.js'
 
 export enum ChipType {
   assist = 'assist',

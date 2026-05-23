@@ -4,7 +4,7 @@ import { classMap } from 'lit/directives/class-map.js'
 import UiListItem from '../../list/internals/ListItem.js'
 import UiSubMenu from './SubMenu.js'
 import { findElementInShadowRoots } from '../../../lib/Dom.js'
-import { nanoid } from '@api-client/core/nanoid.js'
+import { randomId } from '../../../lib/random.js'
 import type Menu from './Menu.js'
 
 import '../../icons/ui-icon.js'
@@ -75,7 +75,7 @@ export default class UiMenuItem extends UiListItem {
 
     // Generate ID if not present (needed for submenu anchoring)
     if (!this.id) {
-      this.id = nanoid(6)
+      this.id = randomId()
     }
 
     // Initialize selection state

@@ -1,6 +1,6 @@
 import { html, nothing, type PropertyValues, type TemplateResult } from 'lit'
 import { property, query } from 'lit/decorators.js'
-import { nanoid } from '@api-client/core/nanoid.js'
+import { randomId } from '../../../lib/random.js'
 import { UiElement } from '../../UiElement.js'
 import type { BeginPressConfig, EndPressConfig } from '../../../controllers/ActionController.js'
 import { isDisabled, setDisabled } from '../../../lib/disabled.js'
@@ -286,7 +286,7 @@ export default class BaseButton extends UiElement {
     this.value = id
     // create an anchor association with the popover target
     if (!this.id) {
-      this.id = nanoid()
+      this.id = randomId()
     }
     const anchorName = `--anchor-${this.id}`
     this.style.setProperty('anchor-name', anchorName)

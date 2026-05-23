@@ -1,5 +1,5 @@
 import { html, LitElement, nothing, PropertyValues, TemplateResult } from 'lit'
-import { cancelEvent } from '@api-client/core/lib/events/Utils.js'
+import { cancelEvent } from '../../../lib/events.js'
 import { property } from 'lit/decorators.js'
 import { classMap } from 'lit/directives/class-map.js'
 import '../../button/ui-button.js'

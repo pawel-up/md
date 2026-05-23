@@ -1,5 +1,5 @@
 import { fixture, html, nextFrame, test } from '@pawel-up/lupa/testing'
-import { normalizeColor } from '@api-client/core/lib/color/ColorConverter.js'
+import { normalizeColor } from '../../../../src/lib/color.js'
 import { query } from '@pawel-up/lupa/commands'
 import sinon from 'sinon'
 import type { UiChipElement } from '../../../../src/components/chip/ui-chip.js'

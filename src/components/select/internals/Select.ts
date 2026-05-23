@@ -6,7 +6,7 @@ import { setDisabled } from '../../../lib/disabled.js'
 import { UiElement } from '../../UiElement.js'
 import type UiOption from './Option.js'
 import type { UiMenuElement } from '../../menu/ui-menu.js'
-import { nanoid } from '@api-client/core/nanoid.js'
+import { randomId } from '../../../lib/random.js'
 
 import '../../text-field/ui-outlined-text-field.js'
 import '../../menu/ui-menu.js'
@@ -293,7 +293,7 @@ export default class UiSelect extends UiElement {
       this.setAttribute('tabindex', '0')
     }
     if (!this.id) {
-      this.id = `select-${nanoid(6)}`
+      this.id = randomId('select')
     }
   }
 

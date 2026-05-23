@@ -1,4 +1,4 @@
-import { randomString } from '@api-client/core/lib/math/Random.js'
+import { randomId } from '../../../lib/random.js'
 import { query } from 'lit/decorators.js'
 import UiList from '../../list/internals/List.js'
 import UiListItem from '../../list/internals/ListItem.js'
@@ -50,7 +50,7 @@ export default class UiListbox extends UiList {
     }
     item.setAttribute('aria-selected', 'true')
     if (!item.id) {
-      item.id = `option-${randomString(4)}`
+      item.id = `option-${randomId()}`
     }
     this.setAttribute('aria-activedescendant', item.id)
   }

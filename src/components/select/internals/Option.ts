@@ -2,7 +2,7 @@ import { html, PropertyValues, TemplateResult } from 'lit'
 import { property } from 'lit/decorators.js'
 import { ClassInfo, classMap } from 'lit/directives/class-map.js'
 import UiListItem, { ListItemLines } from '../../list/internals/ListItem.js'
-import { nanoid } from '@api-client/core/nanoid.js'
+import { randomId } from '../../../lib/random.js'
 
 /**
  * Material Design 3 Select Option component.
@@ -102,7 +102,7 @@ export default class UiOption extends UiListItem {
     super.connectedCallback()
     this.setAttribute('role', 'option')
     if (!this.id) {
-      this.id = `option-${nanoid(6)}`
+      this.id = randomId('option')
     }
   }
 

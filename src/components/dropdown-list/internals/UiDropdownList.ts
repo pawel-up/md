@@ -1,4 +1,4 @@
-import { randomString } from '@api-client/core/lib/math/Random.js'
+import { randomId } from '../../../lib/random.js'
 import { html, LitElement, PropertyValues, TemplateResult } from 'lit'
 import { property, queryAssignedElements, state } from 'lit/decorators.js'
 import { ClassInfo, classMap } from 'lit/directives/class-map.js'
@@ -39,9 +39,9 @@ export default class UiDropdownList extends LitElement {
   @queryAssignedElements({ slot: 'dropdown' })
   protected accessor dropdowns!: HTMLElement[]
 
-  @state() protected accessor triggerId = `ui-trigger-${randomString(4)}`
+  @state() protected accessor triggerId = `ui-trigger-${randomId()}`
 
-  @state() protected accessor menuId = `ui-menu-${randomString(4)}`
+  @state() protected accessor menuId = `ui-menu-${randomId()}`
 
   /**
    * Whether the menu is opened.

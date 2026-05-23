@@ -1,6 +1,6 @@
 import { fixture, html, test } from '@pawel-up/lupa/testing'
-import { normalizeColor } from '@api-client/core/lib/color/ColorConverter.js'
 import { query } from '@pawel-up/lupa/commands'
+import { normalizeColor } from '../../../../src/lib/color.js'
 import sinon from 'sinon'
 import { UiChipElement } from '../../../../src/components/chip/ui-chip.js'
 

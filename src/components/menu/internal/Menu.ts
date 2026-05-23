@@ -1,7 +1,7 @@
 import { html, PropertyValues, TemplateResult } from 'lit'
 import { property, state } from 'lit/decorators.js'
 import { classMap } from 'lit/directives/class-map.js'
-import { nanoid } from '@api-client/core/nanoid.js'
+import { randomId } from '../../../lib/random.js'
 import UiList from '../../list/internals/List.js'
 import UiMenuItem from './MenuItem.js'
 import UiSubMenu from './SubMenu.js'
@@ -60,7 +60,7 @@ export default class Menu extends UiList {
       this.setAttribute('popover', 'auto')
     }
     if (!this.id) {
-      this.id = nanoid()
+      this.id = randomId()
     }
     this.ariaExpanded = 'false'
   }
