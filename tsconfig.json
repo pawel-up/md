@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "display": "API Client",
+  "compilerOptions": {
+    "target": "ES2024",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "noEmitOnError": true,
+    "lib": ["esnext", "DOM", "Decorators", "dom.iterable"],
+    "strict": true,
+    "esModuleInterop": true,
+    "experimentalDecorators": false,
+    "useDefineForClassFields": true,
+    "importHelpers": true,
+    "noImplicitOverride": true,
+    "outDir": "./build",
+    "rootDir": "./",
+    "sourceMap": true,
+    "inlineSources": true,
+    "declaration": true,
+    "declarationMap": true,
+    "noImplicitThis": true,
+    "noImplicitAny": true,
+    "alwaysStrict": true,
+    "forceConsistentCasingInFileNames": true,
+    "pretty": true,
+    "checkJs": true,
+    "allowJs": true,
+    "incremental": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "plugins": [
+      {
+        "name": "ts-lit-plugin"
+      }
+    ],
+    "types": ["mocha"]
+  },
+  "include": ["src/**/*.ts", "demo/**/*.ts", "test/**/*.ts", "lupa.config.ts", "tests/**/*.ts", "vite.config.ts"],
+  "exclude": ["node_modules"]
+}

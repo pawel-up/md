@@ -1,0 +1,7 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "tags": ["-lintignore"],
+  "entry": ["web-dev-server.config.js", "vite.config.ts", "lupa.config.ts", "tests/**/*.{js,ts,tsx}"],
+  "ignore": ["demo/**/*"],
+  "playwright": true
+}

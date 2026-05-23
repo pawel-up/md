@@ -1,0 +1,270 @@
+/* Styling for the native UI controls to look like MD elements */
+
+/* 
+Material Select 
+
+Behaves mostly like an outlined input with a label.
+*/
+
+@keyframes focus-outline-inward {
+  0% {
+    outline-width: 0;
+    outline-offset: 0;
+  }
+  50% {
+    outline-width: var(--md-focus-ring-active-width, 8px);
+    outline-offset: calc(-1 * var(--md-focus-ring-active-width, 8px));
+  }
+  100% {
+    outline-width: var(--md-focus-ring-width, 3px);
+    outline-offset: calc(-1 * var(--md-focus-ring-width, 3px));
+  }
+}
+
+.md-select {
+  display: inline-block;
+  vertical-align: top;
+
+  --_outline-color: var(--md-focus-ring-color, var(--md-sys-color-secondary));
+
+  select,
+  ::picker(select) {
+    appearance: base-select;
+  }
+
+  select {
+    height: 56px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: start;
+    box-sizing: border-box;
+    gap: 0;
+    padding: 0 16px 0 16px;
+
+    .prefix, .suffix {
+      min-width: 16px;
+    }
+
+    .prefix {
+      margin-left: 12px;
+      margin-right: 16px;
+    }
+
+    .suffix {
+      margin-left: 12px;
+      margin-right: 12px;
+    }
+
+    .prefix, selectedcontent, .suffix {
+      display: flex;
+      align-items: center;
+      justify-content: start;
+    }
+
+    selectedcontent {
+      padding-right: 16px;
+    }
+  }
+
+  select:has(.suffix) selectedcontent {
+    padding-right: 0;
+  }
+
+  select:has(.prefix) {
+    padding-left: 0;
+  }
+
+  option {
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    padding: 8px 16px;
+    box-sizing: border-box;
+    height: 56px;
+    cursor: default;
+    position: relative;
+
+    outline: 0 solid var(--_outline-color);
+    outline-offset: -3px;
+  }
+
+  option:hover {
+    background-color: transparent;
+    &::before {
+      opacity: var(--md-sys-state-hover-state-layer-opacity);
+      background-color: var(--md-sys-color-primary);
+      content: '';
+      position: absolute;
+      inset: 0;
+    }
+  }
+
+  option:focus-visible {
+    background-color: transparent;
+    animation: focus-outline-inward var(--md-focus-ring-duration, 600ms) cubic-bezier(0.2, 0, 0, 1) forwards;
+  }
+
+  @media(prefers-reduced-motion) {
+    option:focus-visible {
+      animation: none;
+      outline-width: var(--md-focus-ring-width, 3px);
+      outline-offset: calc(-1 * var(--md-focus-ring-width, 3px));
+    }
+  }
+
+  ::picker(select) {
+    border: none;
+    padding: 10px 0;
+    background-color: var(--md-sys-color-surface);
+    transform: scaleY(0);
+    transition: all 250ms cubic-bezier(0.2, 0, 0, 1) 0s allow-discrete;
+    transform-origin: top center;
+    width: fit-content;
+    box-shadow: var(--md-sys-elevation-1);
+    border-radius: var(--md-sys-shape-corner-medium);
+  }
+
+  ::picker(select):popover-open {
+    transform: scaleY(1);
+  }
+
+  @starting-style {
+    ::picker(select):popover-open {
+      transform: scaleY(0);
+    }
+  }
+
+  label {
+    font-family: var(--md-sys-typescale-label-medium-font);
+    font-size: var(--md-sys-typescale-label-medium-size);
+    letter-spacing: var(--md-sys-typescale-label-medium-tracking);
+    line-height: var(--md-sys-typescale-label-medium-height);
+    font-weight: var(--md-ref-typeface-weight-regular);
+    position: absolute;
+  }
+
+  label:has( + select:focus-within ) {
+    color: var(--md-sys-color-primary);
+  }
+
+  select::picker-icon {
+    font-family: var(--md-icon-font, Material Symbols Outlined);
+    font-weight: 400;
+    font-variation-settings:
+      'FILL' 0,
+      'wght' 700,
+      'GRAD' 200,
+      'opsz' 24;
+    content: "\e5c5";
+    letter-spacing: 0;
+    color: currentColor;
+  }
+
+  option::checkmark {
+    font-family: var(--md-icon-font, Material Symbols Outlined);
+    font-weight: 400;
+    font-variation-settings:
+      'FILL' 0,
+      'wght' 700,
+      'GRAD' 200,
+      'opsz' 24;
+    content: "\e5ca";
+    letter-spacing: 0;
+    color: var(--md-sys-color-primary);
+  }
+
+  &.outlined {
+    position: relative;
+
+    select {
+      border: 1px var(--md-sys-color-outline) solid;
+      outline: 0 solid var(--md-sys-color-primary);
+      outline-offset: 0;
+      transition: border-color var(--md-sys-motion-duration-short3) var(--md-sys-motion-easing-standard-accelerate);
+      border-radius: var(--md-sys-shape-corner-extra-small);
+      background-color: transparent;
+
+      &:hover:not(:focus-visible) {
+        border-color: var(--md-sys-color-on-surface);
+      }
+
+      &:focus-within {
+        outline-width: var(--md-focus-ring-width, 3px);
+        outline-offset: calc(-1 * var(--md-focus-ring-width, 3px));
+      }
+
+      &:focus-visible {
+        animation: focus-outline-inward var(--md-focus-ring-duration, 600ms) cubic-bezier(0.2, 0, 0, 1) forwards;
+      }
+    }
+
+    @media(prefers-reduced-motion) {
+      select:focus-visible {
+        animation: none;
+        outline-width: var(--md-focus-ring-width, 3px);
+        outline-offset: calc(-1 * var(--md-focus-ring-width, 3px));
+      }
+    }
+
+    label {
+      background-color: var(--md-sys-color-surface);
+      padding: 0 4px;
+      color: var(--md-sys-color-on-surface-variant);
+      left: 12px;
+      top: -7px;
+    }
+  }
+
+  &.filled {
+    position: relative;
+
+    select {
+      background-color: var(--md-sys-color-surface-variant);
+      border: none;
+      /* border-bottom: 1px solid var(--md-sys-color-on-surface-variant); */
+      border-radius: var(--md-sys-shape-corner-extra-small-top);
+      outline: none;
+
+      selectedcontent {
+        padding-top: 1em;
+      }
+    }
+
+    select::before {
+      content: '';
+      border-bottom: 1px solid var(--md-sys-color-on-surface-variant);
+      inset: auto 0 0;
+      position: absolute;
+    }
+
+    select::after {
+      content: '';
+      border-bottom-color: var(--md-sys-color-primary);
+      border-bottom-width: 2px;
+      border-bottom-style: solid;
+      opacity: 0;
+      transform: scaleX(0);
+      transform-origin: center center;
+
+      transition:
+        opacity 150ms cubic-bezier(0.4, 0, 0.2, 1) 0s,
+        transform 150ms cubic-bezier(0.4, 0, 0.2, 1) 150ms;
+
+      position: absolute;
+      inset: auto 0 0;
+    }
+
+    select:focus-within::after {
+      opacity: 1;
+      transform: scaleX(1);
+
+    }
+
+    label {
+      color: var(--md-sys-color-on-surface-variant);
+      transform: translateY(-1.35rem);
+      top: 50%;
+      left: 16px;
+    }
+  }
+}

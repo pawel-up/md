@@ -1,0 +1,111 @@
+{
+  "name": "@pawel-up/md",
+  "version": "0.1.0",
+  "description": "Material components and core UI framework",
+  "license": "UNLICENSED",
+  "main": "build/src/index.js",
+  "module": "build/src/index.js",
+  "types": "build/src/index.d.ts",
+  "type": "module",
+  "author": {
+    "name": "Pawel Uchida-Psztyc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/pawel-up/md.git"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "build/src/**/*.js",
+    "build/src/**/*.d.ts",
+    "build/src/**/*.js.map",
+    "build/src/**/*.css",
+    "build/custom-elements.json"
+  ],
+  "exports": {
+    ".": "./build/src/index.js",
+    "./index.js": "./build/src/index.js",
+    "./package.json": "./package.json",
+    "./controllers/*.js": "./build/src/controllers/*.js",
+    "./controllers/*": "./build/src/controllers/*",
+    "./decorators/*.js": "./build/src/decorators/*.js",
+    "./decorators/*": "./build/src/decorators/*",
+    "./lib/*.js": "./build/src/lib/*.js",
+    "./lib/*": "./build/src/lib/*",
+    "./types/*.js": "./build/src/types/*.js",
+    "./types/*": "./build/src/types/*",
+    "./styles/*": "./build/src/styles/*",
+    "./*": "./build/src/components/*"
+  },
+  "scripts": {
+    "docs": "typedoc",
+    "build": "npm run tsc && npm run build:ce && npm run copy-assets",
+    "build:ce": "cem analyze --litelement --globs \"src/**/*.ts\" --exclude \"src/**/*.styles.ts\" \"src/**/*.test.ts\" --outdir build/",
+    "copy-assets": "node scripts/copy-assets.js",
+    "lint": "npm run lint:prettier && npm run lint:eslint",
+    "lint:eslint": "eslint --color --cache --cache-location .eslintcache .",
+    "lint:prettier": "prettier \"**/*.ts\" --check",
+    "format": "npm run format:prettier && npm run format:prettier",
+    "format:prettier": "prettier \"**/*.ts\" --write",
+    "format:eslint": "eslint --color --cache --fix --cache-location .eslintcache .",
+    "test": "npx lupa test",
+    "test:watch": "npx lupa test --watch",
+    "test:coverage": "npx lupa test --coverage",
+    "prepare": "husky",
+    "tsc": "tsc --build tsconfig.build.json --pretty",
+    "dev": "wds --watch --config web-dev-server.config.js",
+    "tsc:all": "tsc --project tsconfig.json",
+    "knip": "knip"
+  },
+  "dependencies": {
+    "@api-client/core": "^0.21.0",
+    "lit": "^3.2.1"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^21.0.1",
+    "@commitlint/config-conventional": "^21.0.1",
+    "@commitlint/types": "^21.0.1",
+    "@custom-elements-manifest/analyzer": "^0.11.0",
+    "@eslint/compat": "^2.0.3",
+    "@eslint/js": "^10.0.1",
+    "@pawel-up/lupa": "^0.3.2",
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/git": "^10.0.1",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^25.9.1",
+    "@types/sinon": "^21.0.1",
+    "@web/dev-server": "^0.4.6",
+    "@web/dev-server-esbuild": "^1.0.5",
+    "esbuild": "^0.28.0",
+    "eslint": "^10.0.3",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-no-only-tests": "^3.3.0",
+    "eslint-plugin-prettier": "^5.5.5",
+    "globals": "^17.4.0",
+    "husky": "^9.1.7",
+    "knip": "^6.14.1",
+    "lint-staged": "^17.0.4",
+    "prettier": "^3.8.1",
+    "semantic-release": "^25.0.3",
+    "sinon": "^22.0.0",
+    "ts-lit-plugin": "^2.0.2",
+    "tslib": "^2.8.1",
+    "typedoc": "^0.28.19",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.56.1"
+  },
+  "lint-staged": {
+    "*.js": [
+      "eslint --fix"
+    ],
+    "*.ts": [
+      "eslint --fix"
+    ],
+    "*.json": [
+      "prettier --write"
+    ]
+  },
+  "customElements": "build/custom-elements.json"
+}
