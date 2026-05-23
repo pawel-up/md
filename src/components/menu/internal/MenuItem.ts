@@ -5,6 +5,7 @@ import UiListItem from '../../list/internals/ListItem.js'
 import UiSubMenu from './SubMenu.js'
 import { findElementInShadowRoots } from '../../../lib/Dom.js'
 import { nanoid } from '@api-client/core/nanoid.js'
+import type Menu from './Menu.js'
 
 import '../../icons/ui-icon.js'
 
@@ -97,14 +98,16 @@ export default class UiMenuItem extends UiListItem {
   /**
    * Sets up the connection between this menu item and its submenu
    */
-  protected setupSubmenuConnection(): void {
-    if (this.subMenuElement) {
-      this.subMenuElement.anchor = this.id
+  protected async setupSubmenuConnection(): Promise<void> {
+    const subMenu = this.subMenuElement
+    if (subMenu) {
+      await customElements.whenDefined(subMenu.localName)
+      subMenu.anchor = this.id
 
       // Find parent menu and set it on the submenu
-      const parentMenu = this.closest('ui-menu, ui-sub-menu') as UiSubMenu
+      const parentMenu = this.closest('ui-menu, ui-sub-menu') as Menu
       if (parentMenu) {
-        this.subMenuElement.setParentMenu(parentMenu)
+        subMenu.setParentMenu(parentMenu)
       }
     }
   }

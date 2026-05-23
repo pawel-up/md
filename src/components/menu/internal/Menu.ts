@@ -49,7 +49,6 @@ export default class Menu extends UiList {
   constructor() {
     super()
     this.selector = 'ui-menu-item'
-    this.ariaExpanded = 'false'
     this.addEventListener('beforetoggle', this.handleBeforeToggle.bind(this))
   }
 
@@ -63,6 +62,7 @@ export default class Menu extends UiList {
     if (!this.id) {
       this.id = nanoid()
     }
+    this.ariaExpanded = 'false'
   }
 
   protected override updated(changedProperties: PropertyValues<this>): void {

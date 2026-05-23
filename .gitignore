@@ -61,3 +61,7 @@ build/
 coverage
 lit-plugin.log
 docs/
+
+# VitePress
+demo/.vitepress/cache/
+demo/.vitepress/dist/
