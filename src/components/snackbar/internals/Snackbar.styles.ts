@@ -6,6 +6,7 @@ export default css`
     --snackbar-y: 40px;
 
     position: fixed;
+    z-index: 9999;
 
     bottom: var(--snackbar-y);
     left: var(--snackbar-x);

@@ -1,7 +1,7 @@
 {
   "name": "@pawel-up/md",
-  "version": "0.1.0",
-  "description": "Material components and core UI framework",
+  "version": "1.0.0",
+  "description": "Material Design 3 components for the web",
   "license": "UNLICENSED",
   "main": "build/src/index.js",
   "module": "build/src/index.js",
@@ -26,7 +26,6 @@
   ],
   "exports": {
     ".": "./build/src/index.js",
-    "./index.js": "./build/src/index.js",
     "./package.json": "./package.json",
     "./controllers/*.js": "./build/src/controllers/*.js",
     "./controllers/*": "./build/src/controllers/*",

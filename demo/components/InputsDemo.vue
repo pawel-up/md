@@ -1,3 +1,18 @@
+<style>
+  .demo-grid {
+    grid-template-columns: 160px 1fr 1fr;
+    display: grid;
+    gap: 0 0;
+    justify-items: center; 
+    align-items: center;
+    grid-template-rows: 40px repeat(auto-fit, minmax(80px, 1fr));
+    grid-auto-rows: 80px;
+
+    padding: 40px;
+    border-radius: 20px;
+    border: 1px var(--md-sys-color-outline) solid;
+  }
+</style>
 <template>
   <form method="get" action="#" @submit="submitHandler">
     <section class="demo-section">

@@ -4,5 +4,6 @@
   "entry": ["web-dev-server.config.js", "vite.config.ts", "lupa.config.ts", "tests/**/*.{js,ts,tsx}"],
   "ignore": ["demo/**/*"],
   "ignoreDependencies": ["vue"],
+  "ignoreBinaries": ["playwright"],
   "playwright": true
 }
