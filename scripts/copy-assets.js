@@ -2,8 +2,8 @@ import { copyFile, mkdir } from 'node:fs/promises';
 import { join } from 'node:path';
 
 async function copyStyles() {
-  const src = join('src', 'styles', 'm3');
-  const dest = join('build', 'src', 'styles', 'm3');
+  const src = join('src', 'styles');
+  const dest = join('build', 'src', 'styles');
   const files = [
     'theme.css',
     'tokens.css',
