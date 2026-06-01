@@ -20,7 +20,7 @@ export default defineConfig({
     },
   ],
   harness: {
-    stylesheets: ['./src/styles/m3/tokens.css', './src/styles/m3/theme.css'],
+    stylesheets: ['./src/styles/tokens.css', './src/styles/theme.css'],
     template: `
       <!DOCTYPE html>
       <html lang="en" class="theme-light">

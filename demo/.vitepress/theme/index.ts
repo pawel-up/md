@@ -1,7 +1,7 @@
 import DefaultTheme from 'vitepress/theme'
-import '../../../src/styles/m3/tokens.css'
-import '../../../src/styles/m3/theme.css'
-import '../../../src/styles/m3/native.css'
+import '../../../src/styles/tokens.css'
+import '../../../src/styles/theme.css'
+import '../../../src/styles/native.css'
 import './custom.css'
 
 export default {

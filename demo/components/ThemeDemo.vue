@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue';
+import { onMounted, watch } from 'vue';
+import { useData } from 'vitepress';
 
 const COLOR_VARS = [
   '--md-sys-color-primary',
@@ -85,18 +86,16 @@ function renderGrid() {
   grid.appendChild(frag);
 }
 
-const currentTheme = ref('light');
+const { isDark } = useData();
 
-watch(currentTheme, (theme) => {
-  document.documentElement.classList.remove('theme-light', 'theme-dark');
-  document.documentElement.classList.add(`theme-${theme}`);
+watch(isDark, () => {
   setTimeout(renderGrid, 0);
 });
 
 onMounted(() => renderGrid());
 
 const setTheme = (theme: string) => {
-  currentTheme.value = theme;
+  isDark.value = theme === 'dark';
 };
 </script>
 
@@ -108,8 +107,8 @@ const setTheme = (theme: string) => {
       <h2 class="display-large">System Colors</h2>
       <div class="controls" id="themeToggle">
         <span style="font-size:12px;opacity:.75">Theme:</span>
-        <button type="button" data-theme="light" :aria-pressed="currentTheme === 'light'" @click="setTheme('light')">Light</button>
-        <button type="button" data-theme="dark" :aria-pressed="currentTheme === 'dark'" @click="setTheme('dark')">Dark</button>
+        <button type="button" data-theme="light" :aria-pressed="!isDark" @click="setTheme('light')">Light</button>
+        <button type="button" data-theme="dark" :aria-pressed="isDark" @click="setTheme('dark')">Dark</button>
       </div>
       <div class="color-grid" id="colorGrid" aria-live="polite"></div>
     </section>

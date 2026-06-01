@@ -5,7 +5,6 @@ async function copyStyles() {
   const src = join('src', 'styles', 'm3');
   const dest = join('build', 'src', 'styles', 'm3');
   const files = [
-    'native.css',
     'theme.css',
     'tokens.css',
   ];

@@ -163,7 +163,7 @@ When a theme is active, all components relying on `--md-sys-color-*` variables w
 
 ## Design System Tokens
 
-The MD3 tokens are implemented as CSS custom properties and are injected into the design via the `@pawel-up/md/styles/m3/` stylesheets (`tokens.ts`, `theme.ts`, `colors.module.ts`, `typography.module.ts`, etc.). 
+The MD3 tokens are implemented as CSS custom properties and are injected into the design via the `@pawel-up/md/styles/` stylesheets (`tokens.ts`, `theme.ts`, `typography.module.ts`, etc.). 
 
 To use these tokens in your custom components, reference the CSS variables directly:
 

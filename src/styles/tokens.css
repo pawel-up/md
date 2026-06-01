@@ -1,0 +1,151 @@
+html {
+  /* Typeface */
+  --md-ref-typeface-brand: Roboto, system-ui, -apple-system, 'Segoe UI', Ubuntu, Cantarell, 'Noto Sans', sans-serif;
+
+  --md-ref-typeface-weight-regular: 400;
+  --md-ref-typeface-weight-medium: 500;
+  --md-ref-typeface-weight-bold: 700;
+
+  /* display - large */
+  --md-sys-typescale-display-large-font: var(--md-ref-typeface-brand);
+  --md-sys-typescale-display-large-weight: var(--md-ref-typeface-weight-regular);
+  --md-sys-typescale-display-large-size: 3.5625rem; /* 57pt */
+  --md-sys-typescale-display-large-height: 4rem; /* 64pt */
+  --md-sys-typescale-display-large-tracking: -0.25px;
+  /* display - medium */
+  --md-sys-typescale-display-medium-font: var(--md-ref-typeface-brand);
+  --md-sys-typescale-display-medium-weight: var(--md-ref-typeface-weight-regular);
+  --md-sys-typescale-display-medium-size: 2.8125rem; /* 45pt */
+  --md-sys-typescale-display-medium-height: 3.25rem; /* 52pt */
+  --md-sys-typescale-display-medium-tracking: 0px;
+  /* display - small */
+  --md-sys-typescale-display-small-font: var(--md-ref-typeface-brand);
+  --md-sys-typescale-display-small-weight: var(--md-ref-typeface-weight-regular);
+  --md-sys-typescale-display-small-size: 2.25rem; /* 36pt */
+  --md-sys-typescale-display-small-height: 2.75rem; /* 44pt */
+  --md-sys-typescale-display-small-tracking: 0px;
+  /* headline - large */
+  --md-sys-typescale-headline-large-font: var(--md-ref-typeface-brand);
+  --md-sys-typescale-headline-large-weight: var(--md-ref-typeface-weight-regular);
+  --md-sys-typescale-headline-large-size: 2rem; /* 32pt */
+  --md-sys-typescale-headline-large-height: 2.5rem; /* 40pt */
+  --md-sys-typescale-headline-large-tracking: 0px;
+  /* headline - medium */
+  --md-sys-typescale-headline-medium-font: var(--md-ref-typeface-brand);
+  --md-sys-typescale-headline-medium-weight: var(--md-ref-typeface-weight-regular);
+  --md-sys-typescale-headline-medium-size: 1.75rem; /* 28pt */
+  --md-sys-typescale-headline-medium-height: 2.25rem; /* 36pt */
+  --md-sys-typescale-headline-medium-tracking: 0px;
+  /* headline - small */
+  --md-sys-typescale-headline-small-font: var(--md-ref-typeface-brand);
+  --md-sys-typescale-headline-small-weight: var(--md-ref-typeface-weight-regular);
+  --md-sys-typescale-headline-small-size: 1.5rem; /* 24pt */
+  --md-sys-typescale-headline-small-height: 2rem; /* 32pt */
+  --md-sys-typescale-headline-small-tracking: 0px;
+  /* title - large */
+  --md-sys-typescale-title-large-font: var(--md-ref-typeface-brand);
+  --md-sys-typescale-title-large-weight: var(--md-ref-typeface-weight-regular);
+  --md-sys-typescale-title-large-size: 1.375rem; /* 22pt */
+  --md-sys-typescale-title-large-height: 1.75rem; /* 28pt */
+  --md-sys-typescale-title-large-tracking: 0px;
+  /* title - medium */
+  --md-sys-typescale-title-medium-font: var(--md-ref-typeface-brand);
+  --md-sys-typescale-title-medium-weight: var(--md-ref-typeface-weight-medium);
+  --md-sys-typescale-title-medium-size: 1rem; /* 16pt */
+  --md-sys-typescale-title-medium-height: 1.5rem; /* 24pt */
+  --md-sys-typescale-title-medium-tracking: 0.15px;
+  /* title - small */
+  --md-sys-typescale-title-small-font: var(--md-ref-typeface-brand);
+  --md-sys-typescale-title-small-weight: var(--md-ref-typeface-weight-medium);
+  --md-sys-typescale-title-small-size: 0.875rem; /* 14pt */
+  --md-sys-typescale-title-small-height: 1.25rem; /* 20pt */
+  --md-sys-typescale-title-small-tracking: 0.1px;
+  /* body - large */
+  --md-sys-typescale-body-large-font: var(--md-ref-typeface-brand);
+  --md-sys-typescale-body-large-weight: var(--md-ref-typeface-weight-regular);
+  --md-sys-typescale-body-large-size: 1rem; /* 16pt */
+  --md-sys-typescale-body-large-height: 1.5rem; /* 24pt */
+  --md-sys-typescale-body-large-tracking: 0.5px;
+  /* body - medium */
+  --md-sys-typescale-body-medium-font: var(--md-ref-typeface-brand);
+  --md-sys-typescale-body-medium-weight: var(--md-ref-typeface-weight-regular);
+  --md-sys-typescale-body-medium-size: 0.875rem; /* 14pt */
+  --md-sys-typescale-body-medium-height: 1.25rem; /* 20pt */
+  --md-sys-typescale-body-medium-tracking: 0.25px;
+  /* body - small */
+  --md-sys-typescale-body-small-font: var(--md-ref-typeface-brand);
+  --md-sys-typescale-body-small-weight: var(--md-ref-typeface-weight-regular);
+  --md-sys-typescale-body-small-size: 0.75rem; /* 12pt */
+  --md-sys-typescale-body-small-height: 1rem; /* 16pt */
+  --md-sys-typescale-body-small-tracking: 0.4px;
+  /* label - large */
+  --md-sys-typescale-label-large-font: var(--md-ref-typeface-brand);
+  --md-sys-typescale-label-large-weight: var(--md-ref-typeface-weight-medium);
+  --md-sys-typescale-label-large-weight-prominent: var(--md-ref-typeface-weight-bold);
+  --md-sys-typescale-label-large-size: 0.875rem; /* 14pt */
+  --md-sys-typescale-label-large-height: 1.25rem; /* 20pt */
+  --md-sys-typescale-label-large-tracking: 0.1px;
+  /* label - medium */
+  --md-sys-typescale-label-medium-font: var(--md-ref-typeface-brand);
+  --md-sys-typescale-label-medium-weight: var(--md-ref-typeface-weight-medium);
+  --md-sys-typescale-label-medium-weight-prominent: var(--md-ref-typeface-weight-bold);
+  --md-sys-typescale-label-medium-size: 0.75rem; /* 12pt */
+  --md-sys-typescale-label-medium-height: 1rem; /* 16pt */
+  --md-sys-typescale-label-medium-tracking: 0.5px;
+  /* label - small */
+  --md-sys-typescale-label-small-font: var(--md-ref-typeface-brand);
+  --md-sys-typescale-label-small-weight: var(--md-ref-typeface-weight-medium);
+  --md-sys-typescale-label-small-size: 0.6875rem; /* 11pt */
+  --md-sys-typescale-label-small-height: 1rem; /* 16pt */
+  --md-sys-typescale-label-small-tracking: 0.5px;
+
+  /* CUSTOM!!! */
+  /* State layer */
+  --md-sys-state-hover-state-layer-opacity: 0.08;
+  --md-sys-state-focus-state-layer-opacity: 0.1;
+  --md-sys-state-pressed-state-layer-opacity: 0.1;
+  --md-sys-state-dragged-state-layer-opacity: 0.16;
+  /* Rounding */
+  --md-sys-shape-corner-none: 0;
+  --md-sys-shape-corner-extra-small: 4px;
+  --md-sys-shape-corner-extra-small-top: 4px 4px 0px 0px;
+  --md-sys-shape-corner-small: 8px;
+  --md-sys-shape-corner-small-top: 8px 8px 0 0;
+  --md-sys-shape-corner-small-bottom: 0 0 8px 8px;
+  --md-sys-shape-corner-medium: 12px;
+  --md-sys-shape-corner-medium-top: 12px 12px 0 0;
+  --md-sys-shape-corner-large: 16px;
+  --md-sys-shape-corner-large-end: 0px 16px 16px 0px;
+  --md-sys-shape-corner-large-top: 16px 16px 0px 0px;
+  --md-sys-shape-corner-extra-large: 28px;
+  --md-sys-shape-corner-extra-large-top: 28px 28px 0 0;
+  --md-sys-shape-corner-full: 9999px;
+
+  --md-sys-animation-easing-standard: cubic-bezier(0.2, 0, 0, 1);
+  --md-sys-animation-easing-acceleration: cubic-bezier(0.4, 0, 1, 1);
+  --md-sys-animation-easing-deceleration: cubic-bezier(0, 0, 0.2, 1);
+  --md-sys-animation-easing-sharp: cubic-bezier(0.4, 0, 0.6, 1);
+
+  /* Motion */
+  --md-sys-motion-easing-emphasized-decelerate: cubic-bezier(0.05, 0.7, 0.1, 1);
+  --md-sys-motion-easing-emphasized-accelerate: cubic-bezier(0.3, 0, 0.8, 0.15);
+  --md-sys-motion-easing-standard: cubic-bezier(0.2, 0, 0, 1);
+  --md-sys-motion-easing-standard-decelerate: cubic-bezier(0, 0, 0, 1);
+  --md-sys-motion-easing-standard-accelerate: cubic-bezier(0.3, 0, 1, 1);
+  --md-sys-motion-duration-short1: 50ms;
+  --md-sys-motion-duration-short2: 100ms;
+  --md-sys-motion-duration-short3: 150ms;
+  --md-sys-motion-duration-short4: 200ms;
+  --md-sys-motion-duration-medium1: 250ms;
+  --md-sys-motion-duration-medium2: 300ms;
+  --md-sys-motion-duration-medium3: 350ms;
+  --md-sys-motion-duration-medium4: 400ms;
+  --md-sys-motion-duration-long1: 450ms;
+  --md-sys-motion-duration-long2: 500ms;
+  --md-sys-motion-duration-long3: 550ms;
+  --md-sys-motion-duration-long4: 600ms;
+  --md-sys-motion-duration-extra-long1: 700ms;
+  --md-sys-motion-duration-extra-long2: 800ms;
+  --md-sys-motion-duration-extra-long3: 900ms;
+  --md-sys-motion-duration-extra-long4: 1000ms;
+}
