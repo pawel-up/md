@@ -106,13 +106,13 @@ export default class RadioElement extends CheckedElement {
 
   protected override render(): TemplateResult {
     const { pressed = false } = this
-    const surfaceClasses = classMap({
+    const surfaceClasses = {
       surface: true,
       pressed,
-    })
+    }
     return html`
       <ui-focus-ring part="focus-ring" .control="${this as HTMLElement}"></ui-focus-ring>
-      <div class="${surfaceClasses}" ${ripple(this.getRipple)}>
+      <div class=${classMap(surfaceClasses)} ${ripple(this.getRipple)}>
         <div class="container"></div>
         <div class="state"></div>
         ${when(this.showRipple, this.renderRipple)}

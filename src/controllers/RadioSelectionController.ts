@@ -25,19 +25,54 @@ const inputs: IRadioSelectionControllerHost[] = []
  * in the group.
  */
 export class RadioSelectionController implements ReactiveController {
+  private _prevName?: string = undefined
+  private _prevDisabled?: boolean = undefined
+  private _prevRequired?: boolean = undefined
+
   constructor(private readonly element: IRadioSelectionControllerHost) {
     this.element.addController(this)
+    this._prevName = this.element.name
+    this._prevDisabled = this.element.disabled
+    this._prevRequired = this.element.required
   }
 
   hostConnected(): void {
     const { element } = this
     inputs.push(element)
+    this._prevName = element.name
+    this._prevDisabled = element.disabled
+    this._prevRequired = element.required
+    RadioSelectionController.syncGroup(this._findGroup(element))
   }
 
   hostDisconnected(): void {
-    const index = inputs.indexOf(this.element)
+    const { element } = this
+    const index = inputs.indexOf(element)
     if (index >= 0) {
       inputs.splice(index, 1)
+    }
+    const remainingGroup = this._findGroupByNameAndForm(element.name || '', element.form)
+    RadioSelectionController.syncGroup(remainingGroup)
+  }
+
+  hostUpdated(): void {
+    const { element } = this
+    const nameChanged = this._prevName !== element.name
+    const disabledChanged = this._prevDisabled !== element.disabled
+    const requiredChanged = this._prevRequired !== element.required
+
+    if (nameChanged || disabledChanged || requiredChanged) {
+      if (nameChanged && this._prevName !== undefined) {
+        const oldGroup = this._findGroupByNameAndForm(this._prevName, element.form)
+        RadioSelectionController.syncGroup(oldGroup)
+      }
+
+      const currentGroup = this._findGroup(element)
+      RadioSelectionController.syncGroup(currentGroup)
+
+      this._prevName = element.name
+      this._prevDisabled = element.disabled
+      this._prevRequired = element.required
     }
   }
 
@@ -47,25 +82,10 @@ export class RadioSelectionController implements ReactiveController {
   handleSelection(): void {
     const { element } = this
     const group = this._findGroup(element)
-    const isRequired = group.some((i) => !!i.required || typeof i.dataset.required === 'string')
-    for (let i = 0, len = group.length; i < len; i++) {
-      const item = group[i]
-      if (item === element) {
-        item.checked = true
-        item.setAttribute('tabindex', '0')
-        if (isRequired) {
-          item.required = true
-        }
-      } else {
-        if (item.required) {
-          item.required = false
-        }
-        if (item.checked) {
-          item.checked = false
-        }
-        item.removeAttribute('tabindex')
-      }
+    for (const item of group) {
+      item.checked = item === element
     }
+    RadioSelectionController.syncGroup(group)
   }
 
   /**
@@ -164,13 +184,14 @@ export class RadioSelectionController implements ReactiveController {
   }
 
   private _findGroup(element: IRadioSelectionControllerHost): IRadioSelectionControllerHost[] {
-    let group: IRadioSelectionControllerHost[]
-    if (element.form) {
-      group = this._findFormGroup(element.name || '', element.form)
-    } else {
-      group = this._findDocumentGroup(element)
+    return this._findGroupByNameAndForm(element.name || '', element.form)
+  }
+
+  private _findGroupByNameAndForm(name: string, form: HTMLFormElement | null): IRadioSelectionControllerHost[] {
+    if (form) {
+      return this._findFormGroup(name, form)
     }
-    return group
+    return this._findDocumentGroup(name)
   }
 
   /**
@@ -192,11 +213,10 @@ export class RadioSelectionController implements ReactiveController {
   }
 
   /**
-   * @param element The element to find its group
+   * @param name The name of the input group
    * @returns Ordered list of inputs with the same name that don't belong to any form.
    */
-  private _findDocumentGroup(element: IRadioSelectionControllerHost): IRadioSelectionControllerHost[] {
-    const { name = '' } = element
+  private _findDocumentGroup(name: string): IRadioSelectionControllerHost[] {
     const group = inputs.filter((node) => {
       if (node.form) {
         return false
@@ -207,85 +227,64 @@ export class RadioSelectionController implements ReactiveController {
   }
 
   /**
-   * When multiple inputs within the same group have the `required` attribute
-   * then the validation is reported incorrectly on inputs where the `tabindex` was removed from.
-   * This triggers a console error (not an error in a sense of stopping JS execution) that
-   * the form control is not focusable.
-   * This removes the `required` attribute from the input when there's another radio button that has the
-   * required attribute.
+   * Clears required attribute on redundant elements in the group.
    */
   clearRequired(): void {
-    const { element } = this
-    if (!element.required) {
-      return
-    }
-    const group = this._findGroup(element)
-    let hasPreviousRequired = false
-    for (let i = 0, len = group.length; i < len; i++) {
-      const item = group[i]
-      if (item === element) {
-        break
-      }
-      if (item.required && !item.disabled) {
-        hasPreviousRequired = true
-        break
-      }
-    }
-    if (hasPreviousRequired) {
-      element.required = false
-      element.dataset.required = ''
-    }
+    RadioSelectionController.syncGroup(this._findGroup(this.element))
   }
 
   /**
-   * Removes the tabindex attribute from the input when there's another input with
-   * `tabindex` within the same group. This way the user can `tab` to the next input instead
-   * of tabbing through all inputs in the group.
-   *
-   * Note, tabindex values within a group may be different but it has no semantic or logical
-   * meaning as navigation within a group happens with arrows and not tab.
-   *
+   * Removes the tabindex attribute from redundant elements in the group.
    */
   clearTabindex(): void {
-    const { element } = this
-    const elementIndex = this._readTabIndex(element)
-    if (elementIndex < 0) {
-      return
-    }
-    const group = this._findGroup(element)
-    if (group.length < 2) {
-      // noting to clear.
-      return
-    }
-    let hasFocusableElement = false
-    for (let i = 0, len = group.length; i < len; i++) {
-      const item = group[i]
-      if (item === element) {
-        break
-      }
-      if (item.disabled) {
-        continue
-      }
-      const index = this._readTabIndex(item)
-      if (index >= 0) {
-        hasFocusableElement = true
-        break
-      }
-    }
-    if (hasFocusableElement) {
-      element.removeAttribute('tabindex')
-    }
+    RadioSelectionController.syncGroup(this._findGroup(this.element))
   }
 
-  protected _readTabIndex(element: HTMLElement): number {
-    const tIndex = element.getAttribute('tabindex')
-    if (!tIndex) {
-      return -1
+  /**
+   * Synchronizes the tabindex and required attributes for a group of radio buttons.
+   */
+  static syncGroup(group: IRadioSelectionControllerHost[]): void {
+    if (group.length === 0) return
+
+    let focusableElement = group.find((item) => item.checked && !item.disabled)
+    if (!focusableElement) {
+      focusableElement = group.find((item) => !item.disabled)
     }
-    const num = Number(tIndex)
-    if (!Number.isInteger(num)) {
-      return -1
+
+    const isRequired = group.some(
+      (item) => !!item.required || (item instanceof HTMLElement && typeof item.dataset.required === 'string')
+    )
+
+    for (const item of group) {
+      if (item.disabled) {
+        item.removeAttribute('tabindex')
+        if (isRequired) {
+          item.required = false
+          if (item instanceof HTMLElement) {
+            item.dataset.required = ''
+          }
+        }
+        continue
+      }
+
+      // Tabindex
+      if (item === focusableElement) {
+        item.setAttribute('tabindex', '0')
+      } else {
+        item.removeAttribute('tabindex')
+      }
+
+      // Required
+      if (isRequired) {
+        if (item === focusableElement) {
+          item.required = true
+        } else {
+          item.required = false
+          if (item instanceof HTMLElement) {
+            item.dataset.required = ''
+          }
+        }
+      }
     }
-    return num
   }
 }
