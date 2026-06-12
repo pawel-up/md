@@ -13,4 +13,10 @@ export default class Button extends BaseButton {
    * @attribute
    */
   @property({ type: String, reflect: true }) accessor color: MdButtonColor = 'filled'
+
+  /**
+   * Whether the button represents a destructive action.
+   * @attribute
+   */
+  @property({ type: Boolean, reflect: true }) accessor destructive = false
 }

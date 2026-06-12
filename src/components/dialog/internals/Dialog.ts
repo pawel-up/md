@@ -449,13 +449,13 @@ export default class UiDialog extends UiElement implements TypedEvents<DialogEve
       return nothing
     }
     const type = this.confirmType ?? 'button'
-    const buttonClass = destructive ? 'internal-button destructive' : 'internal-button'
     return html`
       <ui-button
         color="text"
         type="${type}"
         value="${confirmValue}"
-        class="${buttonClass}"
+        class="internal-button"
+        ?destructive="${destructive}"
         @click="${this.handleConfirm}"
         part="positive-action"
         >${confirmLabel}</ui-button

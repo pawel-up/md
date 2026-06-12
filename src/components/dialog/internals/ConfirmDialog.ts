@@ -67,7 +67,8 @@ export default class ConfirmDialog extends UiDialog {
         <ui-button
           color="filled"
           value="confirm"
-          class="internal-button ${this.destructive ? 'destructive' : ''}"
+          class="internal-button"
+          ?destructive="${this.destructive}"
           @click="${this.handleConfirm}"
           part="confirm-button"
         >

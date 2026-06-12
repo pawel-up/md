@@ -247,7 +247,7 @@ test.group('UiDialog - buttons', () => {
     assert.isTrue(container.classList.contains('with-buttons'), 'has the with-buttons class')
   })
 
-  test('applies destructive class to confirm button when destructive is true', async ({ assert }) => {
+  test('applies destructive attribute to confirm button when destructive is true', async ({ assert }) => {
     const element = await basicFixture()
     element.confirmLabel = 'Delete'
     element.destructive = true
@@ -255,10 +255,10 @@ test.group('UiDialog - buttons', () => {
 
     const button = element.shadowRoot!.querySelector('.internal-button[value="confirm"]') as UiButton
     assert.ok(button, 'has the confirm button')
-    assert.isTrue(button.classList.contains('destructive'), 'has destructive class')
+    assert.isTrue(button.hasAttribute('destructive'), 'has destructive attribute')
   })
 
-  test('does not apply destructive class when destructive is false', async ({ assert }) => {
+  test('does not apply destructive attribute when destructive is false', async ({ assert }) => {
     const element = await basicFixture()
     element.confirmLabel = 'Confirm'
     element.destructive = false
@@ -266,7 +266,7 @@ test.group('UiDialog - buttons', () => {
 
     const button = element.shadowRoot!.querySelector('.internal-button[value="confirm"]') as UiButton
     assert.ok(button, 'has the confirm button')
-    assert.isFalse(button.classList.contains('destructive'), 'does not have destructive class')
+    assert.isFalse(button.hasAttribute('destructive'), 'does not have destructive attribute')
   })
 })
 

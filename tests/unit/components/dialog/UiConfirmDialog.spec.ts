@@ -91,7 +91,7 @@ test.group('UiConfirmDialog', () => {
     await element.updateComplete
 
     const confirmButton = element.shadowRoot!.querySelector('ui-button[value="confirm"]')
-    assert.ok(confirmButton?.classList.contains('destructive'), 'confirm button has destructive class')
+    assert.ok(confirmButton?.hasAttribute('destructive'), 'confirm button has destructive attribute')
   })
 
   test('renders confirm button with destructive styling', async ({ assert }) => {
@@ -100,7 +100,7 @@ test.group('UiConfirmDialog', () => {
 
     const confirmButton = element.shadowRoot!.querySelector('ui-button[value="confirm"]')
     assert.equal(confirmButton!.getAttribute('color'), 'filled')
-    assert.ok(confirmButton!.classList.contains('destructive'), 'has destructive class for styling')
+    assert.ok(confirmButton!.hasAttribute('destructive'), 'has destructive attribute for styling')
   })
 
   test('is not destructive by default', async ({ assert }) => {
@@ -113,19 +113,19 @@ test.group('UiConfirmDialog', () => {
     assert.isTrue(element.destructive)
   })
 
-  test('applies destructive class to confirm button when destructive is true', async ({ assert }) => {
+  test('applies destructive attribute to confirm button when destructive is true', async ({ assert }) => {
     const element = await destructiveFixture()
     await element.updateComplete
 
     const confirmButton = element.shadowRoot!.querySelector('ui-button[value="confirm"]')
-    assert.isTrue(confirmButton!.classList.contains('destructive'))
+    assert.isTrue(confirmButton!.hasAttribute('destructive'))
   })
 
-  test('does not apply destructive class when destructive is false', async ({ assert }) => {
+  test('does not apply destructive attribute when destructive is false', async ({ assert }) => {
     const element = await basicFixture()
     await element.updateComplete
 
     const confirmButton = element.shadowRoot!.querySelector('ui-button[value="confirm"]')
-    assert.isFalse(confirmButton!.classList.contains('destructive'))
+    assert.isFalse(confirmButton!.hasAttribute('destructive'))
   })
 })

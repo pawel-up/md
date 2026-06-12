@@ -296,6 +296,30 @@ export default css`
     --_pill-radius: var(--md-sys-shape-corner-medium);
   }
 
+  /* Destructive Button styles */
+  :host([color='elevated'][destructive]:not([disabled])) {
+    --_color: var(--md-sys-color-error);
+  }
+
+  :host([color='filled'][destructive]:not([disabled])) {
+    --_background-color: var(--md-sys-color-error);
+    --_color: var(--md-sys-color-on-error);
+  }
+
+  :host([color='tonal'][destructive]:not([disabled])) {
+    --_background-color: var(--md-sys-color-error-container);
+    --_color: var(--md-sys-color-on-error-container);
+  }
+
+  :host([color='outlined'][destructive]:not([disabled])) {
+    border-color: var(--md-sys-color-error);
+    --_color: var(--md-sys-color-error);
+  }
+
+  :host([color='text'][destructive]:not([disabled])) {
+    --_color: var(--md-sys-color-error);
+  }
+
   /* Preference-based animations */
   @media (prefers-reduced-motion: reduce) {
     :host {

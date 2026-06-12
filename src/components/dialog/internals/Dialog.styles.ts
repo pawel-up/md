@@ -167,15 +167,4 @@ export default css`
       opacity: 1;
     }
   }
-
-  /* Destructive button styling for dangerous actions */
-  .internal-button.destructive {
-    --_background-color: var(--md-sys-color-error);
-    --_color: var(--md-sys-color-on-error);
-
-    /* Override ripple colors for better interaction feedback */
-    --md-ripple-hover-state-layer-color: var(--md-sys-color-on-error);
-    --md-ripple-focus-state-layer-color: var(--md-sys-color-on-error);
-    --md-ripple-pressed-state-layer-color: var(--md-sys-color-on-error);
-  }
 `
