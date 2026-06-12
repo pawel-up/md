@@ -210,6 +210,9 @@ export default class UiRipple extends LitElement {
   }
 
   beginHover(hoverEvent?: Event): void {
+    if (this.disabled) {
+      return
+    }
     if ((hoverEvent as PointerEvent)?.pointerType !== 'touch') {
       this.hovered = true
       this.manageActivated()
@@ -222,6 +225,9 @@ export default class UiRipple extends LitElement {
   }
 
   beginFocus(): void {
+    if (this.disabled) {
+      return
+    }
     this.focused = true
     this.manageActivated()
   }
@@ -232,6 +238,9 @@ export default class UiRipple extends LitElement {
   }
 
   beginPress(positionEvent?: Event | null): void {
+    if (this.disabled) {
+      return
+    }
     this.pressed = true
     this.rippleStartEvent = positionEvent
     if (this.delayedEndPressHandle !== null) {

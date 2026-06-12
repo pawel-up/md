@@ -195,6 +195,8 @@ export class SnackNotifications {
     } else {
       const index = this.stack.findIndex((i) => i.element === snack)
       if (index >= 0) {
+        const item = this.stack[index]
+        item.element.parentElement?.removeChild(item.element)
         this.stack.splice(index, 1)
       }
     }

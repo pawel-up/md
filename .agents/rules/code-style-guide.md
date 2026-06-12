@@ -23,6 +23,8 @@ Coding standards:
 - ALWAYS define a type for complex objects (ESLint)
 - Always add a function's return type, even if it's void.
 - Auto-format JS/TS files after edit using the `npm run format` command
+- Always run the typecheck script to confirm TS compiles correctly
+- Always check the linter issues because the CI checkf for it before the automayted release
 
 Null-assertions handling:
 
