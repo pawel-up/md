@@ -1,3 +1,11 @@
+## [1.0.2](https://github.com/pawel-up/md/compare/v1.0.1...v1.0.2) (2026-06-12)
+
+
+### Bug Fixes
+
+* implement fallback positioning for Menu components using scroll listeners ([8cf15fd](https://github.com/pawel-up/md/commit/8cf15fd0200212a8b804491eab9eda32fc8a2578))
+* refine Input lifecycle and Tabs event handling logic ([d7bc0bc](https://github.com/pawel-up/md/commit/d7bc0bc7d19580e484b201c8adfc39d580e805d8))
+
 ## [1.0.1](https://github.com/pawel-up/md/compare/v1.0.0...v1.0.1) (2026-06-01)
 
 
