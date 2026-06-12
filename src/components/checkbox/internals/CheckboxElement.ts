@@ -74,13 +74,13 @@ export default class CheckboxElement extends CheckedElement {
 
   protected override render(): TemplateResult {
     const { pressed = false } = this
-    const containerClasses = classMap({
+    const containerClasses = {
       surface: true,
       pressed,
-    })
+    }
     return html`
       <ui-focus-ring part="focus-ring" .control="${this as HTMLElement}"></ui-focus-ring>
-      <div class="${containerClasses}">
+      <div class=${classMap(containerClasses)}>
         <div class="container"></div>
         <div class="state"></div>
         <ui-ripple class="ripple" unbounded ?disabled="${this.disabled}"></ui-ripple>

@@ -31,10 +31,14 @@ export function setDisabled(target: HTMLElement, disabled: boolean | undefined):
     state.tabindexBeforeDisabled = target.getAttribute('tabindex') || '0'
     target.removeAttribute('tabindex')
     target.setAttribute('aria-disabled', 'true')
-  } else if (state.tabindexBeforeDisabled) {
-    target.setAttribute('tabindex', state.tabindexBeforeDisabled)
-    delete state.tabindexBeforeDisabled
+  } else {
     target.removeAttribute('aria-disabled')
+    if (state.tabindexBeforeDisabled) {
+      target.setAttribute('tabindex', state.tabindexBeforeDisabled)
+      delete state.tabindexBeforeDisabled
+    } else if (!target.hasAttribute('tabindex')) {
+      target.setAttribute('tabindex', '0')
+    }
   }
   elements.set(target, state)
 }
