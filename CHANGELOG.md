@@ -1,3 +1,13 @@
+## [1.0.3](https://github.com/pawel-up/md/compare/v1.0.2...v1.0.3) (2026-06-12)
+
+
+### Bug Fixes
+
+* add destructive attribute to UiButton and migrate Dialog components to use it for styling ([024a191](https://github.com/pawel-up/md/commit/024a19171c20811b9cd4f416ffcac463c11bb5e7))
+* centralize radio group synchronization logic ([cb88821](https://github.com/pawel-up/md/commit/cb888219f4c62130f87bd00a4f5d0c6bea7fe6cb))
+* ensure tabindex restoration for disabled elements ([bd840a6](https://github.com/pawel-up/md/commit/bd840a682ed7f2efaa0e7f24bf373e76a1916d42))
+* implement outlined text field variant with notch support ([125603e](https://github.com/pawel-up/md/commit/125603e68537b9bcb2e93b2f66d42334a4e0b04b))
+
 ## [1.0.2](https://github.com/pawel-up/md/compare/v1.0.1...v1.0.2) (2026-06-12)
 
 
