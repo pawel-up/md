@@ -301,11 +301,11 @@ export default class UiTabs extends LitElement {
 
   protected async handleTabClick(e: PointerEvent): Promise<void> {
     const tab = e.composedPath().find((el) => isTab(el)) as UiTab | undefined
-    // Allow event to bubble
-    await new Promise((resolve) => setTimeout(resolve, 0))
     if (e.defaultPrevented || !tab || tab.selected) {
       return
     }
+    // Allow event to bubble
+    await new Promise((resolve) => setTimeout(resolve, 0))
     this.activateTab(tab)
   }
 
@@ -343,15 +343,13 @@ export default class UiTabs extends LitElement {
     this.scrollToTab(activeTab)
   }
 
-  private updateFocusableTab(focusableTab: UiTab) {
+  private updateFocusableTab(focusableTab: UiTab): void {
     for (const tab of this.tabs) {
       tab.tabIndex = tab === focusableTab ? 0 : -1
     }
   }
 
-  private async handleKeydown(event: KeyboardEvent) {
-    // Allow event to bubble.
-    await new Promise((resolve) => setTimeout(resolve, 0))
+  private async handleKeydown(event: KeyboardEvent): Promise<void> {
     const isLeft = event.key === 'ArrowLeft'
     const isRight = event.key === 'ArrowRight'
     const isHome = event.key === 'Home'
@@ -361,14 +359,17 @@ export default class UiTabs extends LitElement {
       return
     }
 
+    // Prevent default interactions, such as scrolling.
+    event.preventDefault()
+
+    // Allow event to bubble
+    await new Promise((resolve) => setTimeout(resolve, 0))
+
     const { tabs } = this
     // Don't try to select another tab if there aren't any.
     if (tabs.length < 2) {
       return
     }
-
-    // Prevent default interactions, such as scrolling.
-    event.preventDefault()
 
     let indexToFocus: number
     if (isHome || isEnd) {

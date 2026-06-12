@@ -477,6 +477,18 @@ export default abstract class Input extends UiElement {
     }
   }
 
+  protected override firstUpdated(changedProperties: PropertyValues): void {
+    super.firstUpdated(changedProperties)
+    const { input } = this
+    if (input) {
+      this.pendingSetters.forEach((value, key) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        ;(input as any)[key] = value
+      })
+      this.pendingSetters.clear()
+    }
+  }
+
   protected override updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties)
     if (changedProperties.has('value')) {
