@@ -813,6 +813,7 @@ export default class UiSelect extends UiElement {
       class="menu"
       part="menu"
       style=${styleMap(styles)}
+      .positionAnchor=${this.shadowRoot?.querySelector<HTMLElement>('.input') || undefined}
       popover="auto"
       selector="ui-option"
       @select="${this.handleSelect}"

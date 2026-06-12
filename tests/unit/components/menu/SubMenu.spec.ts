@@ -98,14 +98,14 @@ test.group('Anchor functionality', () => {
     const anchorItem = container.querySelector('#anchor-item') as UiMenuItem
     await nextFrame()
 
-    assert.equal(submenu.anchorElement, anchorItem)
+    assert.equal(submenu.menuItemAnchor, anchorItem)
   })
 
   test('should return null for invalid anchor', async ({ assert }) => {
     const submenu: UiSubMenu = await fixture(html`<ui-sub-menu anchor="nonexistent"></ui-sub-menu>`)
     await nextFrame()
 
-    assert.isNull(submenu.anchorElement)
+    assert.isNull(submenu.menuItemAnchor)
   })
 
   test('should update anchor positioning', async ({ assert }) => {
@@ -116,8 +116,8 @@ test.group('Anchor functionality', () => {
 
     // This tests that the CSS positioning properties are set
     // The actual values depend on the CSS implementation
-    assert.isNotNull(submenu.anchorElement)
-    assert.equal(submenu.anchorElement, anchorItem)
+    assert.isNotNull(submenu.menuItemAnchor)
+    assert.equal(submenu.menuItemAnchor, anchorItem)
   })
 })
 
@@ -226,8 +226,8 @@ test.group('Nested submenus', () => {
     // Verify the structure
     assert.equal(level1Submenu.anchor, 'level1-item')
     assert.equal(level2Submenu.anchor, 'level2-item')
-    assert.equal(level1Submenu.anchorElement, level1Item)
-    assert.equal(level2Submenu.anchorElement, level2Item)
+    assert.equal(level1Submenu.menuItemAnchor, level1Item)
+    assert.equal(level2Submenu.menuItemAnchor, level2Item)
   })
 
   test('should show nested submenus properly', async ({ assert }) => {
@@ -336,7 +336,7 @@ test.group('Edge cases', () => {
 
     // Should not throw
     assert.equal(submenu.anchor, 'new-anchor')
-    assert.isNull(submenu.anchorElement) // Since 'new-anchor' doesn't exist
+    assert.isNull(submenu.menuItemAnchor) // Since 'new-anchor' doesn't exist
   })
 
   test('should handle missing parent menu gracefully', async ({ assert }) => {

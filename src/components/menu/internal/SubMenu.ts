@@ -30,7 +30,7 @@ export default class UiSubMenu extends Menu {
   /**
    * Reference to the anchor element
    */
-  get anchorElement(): MenuItem | null {
+  override get menuItemAnchor(): MenuItem | null {
     if (!this.anchor) return null
     return findElementInShadowRoots(this.anchor, this) as MenuItem | null
   }
@@ -53,7 +53,7 @@ export default class UiSubMenu extends Menu {
    * Updates anchor positioning using CSS Anchor Positioning API
    */
   protected updateAnchorPositioning(): void {
-    const anchor = this.anchorElement
+    const anchor = this.menuItemAnchor
     if (!anchor) return
     const anchorName = `--anchor-${this.id}`
 
@@ -68,7 +68,7 @@ export default class UiSubMenu extends Menu {
    * Shows the submenu
    */
   override show(): void {
-    if (!this.anchorElement) {
+    if (!this.menuItemAnchor) {
       return
     }
 
@@ -106,7 +106,7 @@ export default class UiSubMenu extends Menu {
     if (parentMenu) {
       parentMenu.setActiveSubMenu(null)
     }
-    const anchor = this.anchorElement
+    const anchor = this.menuItemAnchor
     if (anchor) {
       anchor.closeSubMenu()
     }
@@ -146,16 +146,16 @@ export default class UiSubMenu extends Menu {
         e.preventDefault()
         this.hide()
         // Return focus to parent menu item
-        if (this.anchorElement) {
-          this.anchorElement.focus()
+        if (this.menuItemAnchor) {
+          this.menuItemAnchor.focus()
         }
         break
       case 'ArrowLeft':
         e.preventDefault()
         this.hide()
         // Return focus to parent menu item
-        if (this.anchorElement) {
-          this.anchorElement.focus()
+        if (this.menuItemAnchor) {
+          this.menuItemAnchor.focus()
         }
         break
       default:
@@ -165,13 +165,13 @@ export default class UiSubMenu extends Menu {
   }
 
   override render(): TemplateResult {
-    const classes = classMap({
+    const classes = {
       'submenu-container': true,
       'submenu-open': this.open,
-    })
+    }
 
     return html`
-      <div class=${classes}>
+      <div class=${classMap(classes)}>
         <slot></slot>
       </div>
     `

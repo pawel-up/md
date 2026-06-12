@@ -8,6 +8,9 @@ import UiSubMenu from './SubMenu.js'
 import { setDisabled } from '../../../lib/disabled.js'
 import UiListItem from '../../list/internals/ListItem.js'
 import { bound } from '../../../decorators/bound.js'
+import { positionOverlay } from '../../../lib/ElementPositioning.js'
+import * as ScrollHelper from '../../../lib/ScrollHelper.js'
+import MenuItem from './MenuItem.js'
 
 /**
  * Material Design 3 Menu component with sub-menu support.
@@ -23,6 +26,11 @@ export default class Menu extends UiList {
    * @attribute
    */
   @property({ type: Boolean, reflect: true }) accessor open = false
+
+  /**
+   * Optional anchor element to position relative to in case CSS Anchor Positioning is not supported.
+   */
+  @property({ attribute: false }) accessor positionAnchor: HTMLElement | undefined
 
   /**
    * Whether the menu is disabled
@@ -45,6 +53,12 @@ export default class Menu extends UiList {
    * Currently active sub-menu
    */
   @state() accessor activeSubMenu: UiSubMenu | null = null
+
+  // eslint-disable-next-line @typescript-eslint/class-literal-property-style
+  get menuItemAnchor(): MenuItem | null {
+    // It is here so the SubMenu can override it and set the anchor element
+    return null
+  }
 
   constructor() {
     super()
@@ -113,6 +127,14 @@ export default class Menu extends UiList {
     this.open = true
     this.focus()
     this.dispatchEvent(new CustomEvent('open'))
+
+    // Add scroll/resize listeners for fallback positioning
+    const supportsAnchor =
+      'anchorName' in document.documentElement.style || 'positionAnchor' in document.documentElement.style
+    const anchorEl = this.positionAnchor || this.menuItemAnchor
+    if (!supportsAnchor && anchorEl) {
+      ScrollHelper.addListeners(this, this.positionMenu.bind(this))
+    }
   }
 
   /**
@@ -125,9 +147,44 @@ export default class Menu extends UiList {
     this.open = false
     this.closeSubMenu()
     this.dispatchEvent(new CustomEvent('close'))
+    ScrollHelper.removeListeners(this)
   }
 
   positionMenu(): void {
+    const supportsAnchor =
+      'anchorName' in document.documentElement.style || 'positionAnchor' in document.documentElement.style
+    const anchorEl = this.positionAnchor || this.menuItemAnchor
+
+    if (!supportsAnchor && anchorEl) {
+      // Clear measurements class just in case
+      this.classList.remove('measurements')
+      const styles = positionOverlay(this, anchorEl, {
+        vertical: 'auto',
+        horizontal: 'auto',
+        noOverlap: true,
+        constrain: true,
+        constrainPaddingY: 20,
+      })
+      Object.entries(styles).forEach(([key, val]) => {
+        if (val !== undefined) {
+          this.style.setProperty(key, val as string)
+        }
+      })
+
+      // Get the rect after positioning to decide animation class (positioned above/below)
+      const box = this.getBoundingClientRect()
+      const viewportMiddle = innerHeight / 2
+      const isMenuInUpperHalf = box.top < viewportMiddle
+      if (isMenuInUpperHalf) {
+        this.classList.add('menu-positioned-above')
+        this.classList.remove('menu-positioned-below')
+      } else {
+        this.classList.add('menu-positioned-below')
+        this.classList.remove('menu-positioned-above')
+      }
+      return
+    }
+
     // for the frame, make the element visible (without animations)
     // to take measurements correctly.
     this.classList.add('measurements')
