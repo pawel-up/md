@@ -46,7 +46,8 @@ export default css`
     cursor: inherit;
   }
 
-  .label {
+  .label,
+  .outline-label {
     color: var(--md-sys-color-on-surface-variant);
 
     max-width: 100%;
@@ -165,6 +166,7 @@ export default css`
   }
 
   :host([disabled]) .label,
+  :host([disabled]) .outline-label,
   :host([disabled]) .input,
   :host([disabled]) .end ::slotted(*),
   :host([disabled]) .start ::slotted(*) {
@@ -173,18 +175,26 @@ export default css`
   }
 
   :host([invalid]) .label,
+  :host([invalid]) .outline-label,
   :host([invalid]:focus-within) .label,
+  :host([invalid]:focus-within) .outline-label,
   :host([invalid]) .supporting-text,
   :host([invalid]) .end ::slotted(*) {
     color: var(--md-sys-color-error);
   }
 
   :host([invalid]:hover) .label,
+  :host([invalid]:hover) .outline-label,
   :host([invalid]:hover) .end ::slotted(*) {
     color: var(--md-sys-color-on-error-container);
   }
 
-  .labelHidden .label {
+  .labelHidden .label,
+  .labelHidden .outline-label {
+    display: none;
+  }
+
+  .outline {
     display: none;
   }
 `

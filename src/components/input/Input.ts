@@ -877,10 +877,14 @@ export default abstract class Input extends UiElement {
       labelResting,
       labelActive: !labelResting,
       labelHidden: this.labelHidden(),
+      hasPrefix: this.hasPrefix,
+      hasSuffix: this.hasSuffix,
+      hasLabel: !!this.label,
     }
     return html`
       <div class="${classMap(containerClasses)}">
         <div class="container"></div>
+        ${this.renderOutline()}
         <div class="content" part="content">
           ${this.renderPrefix()} ${this.renderBody()} ${this.renderPasswordControl()} ${this.renderSuffix()}
           ${this.renderHighlight()}
@@ -920,6 +924,23 @@ export default abstract class Input extends UiElement {
       return html``
     }
     return html`<span class="label" id="${this.labelId}" title="${label}" part="label">${label}</span>`
+  }
+
+  protected renderOutline(): TemplateResult {
+    const label = this.renderLabelText()
+    return html`
+      <div class="outline" part="outline">
+        <div class="outline-start"></div>
+        <div class="outline-notch">
+          ${label
+            ? html`<span class="outline-label" id="${this.labelId}-outline" title="${label}" part="outline-label"
+                >${label}</span
+              >`
+            : nothing}
+        </div>
+        <div class="outline-end"></div>
+      </div>
+    `
   }
 
   protected renderHighlight(): TemplateResult {

@@ -1,15 +1,27 @@
 import { fixture, html, nextFrame, test } from '@pawel-up/lupa/testing'
 import { UiFilledTextFieldElement } from '../../../../src/components/text-field/ui-filled-text-field.js'
+import { UiOutlinedTextFieldElement } from '../../../../src/components/text-field/ui-outlined-text-field.js'
 
 import '../../../../src/components/text-field/ui-filled-text-field.js'
+import '../../../../src/components/text-field/ui-outlined-text-field.js'
 
 test.group('TextField', () => {
   async function basicFixture(): Promise<UiFilledTextFieldElement> {
-    return fixture(html`<ui-filled-text-field label="Name"></ui-filled-text-field>`)
+    return fixture(
+      html`<ui-filled-text-field label="Name"></ui-filled-text-field>`
+    ) as Promise<UiFilledTextFieldElement>
   }
 
   async function valueFixture(): Promise<UiFilledTextFieldElement> {
-    return fixture(html`<ui-filled-text-field label="Name" value="Alice"></ui-filled-text-field>`)
+    return fixture(
+      html`<ui-filled-text-field label="Name" value="Alice"></ui-filled-text-field>`
+    ) as Promise<UiFilledTextFieldElement>
+  }
+
+  async function outlinedFixture(): Promise<UiOutlinedTextFieldElement> {
+    return fixture(
+      html`<ui-outlined-text-field label="Outline Name"></ui-outlined-text-field>`
+    ) as Promise<UiOutlinedTextFieldElement>
   }
 
   test('has default empty value', async ({ assert }) => {
@@ -30,7 +42,7 @@ test.group('TextField', () => {
     field.selectionEnd = 8
 
     // Append to document/render
-    const container = await fixture(html`<div></div>`)
+    const container = (await fixture(html`<div></div>`)) as HTMLElement
     container.appendChild(field)
     await nextFrame()
     await field.updateComplete
@@ -53,5 +65,22 @@ test.group('TextField', () => {
     await nextFrame()
     assert.isFalse(field.disabled)
     assert.isFalse(field.hasAttribute('aria-disabled'))
+  }).tags(['@md', '@text-field'])
+
+  test('renders outline structure and notch label for outlined variant', async ({ assert }) => {
+    const field = await outlinedFixture()
+    const outline = field.shadowRoot?.querySelector('.outline')
+    assert.isNotNull(outline)
+
+    const start = outline?.querySelector('.outline-start')
+    const notch = outline?.querySelector('.outline-notch')
+    const end = outline?.querySelector('.outline-end')
+    assert.isNotNull(start)
+    assert.isNotNull(notch)
+    assert.isNotNull(end)
+
+    const outlineLabel = notch?.querySelector('.outline-label')
+    assert.isNotNull(outlineLabel)
+    assert.equal(outlineLabel?.textContent?.trim(), 'Outline Name')
   }).tags(['@md', '@text-field'])
 })
