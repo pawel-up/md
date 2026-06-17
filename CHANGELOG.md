@@ -1,3 +1,15 @@
+# [1.1.0](https://github.com/pawel-up/md/compare/v1.0.3...v1.1.0) (2026-06-17)
+
+
+### Bug Fixes
+
+* relocate active indicator within tab-content and update focus ring positioning properties ([8c2f728](https://github.com/pawel-up/md/commit/8c2f7283db48c8cea0c4a38b2e0fe03f8c07014c))
+
+
+### Features
+
+* add horizontal scroll buttons to tabs for overflow management ([181dd84](https://github.com/pawel-up/md/commit/181dd848640e7e8154a61a19f765a69d9d72a197))
+
 ## [1.0.3](https://github.com/pawel-up/md/compare/v1.0.2...v1.0.3) (2026-06-12)
 
 
