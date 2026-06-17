@@ -1,4 +1,4 @@
-import { html, LitElement, PropertyValues, TemplateResult } from 'lit'
+import { html, LitElement, nothing, PropertyValues, TemplateResult } from 'lit'
 import { property, query, queryAssignedElements, state } from 'lit/decorators.js'
 import { ClassInfo, classMap } from 'lit/directives/class-map.js'
 import { StyleInfo, styleMap } from 'lit/directives/style-map.js'
@@ -7,6 +7,7 @@ import UiTab from './Tab.js'
 import '../../icon-button/ui-icon-button.js'
 import '../../divider/ui-divider.js'
 import '../../icons/ui-icon.js'
+import { chevronLeft, chevronRight } from '../../icons/Icons.js'
 
 export type TabsPriority = 'primary' | 'secondary'
 
@@ -123,7 +124,13 @@ export default class UiTabs extends LitElement {
 
   @state() private accessor indicated = false
 
+  @state() private accessor showLeftArrow = false
+
+  @state() private accessor showRightArrow = false
+
   private observer: IntersectionObserver
+
+  private resizeObserver?: ResizeObserver
 
   /**
    * This is set by the intersection observer. Once the tabs are in the view it turns to `true`.
@@ -160,6 +167,10 @@ export default class UiTabs extends LitElement {
   override connectedCallback(): void {
     super.connectedCallback()
     this.observer.observe(this)
+    this.resizeObserver = new ResizeObserver(() => {
+      this.updateScrollButtons()
+    })
+    this.resizeObserver.observe(this)
     if (!this.hasAttribute('role')) {
       this.setAttribute('role', 'tablist')
     }
@@ -168,11 +179,18 @@ export default class UiTabs extends LitElement {
   override disconnectedCallback(): void {
     super.disconnectedCallback()
     this.observer.unobserve(this)
+    if (this.resizeObserver) {
+      this.resizeObserver.disconnect()
+      this.resizeObserver = undefined
+    }
   }
 
   protected intersectionCallback(entries: IntersectionObserverEntry[]): void {
     const [entry] = entries
     this.isVisible = entry.isIntersecting
+    if (this.isVisible) {
+      this.updateScrollButtons()
+    }
   }
 
   /**
@@ -443,13 +461,62 @@ export default class UiTabs extends LitElement {
     if (this.activeTab) {
       this.updateFocusableTab(this.activeTab)
     }
+    this.updateComplete.then(() => {
+      this.updateScrollButtons()
+    })
+  }
+
+  private readonly scrollTabsLeft = () => {
+    const scroller = this.tabsScrollerElement
+    if (!scroller) return
+    scroller.scrollBy({ left: -scroller.clientWidth * 0.7, behavior: 'smooth' })
+  }
+
+  private readonly scrollTabsRight = () => {
+    const scroller = this.tabsScrollerElement
+    if (!scroller) return
+    scroller.scrollBy({ left: scroller.clientWidth * 0.7, behavior: 'smooth' })
+  }
+
+  private readonly handleScroll = () => {
+    this.updateScrollButtons()
+  }
+
+  private updateScrollButtons() {
+    const scroller = this.tabsScrollerElement
+    if (!scroller) return
+
+    const { scrollLeft, scrollWidth, clientWidth } = scroller
+    const canScrollLeft = scrollLeft > 1
+    const canScrollRight = scrollLeft + clientWidth < scrollWidth - 1
+
+    this.showLeftArrow = canScrollLeft
+    this.showRightArrow = canScrollRight
   }
 
   override render(): TemplateResult {
     return html`
-      <div class="tabs">${this.renderSlot()}</div>
+      <div class="tabs-container">
+        ${this.renderScrollButton('left')}
+        <div class="tabs" @scroll="${this.handleScroll}">${this.renderSlot()}</div>
+        ${this.renderScrollButton('right')}
+      </div>
       ${this.renderIndicator()}
       <ui-divider class="divider"></ui-divider>
+    `
+  }
+
+  protected renderScrollButton(direction: 'left' | 'right'): TemplateResult | typeof nothing {
+    const isLeft = direction === 'left'
+    const show = isLeft ? this.showLeftArrow : this.showRightArrow
+    if (!show) return nothing
+
+    return html`
+      <div class="scroll-button ${direction}">
+        <ui-icon-button @click="${isLeft ? this.scrollTabsLeft : this.scrollTabsRight}">
+          <ui-icon>${isLeft ? chevronLeft : chevronRight}</ui-icon>
+        </ui-icon-button>
+      </div>
     `
   }
 

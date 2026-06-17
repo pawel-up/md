@@ -10,6 +10,13 @@ export default css`
     position: relative;
   }
 
+  .tabs-container {
+    display: flex;
+    align-items: center;
+    position: relative;
+    align-self: stretch;
+  }
+
   .tabs {
     display: flex;
     align-items: center;
@@ -20,9 +27,42 @@ export default css`
     align-self: stretch;
   }
 
+  .tabs::-webkit-scrollbar {
+    display: none;
+  }
+
   .tabs ::slotted(*) {
     flex: 1;
     white-space: nowrap;
+  }
+
+  .scroll-button {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    height: 100%;
+    width: 52px;
+    pointer-events: none;
+  }
+
+  .scroll-button.left {
+    left: 0;
+    background: linear-gradient(to right, var(--md-tab-background-color, var(--md-sys-color-surface)) 60%, transparent);
+    justify-content: flex-start;
+  }
+
+  .scroll-button.right {
+    right: 0;
+    background: linear-gradient(to left, var(--md-tab-background-color, var(--md-sys-color-surface)) 60%, transparent);
+    justify-content: flex-end;
+  }
+
+  .scroll-button ui-icon-button {
+    pointer-events: auto;
+    --md-icon-button-icon-color: var(--md-sys-color-on-surface-variant);
   }
 
   .indicator {

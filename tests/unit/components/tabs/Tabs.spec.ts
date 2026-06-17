@@ -1,4 +1,4 @@
-import { fixture, html, nextFrame, test } from '@pawel-up/lupa/testing'
+import { fixture, html, nextFrame, test, waitUntil } from '@pawel-up/lupa/testing'
 import { UiTabsElement } from '../../../../src/components/tabs/ui-tabs.js'
 import { UiTabElement } from '../../../../src/components/tabs/ui-tab.js'
 
@@ -83,5 +83,36 @@ test.group('Tabs', () => {
 
     assert.equal(tabs.activeTabIndex, 1)
     assert.isTrue(tab2.selected)
+  }).tags(['@md', '@tabs'])
+
+  test('handles overflow and scroll buttons correctly', async ({ assert }) => {
+    const tabs = (await fixture(html`
+      <ui-tabs style="width: 200px;">
+        <ui-tab style="min-width: 100px;">Tab 1</ui-tab>
+        <ui-tab style="min-width: 100px;">Tab 2</ui-tab>
+        <ui-tab style="min-width: 100px;">Tab 3</ui-tab>
+      </ui-tabs>
+    `)) as UiTabsElement
+    await tabs.updateComplete
+    // Wait for ResizeObserver to trigger
+    await new Promise((resolve) => setTimeout(resolve, 50))
+    await tabs.updateComplete
+
+    // Initially, right button should be visible (as it overflows), left should not
+    assert.isNull(tabs.shadowRoot?.querySelector('.scroll-button.left'))
+    assert.isNotNull(tabs.shadowRoot?.querySelector('.scroll-button.right'))
+
+    // Click right scroll button to scroll
+    const rightBtn = tabs.shadowRoot?.querySelector('.scroll-button.right ui-icon-button') as HTMLElement
+    assert.isNotNull(rightBtn, 'Right scroll button exists')
+    rightBtn.click()
+
+    // Wait for scroll to happen and left button to appear
+    await waitUntil(
+      () => tabs.shadowRoot?.querySelector('.scroll-button.left') !== null,
+      'Left scroll button should become visible'
+    )
+
+    assert.isNotNull(tabs.shadowRoot?.querySelector('.scroll-button.left'))
   }).tags(['@md', '@tabs'])
 })
