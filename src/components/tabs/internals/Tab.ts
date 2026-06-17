@@ -223,8 +223,8 @@ export default class UiTab extends UiElement {
         <div class="tab-content">
           ${this.renderIcon()}
           <slot @slotchange="${this.handleSlotChange}"></slot>
+          ${isPrimary ? this.renderIndicator() : nothing}
         </div>
-        ${isPrimary ? this.renderIndicator() : nothing}
       </div>
       ${!isPrimary ? this.renderIndicator() : nothing}
     `

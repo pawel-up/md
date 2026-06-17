@@ -53,14 +53,15 @@ export default css`
 
   .focus-ring {
     border-radius: var(--md-sys-shape-corner-small);
-    transition: margin-bottom var(--md-sys-motion-duration-short3) var(--md-sys-motion-easing-standard);
+    transition: bottom var(--md-sys-motion-duration-short3) var(--md-sys-motion-easing-standard);
   }
 
   :host([selected]) .focus-ring {
-    margin-bottom: calc(var(--_active-indicator-height) + 1px);
+    bottom: calc(var(--_active-indicator-height) + 1px);
   }
 
   .tab-content {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
