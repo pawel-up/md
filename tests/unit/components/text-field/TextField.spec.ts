@@ -83,4 +83,23 @@ test.group('TextField', () => {
     assert.isNotNull(outlineLabel)
     assert.equal(outlineLabel?.textContent?.trim(), 'Outline Name')
   }).tags(['@md', '@text-field'])
+
+  test('collapses notch gap when noFloating is true and label is hidden', async ({ assert }) => {
+    const field = (await fixture(
+      html`<ui-outlined-text-field label="Outline Name" .noFloating="${true}" value="Alice"></ui-outlined-text-field>`
+    )) as UiOutlinedTextFieldElement
+
+    const surface = field.shadowRoot?.querySelector('.surface')
+    const notch = field.shadowRoot?.querySelector('.outline-notch')
+    assert.isNotNull(surface)
+    assert.isNotNull(notch)
+
+    assert.isTrue(surface?.classList.contains('labelHidden'))
+
+    const styles = window.getComputedStyle(notch!)
+    assert.equal(styles.paddingLeft, '0px')
+    assert.equal(styles.paddingRight, '0px')
+    assert.notEqual(styles.borderTopColor, 'rgba(0, 0, 0, 0)')
+    assert.notEqual(styles.borderTopColor, 'transparent')
+  }).tags(['@md', '@text-field'])
 })

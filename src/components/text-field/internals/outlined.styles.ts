@@ -120,4 +120,12 @@ export default css`
   :host(:focus-within) .outline-label {
     color: var(--md-outlined-text-field-label-active-color, var(--md-sys-color-primary));
   }
+
+  .labelHidden.hasLabel .outline-notch {
+    padding: 0;
+  }
+
+  .labelHidden.hasLabel.labelActive .outline-notch {
+    border-top-color: var(--_border-color);
+  }
 `
