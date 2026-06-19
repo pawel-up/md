@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/pawel-up/md/compare/v1.1.0...v1.1.1) (2026-06-19)
+
+
+### Bug Fixes
+
+* prevent duplicate asterisks in required input labels by checking for existing symbols ([d866954](https://github.com/pawel-up/md/commit/d8669540208407a3202a2c020707a731db941a59))
+
 # [1.1.0](https://github.com/pawel-up/md/compare/v1.0.3...v1.1.0) (2026-06-17)
 
 
