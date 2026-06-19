@@ -102,4 +102,21 @@ test.group('TextField', () => {
     assert.notEqual(styles.borderTopColor, 'rgba(0, 0, 0, 0)')
     assert.notEqual(styles.borderTopColor, 'transparent')
   }).tags(['@md', '@text-field'])
+
+  test('appends asterisk to required label only if not already present', async ({ assert }) => {
+    const field1 = (await fixture(
+      html`<ui-outlined-text-field label="Name" required></ui-outlined-text-field>`
+    )) as UiOutlinedTextFieldElement
+    assert.equal((field1 as unknown as { renderLabelText(): string }).renderLabelText(), 'Name*')
+
+    const field2 = (await fixture(
+      html`<ui-outlined-text-field label="Name *" required></ui-outlined-text-field>`
+    )) as UiOutlinedTextFieldElement
+    assert.equal((field2 as unknown as { renderLabelText(): string }).renderLabelText(), 'Name *')
+
+    const field3 = (await fixture(
+      html`<ui-outlined-text-field label="* Name" required></ui-outlined-text-field>`
+    )) as UiOutlinedTextFieldElement
+    assert.equal((field3 as unknown as { renderLabelText(): string }).renderLabelText(), '* Name')
+  }).tags(['@md', '@text-field'])
 })

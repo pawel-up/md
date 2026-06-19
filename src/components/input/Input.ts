@@ -799,7 +799,9 @@ export default abstract class Input extends UiElement {
 
   protected renderLabelText(): string {
     const labelText = this.label ?? ''
-    const optionalAsterisk = this.required && labelText ? '*' : ''
+    const trimmed = labelText.trim()
+    const hasAsterisk = trimmed.startsWith('*') || trimmed.endsWith('*')
+    const optionalAsterisk = this.required && labelText && !hasAsterisk ? '*' : ''
     return labelText + optionalAsterisk
   }
 
