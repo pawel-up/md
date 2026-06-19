@@ -113,7 +113,7 @@ const clearValue = () => {
     <h2>Basic Select</h2>
     <p>Select a fruit from the list:</p>
     <ui-select id="basic-select" @change="handleBasicSelectChange" label="Select a fruit">
-      <ui-option value="apple" selected>Apple</ui-option>
+      <ui-option value="apple" selected="true">Apple</ui-option>
       <ui-option value="banana">Banana</ui-option>
       <ui-option value="cherry">Cherry</ui-option>
       <ui-option value="date">Date</ui-option>
@@ -172,7 +172,7 @@ const clearValue = () => {
         Bob Smith
         <span slot="supporting-text">bob@example.com</span>
       </ui-option>
-      <ui-option value="carol" disabled>
+      <ui-option value="carol" disabled="true">
         Carol Davis
         <span slot="supporting-text">carol@example.com</span>
       </ui-option>
@@ -187,7 +187,7 @@ const clearValue = () => {
   <section>
     <h2>Disabled Select</h2>
     <p>This select is disabled:</p>
-    <ui-select id="disabled-select" disabled>
+    <ui-select id="disabled-select" disabled="true">
       <ui-option value="option1">Option 1</ui-option>
       <ui-option value="option2">Option 2</ui-option>
       <ui-option value="option3">Option 3</ui-option>
@@ -256,13 +256,13 @@ const clearValue = () => {
     <p>Test keyboard navigation with disabled options (use arrow keys to navigate):</p>
     <ui-select id="keyboard-test-select" @change="handleKeyboardTestSelectChange" label="Test Navigation">
       <ui-option value="first">First Option</ui-option>
-      <ui-option value="second" disabled>Second Option (Disabled)</ui-option>
+      <ui-option value="second" disabled="true">Second Option (Disabled)</ui-option>
       <ui-option value="third">Third Option</ui-option>
-      <ui-option value="fourth" disabled>Fourth Option (Disabled)</ui-option>
-      <ui-option value="fifth" disabled>Fifth Option (Disabled)</ui-option>
+      <ui-option value="fourth" disabled="true">Fourth Option (Disabled)</ui-option>
+      <ui-option value="fifth" disabled="true">Fifth Option (Disabled)</ui-option>
       <ui-option value="sixth">Sixth Option</ui-option>
       <ui-option value="seventh">Seventh Option</ui-option>
-      <ui-option value="eighth" disabled>Eighth Option (Disabled)</ui-option>
+      <ui-option value="eighth" disabled="true">Eighth Option (Disabled)</ui-option>
       <ui-option value="ninth">Ninth Option</ui-option>
     </ui-select>
     <p>Selected: <span id="keyboard-test-result">None</span></p>

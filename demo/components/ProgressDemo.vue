@@ -52,10 +52,10 @@ const nextProgress = () => {
   <section class="demo-section">
     <h2 class="title-large">Indeterminate value</h2>
     <div class="demo-row">
-      <ui-progress indeterminate aria-label="indeterminate progress"></ui-progress>
+      <ui-progress indeterminate="true" aria-label="indeterminate progress"></ui-progress>
     </div>
     <div class="demo-row">
-      <ui-progress indeterminate class="slow" aria-label="slow indeterminate progress"></ui-progress>
+      <ui-progress indeterminate="true" class="slow" aria-label="slow indeterminate progress"></ui-progress>
     </div>
   </section>
 
@@ -80,10 +80,10 @@ const nextProgress = () => {
   <section class="demo-section">
     <h2 class="title-large">Disabled state</h2>
     <div class="demo-row">
-      <ui-progress value="40" secondaryProgress="80" disabled aria-label="Disabled progress"></ui-progress>
+      <ui-progress value="40" secondaryProgress="80" disabled="true" aria-label="Disabled progress"></ui-progress>
     </div>
     <div class="demo-row">
-      <ui-progress indeterminate disabled aria-label="Disabled indeterminate progress"></ui-progress>
+      <ui-progress indeterminate="true" disabled="true" aria-label="Disabled indeterminate progress"></ui-progress>
     </div>
   </section>
 
@@ -113,7 +113,7 @@ const nextProgress = () => {
   <section class="demo-section">
     <h2 class="title-large">Circular Indeterminate Progress</h2>
     <div class="demo-row">
-      <ui-circular-progress indeterminate aria-label="Circular indeterminate progress"></ui-circular-progress>
+      <ui-circular-progress indeterminate="true" aria-label="Circular indeterminate progress"></ui-circular-progress>
     </div>
   </section>
 </template>

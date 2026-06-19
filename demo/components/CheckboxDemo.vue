@@ -32,29 +32,29 @@ const submitHandler = (e: Event) => {
         aria-labelledby="acu"
       ></ui-checkbox>
       <ui-checkbox
-        checked
+        checked="true"
         @change="changeHandler"
         name="checkbox"
         value="Checked"
         aria-labelledby="acc"
       ></ui-checkbox>
       <ui-checkbox
-        indeterminate
+        indeterminate="true"
         @change="changeHandler"
         name="checkbox"
         value="Indeterminate"
         aria-labelledby="aci"
       ></ui-checkbox>
       <ui-checkbox
-        checked
-        indeterminate
+        checked="true"
+        indeterminate="true"
         @change="changeHandler"
         name="checkbox"
         value="Checked, indeterminate"
         aria-labelledby="acci"
       ></ui-checkbox>
       <ui-checkbox
-        disabled
+        disabled="true"
         @change="changeHandler"
         name="checkbox"
         value="disabled"
@@ -74,37 +74,37 @@ const submitHandler = (e: Event) => {
     <div class="demo-row grid-3">
       <label class="label-large">
         <ui-checkbox
-          required
+          required="true"
           aria-required="true"
           @change="changeHandler"
           name="checkbox"
           value="error, unselected"
-          invalid
+          invalid="true"
         ></ui-checkbox>
         Invalid, unselected
       </label>
       <label class="label-large">
         <ui-checkbox
-          required
+          required="true"
           aria-required="true"
-          checked
+          checked="true"
           @change="changeHandler"
           name="checkbox"
           value="error, selected"
-          invalid
+          invalid="true"
         ></ui-checkbox>
         Invalid, selected
       </label>
       <label class="label-large">
         <ui-checkbox
-          required
+          required="true"
           aria-required="true"
-          indeterminate
+          indeterminate="true"
           @change="changeHandler"
           name="checkbox"
           value="error, indeterminate"
           aria-labelledby="aci"
-          invalid
+          invalid="true"
         ></ui-checkbox>
         Invalid, indeterminate
       </label>
@@ -115,32 +115,32 @@ const submitHandler = (e: Event) => {
     <h2 class="title-large">Disabled state</h2>
     <div class="demo-row grid-4">
       <ui-checkbox
-        disabled
+        disabled="true"
         @change="changeHandler"
         name="checkbox"
         value="disabled, unchecked"
         aria-labelledby="acdu"
       ></ui-checkbox>
       <ui-checkbox
-        disabled
-        checked
+        disabled="true"
+        checked="true"
         @change="changeHandler"
         name="checkbox"
         value="disabled, checked"
         aria-labelledby="acdc"
       ></ui-checkbox>
       <ui-checkbox
-        disabled
-        invalid
+        disabled="true"
+        invalid="true"
         @change="changeHandler"
         name="checkbox"
         value="disabled, checked, invalid"
         aria-labelledby="acdui"
       ></ui-checkbox>
       <ui-checkbox
-        disabled
-        checked
-        invalid
+        disabled="true"
+        checked="true"
+        invalid="true"
         @change="changeHandler"
         name="checkbox"
         value="disabled, checked, invalid"
@@ -162,7 +162,7 @@ const submitHandler = (e: Event) => {
           name="checkbox"
           value="custom label"
           id="customCheckbox"
-          required
+          required="true"
         ></ui-checkbox>
         Surrounded with label
       </label>
@@ -172,7 +172,7 @@ const submitHandler = (e: Event) => {
         @change="changeHandler"
         name="checkbox"
         value="build-in label"
-        required
+        required="true"
         id="refLabelInput"
         aria-labelledby="refLabel"
       ></ui-checkbox>
@@ -183,7 +183,7 @@ const submitHandler = (e: Event) => {
   <section class="demo-section">
     <h2 class="title-large">A checkbox in a form</h2>
     <form method="get" action="#" @submit="submitHandler">
-      <ui-checkbox required name="newsletter" aria-labelledby="newsletter" id="newsletterCheckbox"></ui-checkbox>
+      <ui-checkbox required="true" name="newsletter" aria-labelledby="newsletter" id="newsletterCheckbox"></ui-checkbox>
       <label class="label-medium" id="newsletter" for="newsletterCheckbox">Newsletter</label>
 
       <label class="label-medium">
@@ -192,7 +192,7 @@ const submitHandler = (e: Event) => {
       </label>
 
       <label class="label-medium">
-        <ui-checkbox name="indeterminate" value="indeterminate value" checked indeterminate></ui-checkbox>
+        <ui-checkbox name="indeterminate" value="indeterminate value" checked="true" indeterminate="true"></ui-checkbox>
         Always indeterminate
       </label>
 

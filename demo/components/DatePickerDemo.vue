@@ -179,7 +179,7 @@ const handleFormSubmit = (e: Event) => {
       <ui-date-picker-input
         label="Disabled input"
         placeholder="Select date"
-        disabled
+        disabled="true"
         name="disabled-date-picker"
         aria-describedby="disabled-input-help"
       ></ui-date-picker-input>
@@ -208,15 +208,15 @@ const handleFormSubmit = (e: Event) => {
 
       <span class="legend-marker">B</span>
       <ui-date-picker-calendar
-        showActions
+        showActions="true"
         :selectedDate="selectedDate"
         @date-select="handleDateConfirm"
         @date-cancel="handleDateCancel"
         aria-describedby="basic-calendar-help"
       ></ui-date-picker-calendar>
       <ui-date-picker-calendar
-        showActions
-        rangeSelection
+        showActions="true"
+        rangeSelection="true"
         :rangeStart="selectedRange.start"
         :rangeEnd="selectedRange.end"
         @date-range-confirm="handleRangeConfirm"
@@ -224,7 +224,7 @@ const handleFormSubmit = (e: Event) => {
         aria-describedby="range-calendar-help"
       ></ui-date-picker-calendar>
       <ui-date-picker-calendar
-        showActions
+        showActions="true"
         :minDate="today"
         :maxDate="oneMonthFromNow"
         :selectedDate="selectedDate"
@@ -294,7 +294,7 @@ const handleFormSubmit = (e: Event) => {
           <legend class="visually-hidden">Event scheduling form</legend>
           <div class="form-row">
             <ui-date-picker-input
-              required
+              required="true"
               label="Event date"
               placeholder="Select event date"
               name="event-date"

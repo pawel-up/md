@@ -17,9 +17,9 @@ import '../../src/components/icons/ui-icon.js'
 
     <h2 class="title-large">Preselected button (multi)</h2>
     <div class="demo-row">
-      <ui-segmented-button-set multiselect>
+      <ui-segmented-button-set multiselect="true">
         <ui-segmented-button>Driving</ui-segmented-button>
-        <ui-segmented-button selected>Public transport</ui-segmented-button>
+        <ui-segmented-button selected="true">Public transport</ui-segmented-button>
         <ui-segmented-button>Biking</ui-segmented-button>
       </ui-segmented-button-set>
     </div>

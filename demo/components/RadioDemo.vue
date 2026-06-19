@@ -27,29 +27,28 @@ const _submitHandler = (e: Event): void => {
         <ui-radio
           name="demo"
           value="unchecked"
-          checked
           aria-labelledby="aru"
           @change="_changeHandler"
         ></ui-radio>
         <ui-radio
           name="demo"
           value="checked"
-          checked
+          checked="true"
           aria-labelledby="arc"
           @change="_changeHandler"
         ></ui-radio>
         <ui-radio
           name="demo1"
           value="disabled"
-          disabled
+          disabled="true"
           aria-labelledby="ard"
           @change="_changeHandler"
         ></ui-radio>
         <ui-radio
           name="demo1"
           value="disabled,checked"
-          disabled
-          checked
+          disabled="true"
+          checked="true"
           aria-labelledby="ardc"
           @change="_changeHandler"
         ></ui-radio>
@@ -103,7 +102,7 @@ const _submitHandler = (e: Event): void => {
 
         <div class="grid-3">
           <label class="label-medium">
-            <ui-radio name="group-2" value="A" required></ui-radio>
+            <ui-radio name="group-2" value="A" required="true"></ui-radio>
             Group 2, A
           </label>
           <label class="label-medium">
@@ -111,22 +110,22 @@ const _submitHandler = (e: Event): void => {
             Group 2, B
           </label>
           <label class="label-medium">
-            <ui-radio name="group-2" value="C" required></ui-radio>
+            <ui-radio name="group-2" value="C" required="true"></ui-radio>
             Group 2, C
           </label>
         </div>
 
         <div class="grid-3">
           <label class="label-medium">
-            <ui-radio name="group-3" value="A" required disabled></ui-radio>
+            <ui-radio name="group-3" value="A" required="true" disabled="true"></ui-radio>
             Group 3, A
           </label>
           <label class="label-medium">
-            <ui-radio name="group-3" value="B" required></ui-radio>
+            <ui-radio name="group-3" value="B" required="true"></ui-radio>
             Group 3, B
           </label>
           <label class="label-medium">
-            <ui-radio name="group-3" value="C" required></ui-radio>
+            <ui-radio name="group-3" value="C" required="true"></ui-radio>
             Group 3, C
           </label>
         </div>

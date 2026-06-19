@@ -3,7 +3,7 @@
     <section class="demo-section">
       <h2 class="display-large">Single line</h2>
       <div class="frame">
-        <ui-expressive-list selectActive>
+        <ui-expressive-list selectActive="true">
           <ui-expressive-list-item class="select">
             <ui-icon slot="start">key</ui-icon>
             user_id
@@ -168,7 +168,7 @@
       </div>
 
       <div class="frame">
-        <ui-expressive-list selectActive>
+        <ui-expressive-list selectActive="true">
           <ui-expressive-list-item v-for="(label, index) in dynamicItems" :key="index" image="avatar">
             <span slot="start" class="avatar">{{ index + 1 }}</span>
             {{ label }}
@@ -192,23 +192,23 @@
       <h2 class="display-large">Static and disabled state</h2>
       <div class="frame">
         <ui-expressive-list>
-          <ui-expressive-list-item static>
+          <ui-expressive-list-item static="true">
             <span slot="start" v-html="flightIcon"></span>
             Static item (no interaction)
           </ui-expressive-list-item>
 
-          <ui-expressive-list-item image="avatar" static>
+          <ui-expressive-list-item image="avatar" static="true">
             <span slot="start" class="avatar">H</span>
             Static avatar
             <ui-checkbox slot="end" @pointerdown.stop.prevent="cancelEvent"></ui-checkbox>
           </ui-expressive-list-item>
 
-          <ui-expressive-list-item disabled>
+          <ui-expressive-list-item disabled="true">
             <span slot="start" v-html="hotelIcon"></span>
             Disabled item
           </ui-expressive-list-item>
 
-          <ui-expressive-list-item disabled>
+          <ui-expressive-list-item disabled="true">
             2000,00
             <span slot="end-text">PLN</span>
           </ui-expressive-list-item>
@@ -219,7 +219,7 @@
     <section class="demo-section">
       <h2 class="display-large">Themed list</h2>
       <div class="frame themed">
-        <ui-expressive-list selectActive>
+        <ui-expressive-list selectActive="true">
           <ui-expressive-list-item class="select">
             <ui-icon slot="start">key</ui-icon>
             user_id
@@ -267,8 +267,8 @@
     <section class="demo-section">
       <h2 class="display-large">Collapsable list</h2>
       <div class="frame themed">
-        <ui-expressive-list collapsible>
-          <ui-expressive-list-item id="parent-1" open>
+        <ui-expressive-list collapsible="true">
+          <ui-expressive-list-item id="parent-1" open="true">
             Parent item 1
             <ui-icon-button slot="end" width="narrow">
               <ui-icon aria-hidden="true">keyboard_arrow_up</ui-icon>

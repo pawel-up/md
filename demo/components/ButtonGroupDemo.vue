@@ -80,23 +80,23 @@ const color = ref('filled')
       <div class="frame">
         <h4 class="title-medium">Multi selection</h4>
         <div class="demo-row">
-          <ui-button-group type="connected" :size="size" multiple>
-            <ui-button :color="color" toggle><ui-icon slot="icon" icon="edit"></ui-icon>Label</ui-button>
-            <ui-button :color="color" toggle><ui-icon slot="icon" icon="edit"></ui-icon>Label</ui-button>
-            <ui-button :color="color" toggle><ui-icon slot="icon" icon="edit"></ui-icon>Label</ui-button>
-            <ui-button :color="color" toggle><ui-icon slot="icon" icon="edit"></ui-icon>Label</ui-button>
-            <ui-button :color="color" toggle><ui-icon slot="icon" icon="edit"></ui-icon>Label</ui-button>
+          <ui-button-group type="connected" :size="size" multiple="true">
+            <ui-button :color="color" toggle="true"><ui-icon slot="icon" icon="edit"></ui-icon>Label</ui-button>
+            <ui-button :color="color" toggle="true"><ui-icon slot="icon" icon="edit"></ui-icon>Label</ui-button>
+            <ui-button :color="color" toggle="true"><ui-icon slot="icon" icon="edit"></ui-icon>Label</ui-button>
+            <ui-button :color="color" toggle="true"><ui-icon slot="icon" icon="edit"></ui-icon>Label</ui-button>
+            <ui-button :color="color" toggle="true"><ui-icon slot="icon" icon="edit"></ui-icon>Label</ui-button>
           </ui-button-group>
         </div>
 
         <h4 class="title-medium">Single selection</h4>
         <div class="demo-row">
           <ui-button-group type="connected" :size="size">
-            <ui-button :color="color" toggle><ui-icon slot="icon" icon="edit"></ui-icon>Label</ui-button>
-            <ui-button :color="color" toggle><ui-icon slot="icon" icon="edit"></ui-icon>Label</ui-button>
-            <ui-button :color="color" toggle><ui-icon slot="icon" icon="edit"></ui-icon>Label</ui-button>
-            <ui-button :color="color" toggle><ui-icon slot="icon" icon="edit"></ui-icon>Label</ui-button>
-            <ui-button :color="color" toggle><ui-icon slot="icon" icon="edit"></ui-icon>Label</ui-button>
+            <ui-button :color="color" toggle="true"><ui-icon slot="icon" icon="edit"></ui-icon>Label</ui-button>
+            <ui-button :color="color" toggle="true"><ui-icon slot="icon" icon="edit"></ui-icon>Label</ui-button>
+            <ui-button :color="color" toggle="true"><ui-icon slot="icon" icon="edit"></ui-icon>Label</ui-button>
+            <ui-button :color="color" toggle="true"><ui-icon slot="icon" icon="edit"></ui-icon>Label</ui-button>
+            <ui-button :color="color" toggle="true"><ui-icon slot="icon" icon="edit"></ui-icon>Label</ui-button>
           </ui-button-group>
         </div>
       </div>
@@ -108,23 +108,23 @@ const color = ref('filled')
       <div class="frame">
         <h4 class="title-medium">Multi selection</h4>
         <div class="demo-row">
-          <ui-button-group type="standard" :size="size" multiple>
-            <ui-button :color="color" toggle><ui-icon slot="icon" icon="edit"></ui-icon>Label</ui-button>
-            <ui-button :color="color" toggle><ui-icon slot="icon" icon="edit"></ui-icon>Label</ui-button>
-            <ui-button :color="color" toggle><ui-icon slot="icon" icon="edit"></ui-icon>Label</ui-button>
-            <ui-button :color="color" toggle><ui-icon slot="icon" icon="edit"></ui-icon>Label</ui-button>
-            <ui-button :color="color" toggle><ui-icon slot="icon" icon="edit"></ui-icon>Label</ui-button>
+          <ui-button-group type="standard" :size="size" multiple="true">
+            <ui-button :color="color" toggle="true"><ui-icon slot="icon" icon="edit"></ui-icon>Label</ui-button>
+            <ui-button :color="color" toggle="true"><ui-icon slot="icon" icon="edit"></ui-icon>Label</ui-button>
+            <ui-button :color="color" toggle="true"><ui-icon slot="icon" icon="edit"></ui-icon>Label</ui-button>
+            <ui-button :color="color" toggle="true"><ui-icon slot="icon" icon="edit"></ui-icon>Label</ui-button>
+            <ui-button :color="color" toggle="true"><ui-icon slot="icon" icon="edit"></ui-icon>Label</ui-button>
           </ui-button-group>
         </div>
 
         <h4 class="title-medium">Single selection</h4>
         <div class="demo-row">
           <ui-button-group type="standard" :size="size">
-            <ui-button :color="color" toggle><ui-icon slot="icon" icon="edit"></ui-icon>Label</ui-button>
-            <ui-button :color="color" toggle><ui-icon slot="icon" icon="edit"></ui-icon>Label</ui-button>
-            <ui-button :color="color" toggle><ui-icon slot="icon" icon="edit"></ui-icon>Label</ui-button>
-            <ui-button :color="color" toggle><ui-icon slot="icon" icon="edit"></ui-icon>Label</ui-button>
-            <ui-button :color="color" toggle><ui-icon slot="icon" icon="edit"></ui-icon>Label</ui-button>
+            <ui-button :color="color" toggle="true"><ui-icon slot="icon" icon="edit"></ui-icon>Label</ui-button>
+            <ui-button :color="color" toggle="true"><ui-icon slot="icon" icon="edit"></ui-icon>Label</ui-button>
+            <ui-button :color="color" toggle="true"><ui-icon slot="icon" icon="edit"></ui-icon>Label</ui-button>
+            <ui-button :color="color" toggle="true"><ui-icon slot="icon" icon="edit"></ui-icon>Label</ui-button>
+            <ui-button :color="color" toggle="true"><ui-icon slot="icon" icon="edit"></ui-icon>Label</ui-button>
           </ui-button-group>
         </div>
       </div>

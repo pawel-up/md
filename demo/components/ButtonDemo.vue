@@ -31,23 +31,23 @@
         
         <span class="legend-marker">A</span>
         <ui-button color="elevated" :size="size" :shape="shape"><ui-icon slot="icon" icon="edit"></ui-icon>elevated button</ui-button>
-        <ui-button color="elevated" :size="size" :shape="shape" toggle><ui-icon slot="icon" icon="edit"></ui-icon>elevated unselected</ui-button>
-        <ui-button color="elevated" :size="size" :shape="shape" toggle selected><ui-icon slot="icon" icon="edit"></ui-icon>elevated selected</ui-button>
+        <ui-button color="elevated" :size="size" :shape="shape" toggle="true"><ui-icon slot="icon" icon="edit"></ui-icon>elevated unselected</ui-button>
+        <ui-button color="elevated" :size="size" :shape="shape" toggle="true" selected="true"><ui-icon slot="icon" icon="edit"></ui-icon>elevated selected</ui-button>
         
         <span class="legend-marker">B</span>
         <ui-button color="filled" :size="size" :shape="shape"><ui-icon slot="icon" icon="edit"></ui-icon>filled button</ui-button>
-        <ui-button color="filled" :size="size" :shape="shape" toggle><ui-icon slot="icon" icon="edit"></ui-icon>filled unselected</ui-button>
-        <ui-button color="filled" :size="size" :shape="shape" toggle selected><ui-icon slot="icon" icon="edit"></ui-icon>filled selected</ui-button>
+        <ui-button color="filled" :size="size" :shape="shape" toggle="true"><ui-icon slot="icon" icon="edit"></ui-icon>filled unselected</ui-button>
+        <ui-button color="filled" :size="size" :shape="shape" toggle="true" selected="true"><ui-icon slot="icon" icon="edit"></ui-icon>filled selected</ui-button>
         
         <span class="legend-marker">C</span>
         <ui-button color="tonal" :size="size" :shape="shape"><ui-icon slot="icon" icon="edit"></ui-icon>tonal button</ui-button>
-        <ui-button color="tonal" :size="size" :shape="shape" toggle><ui-icon slot="icon" icon="edit"></ui-icon>tonal unselected</ui-button>
-        <ui-button color="tonal" :size="size" :shape="shape" toggle selected><ui-icon slot="icon" icon="edit"></ui-icon>tonal selected</ui-button>
+        <ui-button color="tonal" :size="size" :shape="shape" toggle="true"><ui-icon slot="icon" icon="edit"></ui-icon>tonal unselected</ui-button>
+        <ui-button color="tonal" :size="size" :shape="shape" toggle="true" selected="true"><ui-icon slot="icon" icon="edit"></ui-icon>tonal selected</ui-button>
         
         <span class="legend-marker">D</span>
         <ui-button color="outlined" :size="size" :shape="shape"><ui-icon slot="icon" icon="edit"></ui-icon>outlined button</ui-button>
-        <ui-button color="outlined" :size="size" :shape="shape" toggle><ui-icon slot="icon" icon="edit"></ui-icon>outlined unselected</ui-button>
-        <ui-button color="outlined" :size="size" :shape="shape" toggle selected><ui-icon slot="icon" icon="edit"></ui-icon>outlined selected</ui-button>
+        <ui-button color="outlined" :size="size" :shape="shape" toggle="true"><ui-icon slot="icon" icon="edit"></ui-icon>outlined unselected</ui-button>
+        <ui-button color="outlined" :size="size" :shape="shape" toggle="true" selected="true"><ui-icon slot="icon" icon="edit"></ui-icon>outlined selected</ui-button>
         
         <span class="legend-marker">E</span>
         <ui-button color="text" :size="size" :shape="shape"><ui-icon slot="icon" icon="edit"></ui-icon>text button</ui-button>
@@ -75,13 +75,13 @@
           
           <span class="legend-marker">A</span>
           <ui-button :color="type" :size="size" :shape="shape">enabled</ui-button>
-          <ui-button :color="type" :size="size" :shape="shape" toggle>enabled</ui-button>
-          <ui-button :color="type" :size="size" :shape="shape" toggle selected>enabled</ui-button>
+          <ui-button :color="type" :size="size" :shape="shape" toggle="true">enabled</ui-button>
+          <ui-button :color="type" :size="size" :shape="shape" toggle="true" selected="true">enabled</ui-button>
           
           <span class="legend-marker">B</span>
-          <ui-button :color="type" :size="size" :shape="shape" disabled>disabled</ui-button>
-          <ui-button :color="type" :size="size" :shape="shape" toggle disabled>disabled</ui-button>
-          <ui-button :color="type" :size="size" :shape="shape" toggle selected disabled>disabled</ui-button>
+          <ui-button :color="type" :size="size" :shape="shape" disabled="true">disabled</ui-button>
+          <ui-button :color="type" :size="size" :shape="shape" toggle="true" disabled="true">disabled</ui-button>
+          <ui-button :color="type" :size="size" :shape="shape" toggle="true" selected="true" disabled="true">disabled</ui-button>
         </div>
         <p class="body-medium">A. Enabled, B. Disabled</p>
         <ol class="decimal body-medium">
@@ -107,7 +107,7 @@
         <span></span>
         
         <span class="legend-marker">B</span>
-        <ui-button color="text" :size="size" :shape="shape" disabled>disabled</ui-button>
+        <ui-button color="text" :size="size" :shape="shape" disabled="true">disabled</ui-button>
         <span></span>
         <span></span>
       </div>
@@ -152,7 +152,7 @@
         <ui-button @click="openDialog">Open dialog</ui-button>
       </div>
       <!-- Note: lit property bindings are used with .prop in vue or just bound directly if custom elements support attrs -->
-      <ui-dialog :open="dialogOpened" @close="dialogClosed" modal>
+      <ui-dialog :open="dialogOpened" @close="dialogClosed" modal="true">
         <span slot="title">Dialog with a form</span>
         <form method="GET" action="#" @submit="submitHandler" id="dialogForm">
           <label for="formInput3">An input</label>

@@ -27,14 +27,14 @@ const _submitHandler = (e: Event): void => {
       <div class="demo-row grid-3">
         <ui-switch @change="_changeHandler" name="switch" value="unchecked" aria-labelledby="acu"></ui-switch>
         <ui-switch
-          checked
+          checked="true"
           @change="_changeHandler"
           name="switch"
           value="Checked"
           aria-labelledby="acc"
         ></ui-switch>
         <ui-switch
-          disabled
+          disabled="true"
           @change="_changeHandler"
           name="switch"
           value="disabled"
@@ -51,15 +51,15 @@ const _submitHandler = (e: Event): void => {
       <h2 class="title-large">Disabled state</h2>
       <div class="demo-row grid-2">
         <ui-switch
-          disabled
+          disabled="true"
           @change="_changeHandler"
           name="checkbox"
           value="disabled, unchecked"
           aria-labelledby="acdu"
         ></ui-switch>
         <ui-switch
-          disabled
-          checked
+          disabled="true"
+          checked="true"
           @change="_changeHandler"
           name="checkbox"
           value="disabled, checked"
@@ -74,31 +74,31 @@ const _submitHandler = (e: Event): void => {
       <h2 class="title-large">Icons</h2>
       <div class="demo-row grid-4">
         <ui-switch
-          onIcon
-          checked
+          onIcon="true"
+          checked="true"
           @change="_changeHandler"
           name="checkbox"
           value="on-icon only"
           aria-labelledby="asoni"
         ></ui-switch>
         <ui-switch
-          offIcon
+          offIcon="true"
           @change="_changeHandler"
           name="checkbox"
           value="off-icon only"
           aria-labelledby="asoffi"
         ></ui-switch>
         <ui-switch
-          onIcon
-          offIcon
+          onIcon="true"
+          offIcon="true"
           @change="_changeHandler"
           name="checkbox"
           value="all icons"
           aria-labelledby="asi"
         ></ui-switch>
         <ui-switch
-          onIcon
-          offIcon
+          onIcon="true"
+          offIcon="true"
           .onIconInstance="infoIcon"
           .offIconInstance="cancelIcon"
           @change="_changeHandler"

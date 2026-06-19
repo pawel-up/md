@@ -73,20 +73,20 @@ const handleWidthChange = (e: Event) => {
         <span class="legend-marker">3</span>
         <span class="legend-marker">A</span>
         <ui-icon-button color="filled" :size="size" :shape="shape" :width="width"><ui-icon icon="settings"></ui-icon></ui-icon-button>
-        <ui-icon-button color="filled" :size="size" :shape="shape" :width="width" toggle><ui-icon icon="settings"></ui-icon></ui-icon-button>
-        <ui-icon-button color="filled" :size="size" :shape="shape" :width="width" toggle selected><ui-icon icon="settings"></ui-icon></ui-icon-button>
+        <ui-icon-button color="filled" :size="size" :shape="shape" :width="width" toggle="true"><ui-icon icon="settings"></ui-icon></ui-icon-button>
+        <ui-icon-button color="filled" :size="size" :shape="shape" :width="width" toggle="true" selected="true"><ui-icon icon="settings"></ui-icon></ui-icon-button>
         <span class="legend-marker">B</span>
         <ui-icon-button color="tonal" :size="size" :shape="shape" :width="width"><ui-icon icon="settings"></ui-icon></ui-icon-button>
-        <ui-icon-button color="tonal" :size="size" :shape="shape" :width="width" toggle><ui-icon icon="settings"></ui-icon></ui-icon-button>
-        <ui-icon-button color="tonal" :size="size" :shape="shape" :width="width" toggle selected><ui-icon icon="settings"></ui-icon></ui-icon-button>
+        <ui-icon-button color="tonal" :size="size" :shape="shape" :width="width" toggle="true"><ui-icon icon="settings"></ui-icon></ui-icon-button>
+        <ui-icon-button color="tonal" :size="size" :shape="shape" :width="width" toggle="true" selected="true"><ui-icon icon="settings"></ui-icon></ui-icon-button>
         <span class="legend-marker">C</span>
         <ui-icon-button color="outlined" :size="size" :shape="shape" :width="width"><ui-icon icon="settings"></ui-icon></ui-icon-button>
-        <ui-icon-button color="outlined" :size="size" :shape="shape" :width="width" toggle><ui-icon icon="settings"></ui-icon></ui-icon-button>
-        <ui-icon-button color="outlined" :size="size" :shape="shape" :width="width" toggle selected><ui-icon icon="settings"></ui-icon></ui-icon-button>
+        <ui-icon-button color="outlined" :size="size" :shape="shape" :width="width" toggle="true"><ui-icon icon="settings"></ui-icon></ui-icon-button>
+        <ui-icon-button color="outlined" :size="size" :shape="shape" :width="width" toggle="true" selected="true"><ui-icon icon="settings"></ui-icon></ui-icon-button>
         <span class="legend-marker">D</span>
         <ui-icon-button :size="size" :shape="shape" :width="width"><ui-icon icon="settings"></ui-icon></ui-icon-button>
-        <ui-icon-button :size="size" :shape="shape" :width="width" toggle><ui-icon icon="settings"></ui-icon></ui-icon-button>
-        <ui-icon-button :size="size" :shape="shape" :width="width" toggle selected><ui-icon icon="settings"></ui-icon></ui-icon-button>
+        <ui-icon-button :size="size" :shape="shape" :width="width" toggle="true"><ui-icon icon="settings"></ui-icon></ui-icon-button>
+        <ui-icon-button :size="size" :shape="shape" :width="width" toggle="true" selected="true"><ui-icon icon="settings"></ui-icon></ui-icon-button>
       </div>
       <p class="body-medium">A. Filled, B. Tonal, C. Outlined, D. Standard</p>
       <ol class="decimal body-medium">

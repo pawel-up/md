@@ -52,7 +52,7 @@ const handleTabsChange = (e: Event) => {
     <div class="frame">
       <ui-tabs priority="secondary" data-property="selected2" @change="handleTabsChange">
         <ui-tab aria-controls="travel2">Travel</ui-tab>
-        <ui-tab aria-controls="hotel2" selected>Hotel</ui-tab>
+        <ui-tab aria-controls="hotel2" selected="true">Hotel</ui-tab>
         <ui-tab aria-controls="travelHotel2">Travel + Hotel</ui-tab>
         <ui-tab aria-controls="cars2">Cars</ui-tab>
       </ui-tabs>
@@ -78,7 +78,7 @@ const handleTabsChange = (e: Event) => {
           <ui-icon slot="icon"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M1 19V4h2v10h8V6h8q1.65 0 2.825 1.175Q23 8.35 23 10v9h-2v-3H3v3Zm6-6q-1.25 0-2.125-.875T4 10q0-1.25.875-2.125T7 7q1.25 0 2.125.875T10 10q0 1.25-.875 2.125T7 13Zm6 1h8v-4q0-.825-.587-1.413Q19.825 8 19 8h-6Zm-6-3q.425 0 .713-.288Q8 10.425 8 10t-.287-.713Q7.425 9 7 9t-.713.287Q6 9.575 6 10t.287.712Q6.575 11 7 11Zm0-1Zm6-2v6Z"/></svg></ui-icon>
           Hotel
         </ui-tab>
-        <ui-tab aria-controls="travelHotel3" selected>
+        <ui-tab aria-controls="travelHotel3" selected="true">
           <ui-icon slot="icon"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M3 21V7h6V5l3-3 3 3v6h6v10Zm2-2h2v-2H5Zm0-4h2v-2H5Zm0-4h2V9H5Zm6 8h2v-2h-2Zm0-4h2v-2h-2Zm0-4h2V9h-2Zm0-4h2V5h-2Zm6 12h2v-2h-2Zm0-4h2v-2h-2Z"/></svg></ui-icon>
           Travel + Hotel
         </ui-tab>
@@ -113,7 +113,7 @@ const handleTabsChange = (e: Event) => {
           <ui-icon slot="icon"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M3 21V7h6V5l3-3 3 3v6h6v10Zm2-2h2v-2H5Zm0-4h2v-2H5Zm0-4h2V9H5Zm6 8h2v-2h-2Zm0-4h2v-2h-2Zm0-4h2V9h-2Zm0-4h2V5h-2Zm6 12h2v-2h-2Zm0-4h2v-2h-2Z"/></svg></ui-icon>
           Travel + Hotel
         </ui-tab>
-        <ui-tab aria-controls="cars4" selected>
+        <ui-tab aria-controls="cars4" selected="true">
           <ui-icon slot="icon"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M6 19v1q0 .425-.287.712Q5.425 21 5 21H4q-.425 0-.712-.288Q3 20.425 3 20v-8l2.1-6q.15-.45.538-.725Q6.025 5 6.5 5H9V3h6v2h2.5q.475 0 .863.275.387.275.537.725l2.1 6v8q0 .425-.288.712Q20.425 21 20 21h-1q-.425 0-.712-.288Q18 20.425 18 20v-1Zm-.2-9h12.4l-1.05-3H6.85ZM5 12v5Zm2.5 4q.625 0 1.062-.438Q9 15.125 9 14.5t-.438-1.062Q8.125 13 7.5 13t-1.062.438Q6 13.875 6 14.5t.438 1.062Q6.875 16 7.5 16Zm9 0q.625 0 1.062-.438Q18 15.125 18 14.5t-.438-1.062Q17.125 13 16.5 13t-1.062.438Q15 13.875 15 14.5t.438 1.062Q15.875 16 16.5 16ZM5 17h14v-5H5Z"/></svg></ui-icon>
           Cars
         </ui-tab>
@@ -131,20 +131,20 @@ const handleTabsChange = (e: Event) => {
     <h2 class="display-large">Scrollable tabs</h2>
     <div class="frame scrollable">
       <ui-tabs data-property="selected5" @change="handleTabsChange">
-        <ui-tab aria-controls="travel5" selected>Travel</ui-tab>
+        <ui-tab aria-controls="travel5" selected="true">Travel</ui-tab>
         <ui-tab aria-controls="hotel5">Hotel</ui-tab>
         <ui-tab aria-controls="travelHotel5">Travel + Hotel</ui-tab>
-        <ui-tab aria-controls="cars5" disabled>Cars</ui-tab>
+        <ui-tab aria-controls="cars5" disabled="true">Cars</ui-tab>
 
         <ui-tab aria-controls="travel51">Travel (1)</ui-tab>
         <ui-tab aria-controls="hotel51">Hotel (1)</ui-tab>
         <ui-tab aria-controls="travelHotel51">Travel + Hotel (1)</ui-tab>
-        <ui-tab aria-controls="cars51" disabled>Cars (1)</ui-tab>
+        <ui-tab aria-controls="cars51" disabled="true">Cars (1)</ui-tab>
 
         <ui-tab aria-controls="travel52">Travel (2)</ui-tab>
         <ui-tab aria-controls="hotel52">Hotel (2)</ui-tab>
         <ui-tab aria-controls="travelHotel52">Travel + Hotel (2)</ui-tab>
-        <ui-tab aria-controls="cars52" disabled>Cars (2)</ui-tab>
+        <ui-tab aria-controls="cars52" disabled="true">Cars (2)</ui-tab>
       </ui-tabs>
 
       <div class="page">
@@ -188,7 +188,7 @@ const handleTabsChange = (e: Event) => {
     <div class="frame themed">
       <ui-tabs priority="secondary" data-property="selected7" @change="handleTabsChange">
         <ui-tab aria-controls="travel7">Travel</ui-tab>
-        <ui-tab aria-controls="hotel7" selected>Hotel</ui-tab>
+        <ui-tab aria-controls="hotel7" selected="true">Hotel</ui-tab>
         <ui-tab aria-controls="travelHotel7">Travel + Hotel</ui-tab>
         <ui-tab aria-controls="cars7">Cars</ui-tab>
       </ui-tabs>

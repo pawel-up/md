@@ -68,7 +68,7 @@ function updateResult(dialogType: string, detail: UiDialogClosingReason) {
     <ui-confirm-dialog
       confirmLabel="Delete"
       dismissLabel="Keep"
-      destructive
+      destructive="true"
       :open="deleteDialogOpen"
       @close="handleDeleteClose"
     >

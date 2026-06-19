@@ -29,13 +29,13 @@
         <span class="row-name title-small">Required</span>
         <ui-filled-text-field
           label="Required label"
-          required
+          required="true"
           invalidText="This field is required"
           name="required-filled"
         ></ui-filled-text-field>
         <ui-outlined-text-field
           label="Required label"
-          required
+          required="true"
           invalidText="This field is required"
           name="required-outlined"
         ></ui-outlined-text-field>
@@ -65,11 +65,11 @@
         >
 
         <span class="row-name title-small">Hiding label</span>
-        <ui-filled-text-field label="No label floating" name="noFloat-filled" noFloating></ui-filled-text-field>
+        <ui-filled-text-field label="No label floating" name="noFloat-filled" noFloating="true"></ui-filled-text-field>
         <ui-outlined-text-field
           label="No label floating"
           name="noFloat-outlined"
-          noFloating
+          noFloating="true"
         ></ui-outlined-text-field>
 
         <span class="row-name title-small">Supporting text</span>
@@ -115,21 +115,21 @@
         <span class="column-title title-medium">Outlined</span>
 
         <span class="row-name title-small">Disabled</span>
-        <ui-filled-text-field label="Input" name="disabled-filled" value="A value" disabled></ui-filled-text-field>
+        <ui-filled-text-field label="Input" name="disabled-filled" value="A value" disabled="true"></ui-filled-text-field>
         <ui-outlined-text-field
           label="Input"
           name="disabled-outlined"
           value="A value"
-          disabled
+          disabled="true"
         ></ui-outlined-text-field>
 
         <span class="row-name title-small">Read only</span>
-        <ui-filled-text-field label="Input" name="readonly-filled" value="A value" readonly></ui-filled-text-field>
+        <ui-filled-text-field label="Input" name="readonly-filled" value="A value" readonly="true"></ui-filled-text-field>
         <ui-outlined-text-field
           label="Input"
           name="readonly-outlined"
           value="A value"
-          readonly
+          readonly="true"
         ></ui-outlined-text-field>
 
         <span class="row-name title-small">Invalid</span>
@@ -137,14 +137,14 @@
           label="Input"
           name="invalid-filled"
           value="invalid"
-          invalid
+          invalid="true"
           invalidText="Minimum 20 characters."
         ></ui-filled-text-field>
         <ui-outlined-text-field
           label="Input"
           name="invalid-outlined"
           value="invalid"
-          invalid
+          invalid="true"
           invalidText="Minimum 20 characters."
         ></ui-outlined-text-field>
       </div>
@@ -236,7 +236,7 @@
 
     <section class="demo-section">
       <h2 class="title-large">Multiline input</h2>
-      <ui-text-area label="Your bio" name="bio" required></ui-text-area>
+      <ui-text-area label="Your bio" name="bio" required="true"></ui-text-area>
     </section>
 
     <section class="demo-section">

@@ -128,7 +128,7 @@ const handleFormSubmit = (e: Event) => {
     <section class="demo-section">
       <h2 class="title-large">Full UI dialog</h2>
       <ui-button color="filled" @click="openFull">Open</ui-button>
-      <ui-dialog :open="fullOpened" @close="fullClosed" modal style="--ui-dialog-max-width: 380px">
+      <ui-dialog :open="fullOpened" @close="fullClosed" modal="true" style="--ui-dialog-max-width: 380px">
         <ui-icon slot="icon" icon="deleteOutline"></ui-icon>
         <span slot="title">Reset settings?</span>
         <p>This will reset your app preferences back to their default settings. The following accounts will also be signed out:</p>
@@ -148,7 +148,7 @@ const handleFormSubmit = (e: Event) => {
       <h2 class="title-large">Overflow dialog</h2>
       <p>This dialog contains a lot of content that will overflow the container.</p>
       <ui-button color="filled" @click="openOverflow">Open</ui-button>
-      <ui-dialog :open="overflowOpened" @close="overflowClosed" modal style="--ui-dialog-max-width: 400px; --ui-dialog-max-height: 500px;">
+      <ui-dialog :open="overflowOpened" @close="overflowClosed" modal="true" style="--ui-dialog-max-width: 400px; --ui-dialog-max-height: 500px;">
         <ui-icon slot="icon" icon="info"></ui-icon>
         <span slot="title">Terms and Conditions</span>
         <div style="overflow-y: auto; max-height: 300px;">
@@ -205,7 +205,7 @@ const handleFormSubmit = (e: Event) => {
       <p>This dialog contains a form with validation and submit handling.</p>
       <ui-button color="filled" @click="openForm">Open Form Dialog</ui-button>
       <form @submit="handleFormSubmit" style="display: contents;">
-        <ui-dialog :open="formOpened" @close="formClosed" modal style="--ui-dialog-max-width: 500px;" submitClose>
+        <ui-dialog :open="formOpened" @close="formClosed" modal="true" style="--ui-dialog-max-width: 500px;" submitClose="true">
           <ui-icon slot="icon" icon="info"></ui-icon>
           <span slot="title">User Registration</span>
           <div style="display: flex; flex-direction: column; gap: 16px;">
@@ -251,7 +251,7 @@ const handleFormSubmit = (e: Event) => {
       <h2 class="title-large">Destructive dialog</h2>
       <p>This dialog demonstrates the destructive attribute for dangerous actions.</p>
       <ui-button color="filled" @click="openDestructive">Open destructive dialog</ui-button>
-      <ui-dialog :open="destructiveOpened" @close="destructiveClosed" modal confirmLabel="Delete" dismissLabel="Cancel" destructive>
+      <ui-dialog :open="destructiveOpened" @close="destructiveClosed" modal="true" confirmLabel="Delete" dismissLabel="Cancel" destructive="true">
         <ui-icon slot="icon" icon="warning"></ui-icon>
         <span slot="title">Delete Account</span>
         <p>Are you sure you want to permanently delete your account? This action cannot be undone and all your data will be lost.</p>

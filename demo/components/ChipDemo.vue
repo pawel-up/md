@@ -49,21 +49,21 @@ const handleSelect = (e: Event) => {
         <img src="./pawel6c9a.jpg" slot="avatar" alt="Pawel Psztyc" />
         Assist
       </ui-chip>
-      <ui-chip type="assist" @click="handleClickHandler" elevated>
+      <ui-chip type="assist" @click="handleClickHandler" elevated="true">
         <ui-icon slot="icon" v-html="calendarIcon"></ui-icon>Assist
       </ui-chip>
 
       <span class="row-name title-small">Disabled</span>
-      <ui-chip type="assist" disabled @click="handleClickHandler">Assist</ui-chip>
-      <ui-chip type="assist" @click="handleClickHandler" disabled>
+      <ui-chip type="assist" disabled="true" @click="handleClickHandler">Assist</ui-chip>
+      <ui-chip type="assist" @click="handleClickHandler" disabled="true">
         <ui-icon slot="icon" v-html="calendarIcon"></ui-icon>
         Assist
       </ui-chip>
-      <ui-chip type="assist" disabled @click="handleClickHandler">
+      <ui-chip type="assist" disabled="true" @click="handleClickHandler">
         <img src="./pawel6c9a.jpg" slot="avatar" alt="Pawel Psztyc" />
         Assist
       </ui-chip>
-      <ui-chip type="assist" @click="handleClickHandler" disabled elevated>
+      <ui-chip type="assist" @click="handleClickHandler" disabled="true" elevated="true">
         <ui-icon slot="icon" v-html="calendarIcon"></ui-icon>
         Assist
       </ui-chip>
@@ -81,12 +81,12 @@ const handleSelect = (e: Event) => {
 
       <span class="row-name title-small">Enabled</span>
       <ui-chip type="filter" @click="handleClickHandler" @select="handleSelect">Filter</ui-chip>
-      <ui-chip type="filter" checked @click="handleClickHandler" @select="handleSelect"
+      <ui-chip type="filter" checked="true" @click="handleClickHandler" @select="handleSelect"
         >Filter</ui-chip
       >
       <ui-chip
         type="filter"
-        list
+        list="true"
         @click="handleClickHandler"
         @list="handleList"
         @select="handleSelect"
@@ -94,8 +94,8 @@ const handleSelect = (e: Event) => {
       >
       <ui-chip
         type="filter"
-        list
-        elevated
+        list="true"
+        elevated="true"
         @click="handleClickHandler"
         @list="handleList"
         @select="handleSelect"
@@ -103,16 +103,16 @@ const handleSelect = (e: Event) => {
       >
 
       <span class="row-name title-small">Disabled</span>
-      <ui-chip type="filter" disabled @click="handleClickHandler" @select="handleSelect"
+      <ui-chip type="filter" disabled="true" @click="handleClickHandler" @select="handleSelect"
         >Filter</ui-chip
       >
-      <ui-chip type="filter" disabled checked @click="handleClickHandler" @select="handleSelect"
+      <ui-chip type="filter" disabled="true" checked="true" @click="handleClickHandler" @select="handleSelect"
         >Filter</ui-chip
       >
       <ui-chip
         type="filter"
-        list
-        disabled
+        list="true"
+        disabled="true"
         @click="handleClickHandler"
         @list="handleList"
         @select="handleSelect"
@@ -120,9 +120,9 @@ const handleSelect = (e: Event) => {
       >
       <ui-chip
         type="filter"
-        list
-        elevated
-        disabled
+        list="true"
+        elevated="true"
+        disabled="true"
         @click="handleClickHandler"
         @list="handleList"
         @select="handleSelect"
@@ -143,26 +143,26 @@ const handleSelect = (e: Event) => {
 
       <span class="row-name title-small">Regular</span>
       <ui-chip type="input" @click="handleClickHandler">Input</ui-chip>
-      <ui-chip type="input" removable @click="handleClickHandler" @close="handleClose"
+      <ui-chip type="input" removable="true" @click="handleClickHandler" @close="handleClose"
         >Input</ui-chip
       >
-      <ui-chip type="input" disabled @click="handleClickHandler">Input</ui-chip>
-      <ui-chip type="input" elevated @click="handleClickHandler">Input</ui-chip>
+      <ui-chip type="input" disabled="true" @click="handleClickHandler">Input</ui-chip>
+      <ui-chip type="input" elevated="true" @click="handleClickHandler">Input</ui-chip>
 
       <span class="row-name title-small">With icon</span>
       <ui-chip type="input" @click="handleClickHandler">
         <ui-icon slot="icon" v-html="calendarIcon"></ui-icon>
         Input
       </ui-chip>
-      <ui-chip type="input" @click="handleClickHandler" removable @close="handleClose">
+      <ui-chip type="input" @click="handleClickHandler" removable="true" @close="handleClose">
         <ui-icon slot="icon" v-html="calendarIcon"></ui-icon>
         Input
       </ui-chip>
-      <ui-chip type="input" @click="handleClickHandler" removable disabled @close="handleClose">
+      <ui-chip type="input" @click="handleClickHandler" removable="true" disabled="true" @close="handleClose">
         <ui-icon slot="icon" v-html="calendarIcon"></ui-icon>
         Input
       </ui-chip>
-      <ui-chip type="input" @click="handleClickHandler" removable elevated @close="handleClose">
+      <ui-chip type="input" @click="handleClickHandler" removable="true" elevated="true" @close="handleClose">
         <ui-icon slot="icon" v-html="calendarIcon"></ui-icon>
         Input
       </ui-chip>
@@ -172,15 +172,15 @@ const handleSelect = (e: Event) => {
         <img src="./pawel6c9a.jpg" slot="avatar" alt="Pawel Psztyc" />
         Input
       </ui-chip>
-      <ui-chip type="input" @click="handleClickHandler" removable @close="handleClose">
+      <ui-chip type="input" @click="handleClickHandler" removable="true" @close="handleClose">
         <img src="./pawel6c9a.jpg" slot="avatar" alt="Pawel Psztyc" />
         Input
       </ui-chip>
-      <ui-chip type="input" @click="handleClickHandler" removable disabled @close="handleClose">
+      <ui-chip type="input" @click="handleClickHandler" removable="true" disabled="true" @close="handleClose">
         <img src="./pawel6c9a.jpg" slot="avatar" alt="Pawel Psztyc" />
         Input
       </ui-chip>
-      <ui-chip type="input" @click="handleClickHandler" removable elevated @close="handleClose">
+      <ui-chip type="input" @click="handleClickHandler" removable="true" elevated="true" @close="handleClose">
         <img src="./pawel6c9a.jpg" slot="avatar" alt="Pawel Psztyc" />
         Input
       </ui-chip>
@@ -191,17 +191,17 @@ const handleSelect = (e: Event) => {
     <h2 class="display-large">Suggestion chip</h2>
     <div class="demo-row grid-3 frame">
       <ui-chip type="suggestion" @click="handleClickHandler">Enabled</ui-chip>
-      <ui-chip type="suggestion" @click="handleClickHandler" elevated>Elevated</ui-chip>
-      <ui-chip type="suggestion" disabled @click="handleClickHandler">Disabled</ui-chip>
+      <ui-chip type="suggestion" @click="handleClickHandler" elevated="true">Elevated</ui-chip>
+      <ui-chip type="suggestion" disabled="true" @click="handleClickHandler">Disabled</ui-chip>
     </div>
   </section>
 
   <section class="demo-section">
     <h2 class="display-large">Chip set</h2>
     <ui-chip-set>
-      <ui-chip type="input" @click="handleClickHandler" removable>Input</ui-chip>
-      <ui-chip type="input" @click="handleClickHandler" removable>Input</ui-chip>
-      <ui-chip type="input" @click="handleClickHandler" removable>Input</ui-chip>
+      <ui-chip type="input" @click="handleClickHandler" removable="true">Input</ui-chip>
+      <ui-chip type="input" @click="handleClickHandler" removable="true">Input</ui-chip>
+      <ui-chip type="input" @click="handleClickHandler" removable="true">Input</ui-chip>
     </ui-chip-set>
   </section>
 </template>

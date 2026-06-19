@@ -343,16 +343,16 @@
       <ui-button id="single-select-menu-trigger" color="filled" popovertarget="single-select-menu">
         Select Option: {{ iconMenuSelectedOption || 'None' }}
       </ui-button>
-      <ui-menu id="single-select-menu" popover="auto" selectOnActivate @select="handleIconSelectMenuSelect">
-        <ui-menu-item value="premium" showSelectionIcon>
+      <ui-menu id="single-select-menu" popover="auto" selectOnActivate="true" @select="handleIconSelectMenuSelect">
+        <ui-menu-item value="premium" showSelectionIcon="true">
           <span slot="start"><ui-icon>star</ui-icon></span>
           <span>Premium</span>
         </ui-menu-item>
-        <ui-menu-item value="standard" showSelectionIcon>
+        <ui-menu-item value="standard" showSelectionIcon="true">
           <span slot="start"><ui-icon>account_circle</ui-icon></span>
           <span>Standard</span>
         </ui-menu-item>
-        <ui-menu-item value="basic" showSelectionIcon>
+        <ui-menu-item value="basic" showSelectionIcon="true">
           <span slot="start"><ui-icon>public</ui-icon></span>
           <span>Basic</span>
         </ui-menu-item>
@@ -369,14 +369,14 @@
       <ui-button id="auto-check-menu-trigger" color="filled" popovertarget="auto-check-menu">
         Priority: {{ autoCheckSelectedOption || 'None' }}
       </ui-button>
-      <ui-menu id="auto-check-menu" selectOnActivate popover="auto" @select="handleAutoCheckMenuSelect">
-        <ui-menu-item showSelectionIcon>
+      <ui-menu id="auto-check-menu" selectOnActivate="true" popover="auto" @select="handleAutoCheckMenuSelect">
+        <ui-menu-item showSelectionIcon="true">
           <span>Low</span>
         </ui-menu-item>
-        <ui-menu-item showSelectionIcon selected>
+        <ui-menu-item showSelectionIcon="true" selected="true">
           <span>High</span>
         </ui-menu-item>
-        <ui-menu-item showSelectionIcon>
+        <ui-menu-item showSelectionIcon="true">
           <span>Critical</span>
         </ui-menu-item>
       </ui-menu>
