@@ -1,3 +1,11 @@
+## [1.1.2](https://github.com/pawel-up/md/compare/v1.1.1...v1.1.2) (2026-06-20)
+
+
+### Bug Fixes
+
+* add starting-style to animate snackbar entry position ([7b886e5](https://github.com/pawel-up/md/commit/7b886e5a46be1b9c7e7d8cf093d153d036f1a2b9))
+* prevent unnecessary focus restoration and fix element positioning constraints ([7a9ff7c](https://github.com/pawel-up/md/commit/7a9ff7cb5dec52dc813e4cd85c454cb20619e9a9))
+
 ## [1.1.1](https://github.com/pawel-up/md/compare/v1.1.0...v1.1.1) (2026-06-19)
 
 
