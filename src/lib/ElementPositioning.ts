@@ -260,32 +260,43 @@ export function positionOverlay(
   }
 
   if (top !== undefined) {
+    if (options.constrain) {
+      const { constrainPaddingY = 0 } = options
+      if (top < fitRect.top + constrainPaddingY) {
+        top = fitRect.top + constrainPaddingY
+      }
+      const max = fitRect.bottom - top - constrainPaddingY
+      if (max > 0) {
+        result.maxHeight = `${max}px`
+        result.overflowY = 'auto'
+      }
+    }
     if (options.verticalOffset) {
       top += options.verticalOffset
     }
     result.top = `${top}px`
   }
+
   if (left !== undefined) {
+    if (options.constrain) {
+      if (left < fitRect.left) {
+        left = fitRect.left
+      }
+      const max = fitRect.right - left
+      if (max > 0) {
+        result.maxWidth = `${max}px`
+        result.overflowX = 'auto'
+      }
+    }
     if (options.horizontalOffset) {
       left += options.horizontalOffset
     }
     result.left = `${left}px`
   }
+
   if (options.matchAnchorWidth) {
     result.width = `${anchorRect.width}px`
   }
-  if (options.constrain) {
-    result.overflow = 'auto'
-    const { constrainPaddingY = 0 } = options
 
-    const { height } = fitRect
-    if (options.vertical === 'top') {
-      // from target's `top` to the bottom of `fit`.
-      const max = height - top - constrainPaddingY
-      if (max > 0) {
-        result.maxHeight = `${max}px`
-      }
-    }
-  }
   return result
 }

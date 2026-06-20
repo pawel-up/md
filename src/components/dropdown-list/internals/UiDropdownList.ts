@@ -125,6 +125,13 @@ export default class UiDropdownList extends LitElement {
 
   @state() protected accessor overlayPositioning: StyleInfo | undefined
 
+  /**
+   * Flag set to true when the dropdown is closed via an interaction that
+   * shouldn't restore focus to the trigger (such as clicking outside or
+   * another dropdown opening).
+   */
+  protected _blockFocusRestore = false
+
   constructor() {
     super()
     this.dropdownOpenHandler = this.dropdownOpenHandler.bind(this)
@@ -154,6 +161,7 @@ export default class UiDropdownList extends LitElement {
     if (e.composedPath()[0] === this) {
       return
     }
+    this._blockFocusRestore = true
     this.close()
   }
 
@@ -298,6 +306,7 @@ export default class UiDropdownList extends LitElement {
     if (inside) {
       return
     }
+    this._blockFocusRestore = true
     this.close()
   }
 
@@ -362,8 +371,11 @@ export default class UiDropdownList extends LitElement {
     const { trigger, dropdown } = this
     if (trigger) {
       trigger.setAttribute('tabindex', '0')
-      trigger.focus()
+      if (!this._blockFocusRestore) {
+        trigger.focus()
+      }
     }
+    this._blockFocusRestore = false
     if (dropdown) {
       const activeChild = dropdown.querySelector('[tabindex="0"]')
       if (activeChild) {
