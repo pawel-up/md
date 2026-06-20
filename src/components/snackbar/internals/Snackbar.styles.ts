@@ -33,6 +33,12 @@ export default css`
     transform: translateY(0);
   }
 
+  @starting-style {
+    :host([open]) {
+      transform: translateY(calc(var(--snackbar-y) + 100%));
+    }
+  }
+
   .body {
     flex: 1;
     padding-left: 16px;
