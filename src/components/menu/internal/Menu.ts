@@ -181,11 +181,11 @@ export default class Menu extends UiList {
       const viewportMiddle = innerHeight / 2
       const isMenuInUpperHalf = box.top < viewportMiddle
       if (isMenuInUpperHalf) {
-        this.classList.add('menu-positioned-above')
-        this.classList.remove('menu-positioned-below')
-      } else {
         this.classList.add('menu-positioned-below')
         this.classList.remove('menu-positioned-above')
+      } else {
+        this.classList.add('menu-positioned-above')
+        this.classList.remove('menu-positioned-below')
       }
       return
     }
@@ -220,11 +220,11 @@ export default class Menu extends UiList {
 
     // Add CSS class to control animation direction
     if (isMenuInUpperHalf) {
-      this.classList.add('menu-positioned-above')
-      this.classList.remove('menu-positioned-below')
-    } else {
       this.classList.add('menu-positioned-below')
       this.classList.remove('menu-positioned-above')
+    } else {
+      this.classList.add('menu-positioned-above')
+      this.classList.remove('menu-positioned-below')
     }
     // Only set max-height if the menu would overflow the viewport OR is already clipped
     if (menuBottom > innerHeight || isVerticallyClipped) {

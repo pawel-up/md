@@ -5,6 +5,7 @@ import Menu from './Menu.js'
 import UiListItem from '../../list/internals/ListItem.js'
 import { findElementInShadowRoots } from '../../../lib/Dom.js'
 import type MenuItem from './MenuItem.js'
+import { positionOverlay } from '../../../lib/ElementPositioning.js'
 
 /**
  * Material Design 3 Sub-Menu component.
@@ -162,6 +163,74 @@ export default class UiSubMenu extends Menu {
         // Let the parent handle other keys
         super.handleKeydown(e)
     }
+  }
+
+  /**
+   * Positions the sub-menu relative to its anchor (parent menu item).
+   * Overrides the parent implementation to handle sub-menu specific fallback positioning
+   * where vertical alignment needs to align top/bottom edges of the menu item and submenu
+   * (no vertical overlap), while horizontal alignment needs to place the submenu adjacent to the right/left
+   * of the parent menu item.
+   */
+  override positionMenu(): void {
+    const supportsAnchor =
+      'anchorName' in document.documentElement.style || 'positionAnchor' in document.documentElement.style
+    const anchorEl = this.menuItemAnchor
+
+    if (!supportsAnchor && anchorEl) {
+      // Clear measurements class just in case
+      this.classList.remove('measurements')
+      // Reset any previous manual positioning to start clean
+      this.style.removeProperty('min-width')
+
+      // Get separate style sets for vertical and horizontal alignments to avoid IPositioningOptions.noOverlap conflict
+      const verticalStyles = positionOverlay(this, anchorEl, {
+        vertical: 'auto',
+        noOverlap: false,
+        constrain: true,
+        constrainPaddingY: 20,
+      })
+
+      const horizontalStyles = positionOverlay(this, anchorEl, {
+        horizontal: 'auto',
+        noOverlap: true,
+        constrain: true,
+      })
+
+      const styles = {
+        top: verticalStyles.top,
+        maxHeight: verticalStyles.maxHeight,
+        overflowY: verticalStyles.overflowY,
+        left: horizontalStyles.left,
+        maxWidth: horizontalStyles.maxWidth,
+        overflowX: horizontalStyles.overflowX,
+      }
+
+      Object.entries(styles).forEach(([key, val]) => {
+        if (val !== undefined) {
+          this.style.setProperty(key, val as string)
+        }
+      })
+
+      if (styles.maxWidth) {
+        this.style.minWidth = '0px'
+      }
+
+      // Decides animation origin class based on whether the submenu is positioned above or below
+      const box = this.getBoundingClientRect()
+      const viewportMiddle = innerHeight / 2
+      const isMenuInUpperHalf = box.top < viewportMiddle
+      if (isMenuInUpperHalf) {
+        this.classList.add('menu-positioned-below')
+        this.classList.remove('menu-positioned-above')
+      } else {
+        this.classList.add('menu-positioned-above')
+        this.classList.remove('menu-positioned-below')
+      }
+      return
+    }
+
+    super.positionMenu()
   }
 
   override render(): TemplateResult {

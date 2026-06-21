@@ -404,3 +404,42 @@ test.group('Rendering', () => {
     assert.equal(menuItems.length, 3)
   })
 })
+
+test.group('Fallback positioning', () => {
+  test('should compute correct fallback styles when CSS Anchor Positioning is not supported', async ({ assert }) => {
+    const container = await withAnchorFixture()
+    const submenu = container.querySelector('#test-submenu') as UiSubMenu
+    const anchorItem = container.querySelector('#anchor-item') as UiMenuItem
+    await nextFrame()
+
+    // Simulate lack of CSS Anchor Positioning support
+    const originalStyle = document.documentElement.style
+    Object.defineProperty(document.documentElement, 'style', {
+      get() {
+        return {}
+      },
+      configurable: true,
+    })
+
+    const submenuRectStub = sinon.stub(submenu, 'getBoundingClientRect').returns(new DOMRect(0, 0, 200, 300))
+    const anchorRectStub = sinon.stub(anchorItem, 'getBoundingClientRect').returns(new DOMRect(100, 150, 150, 48))
+
+    submenu.positionMenu()
+
+    // vertical: 'auto' & noOverlap: false -> align top of submenu to top of anchor (top = 150px)
+    assert.equal(submenu.style.top, '150px')
+
+    // horizontal: 'auto' & noOverlap: true -> align left of submenu to right of anchor (left = 100 + 150 = 250px)
+    assert.equal(submenu.style.left, '250px')
+
+    submenuRectStub.restore()
+    anchorRectStub.restore()
+
+    // Restore original style descriptor
+    Object.defineProperty(document.documentElement, 'style', {
+      value: originalStyle,
+      configurable: true,
+      writable: true,
+    })
+  })
+})

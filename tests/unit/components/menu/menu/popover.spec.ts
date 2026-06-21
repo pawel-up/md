@@ -82,3 +82,26 @@ test('should constrain menu width and reset min-width when overflowing the viewp
   stubLeft.restore()
   Object.defineProperty(window, 'innerWidth', { value: originalInnerWidth, configurable: true })
 })
+
+test('should add correct positioning classes for animation direction', async ({ assert }) => {
+  const element = await basicFixture()
+
+  const originalInnerHeight = window.innerHeight
+  Object.defineProperty(window, 'innerHeight', { value: 1000, configurable: true })
+
+  // Case 1: Menu in upper half (e.g. top = 100 < 500) -> should be positioned below anchor -> menu-positioned-below
+  const stubUpper = sinon.stub(element, 'getBoundingClientRect').returns(new DOMRect(100, 100, 200, 300))
+  element.positionMenu()
+  assert.isTrue(element.classList.contains('menu-positioned-below'))
+  assert.isFalse(element.classList.contains('menu-positioned-above'))
+  stubUpper.restore()
+
+  // Case 2: Menu in lower half (e.g. top = 600 >= 500) -> should be positioned above anchor -> menu-positioned-above
+  const stubLower = sinon.stub(element, 'getBoundingClientRect').returns(new DOMRect(100, 600, 200, 300))
+  element.positionMenu()
+  assert.isTrue(element.classList.contains('menu-positioned-above'))
+  assert.isFalse(element.classList.contains('menu-positioned-below'))
+  stubLower.restore()
+
+  Object.defineProperty(window, 'innerHeight', { value: originalInnerHeight, configurable: true })
+})

@@ -202,14 +202,6 @@ export default css`
     }
   }
 
-  /* Fallback positioning for browsers without anchor positioning */
-  @supports not (anchor-name: --test) {
-    ui-sub-menu:popover-open {
-      position: fixed;
-      transform: translateX(200px);
-    }
-  }
-
   /* Focus Ring */
   md-focus-ring {
     --md-focus-ring-color: var(--md-sys-color-primary);
