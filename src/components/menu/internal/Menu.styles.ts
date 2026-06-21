@@ -11,6 +11,7 @@ export default css`
     border: none;
     /* in most cases the max-height won't matter as this assumes the whole screen to be available, which is rarely the truth. */
     max-height: 90vh;
+    min-width: 200px;
     overflow: auto;
   }
 
@@ -79,7 +80,6 @@ export default css`
   }
 
   .menu-container {
-    min-width: 200px;
     padding: 8px 0;
     outline: none;
   }
@@ -164,7 +164,6 @@ export default css`
 
   /* Sub-menu Styles */
   .submenu-container {
-    min-width: 200px;
     max-width: 320px;
     background-color: var(--md-sys-color-surface);
     border-radius: var(--md-sys-shape-corner-extra-small);
@@ -225,13 +224,20 @@ export default css`
 
   /* Responsive Design */
   @media (max-width: 600px) {
+    :host {
+      min-width: 180px;
+    }
+
     .menu-container {
+      max-width: 280px;
+    }
+
+    ui-sub-menu:popover-open {
       min-width: 180px;
       max-width: 280px;
     }
 
     .submenu-container {
-      min-width: 180px;
       max-width: 280px;
     }
   }

@@ -158,6 +158,8 @@ export default class Menu extends UiList {
     if (!supportsAnchor && anchorEl) {
       // Clear measurements class just in case
       this.classList.remove('measurements')
+      // Reset any previous manual positioning to start clean
+      this.style.removeProperty('min-width')
       const styles = positionOverlay(this, anchorEl, {
         vertical: 'auto',
         horizontal: 'auto',
@@ -170,6 +172,9 @@ export default class Menu extends UiList {
           this.style.setProperty(key, val as string)
         }
       })
+      if (styles.maxWidth) {
+        this.style.minWidth = '0px'
+      }
 
       // Get the rect after positioning to decide animation class (positioned above/below)
       const box = this.getBoundingClientRect()
@@ -193,6 +198,7 @@ export default class Menu extends UiList {
     this.style.removeProperty('position-area')
     this.style.removeProperty('max-height')
     this.style.removeProperty('max-width')
+    this.style.removeProperty('min-width')
 
     // Let CSS anchor positioning handle the positioning automatically
     // Only intervene if we need to set max-height for overflow cases
@@ -212,11 +218,6 @@ export default class Menu extends UiList {
     const viewportMiddle = innerHeight / 2
     const isMenuInUpperHalf = box.top < viewportMiddle
 
-    // console.log(`Menu positioned at: top=${box.top}, left=${box.left}, bottom=${menuBottom}, right=${menuRight}`)
-    // console.log(
-    // eslint-disable-next-line max-len
-    //   `Menu is in upper half: ${isMenuInUpperHalf}, Vertically clipped: ${isVerticallyClipped}, Horizontally clipped: ${isHorizontallyClipped}`
-    // )
     // Add CSS class to control animation direction
     if (isMenuInUpperHalf) {
       this.classList.add('menu-positioned-above')
@@ -241,11 +242,24 @@ export default class Menu extends UiList {
     }
 
     // Only set max-width if the menu would overflow the viewport OR is already clipped
-    if (menuRight > innerWidth || isHorizontallyClipped) {
-      const availableWidth = innerWidth - box.left
-      if (availableWidth < 200) {
-        this.style.maxWidth = `${Math.max(180, availableWidth - 20)}px`
-      }
+    let availableWidth = innerWidth
+    let hasOverflow = false
+
+    if (box.left < 0 && menuRight > innerWidth) {
+      availableWidth = innerWidth
+      hasOverflow = true
+    } else if (box.left < 0) {
+      availableWidth = box.right
+      hasOverflow = true
+    } else if (menuRight > innerWidth) {
+      availableWidth = innerWidth - box.left
+      hasOverflow = true
+    }
+
+    if (hasOverflow || isHorizontallyClipped) {
+      const maxWidth = Math.max(180, availableWidth - 20)
+      this.style.maxWidth = `${maxWidth}px`
+      this.style.minWidth = '0px'
     }
   }
 
