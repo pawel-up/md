@@ -1,3 +1,15 @@
+# [1.2.0](https://github.com/pawel-up/md/compare/v1.1.2...v1.2.0) (2026-06-21)
+
+
+### Bug Fixes
+
+* improve menu responsive positioning and overflow handling ([0f102d3](https://github.com/pawel-up/md/commit/0f102d35e1b0eb83062002a12a16abfab58c92d0))
+
+
+### Features
+
+* implement fallback positioning for sub-menus and fix animation direction classes ([cef89a4](https://github.com/pawel-up/md/commit/cef89a4ea8dda352388cef858508f33386896a89))
+
 ## [1.1.2](https://github.com/pawel-up/md/compare/v1.1.1...v1.1.2) (2026-06-20)
 
 
