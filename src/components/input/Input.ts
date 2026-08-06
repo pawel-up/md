@@ -934,11 +934,13 @@ export default abstract class Input extends UiElement {
       <div class="outline" part="outline">
         <div class="outline-start"></div>
         <div class="outline-notch">
-          ${label
-            ? html`<span class="outline-label" id="${this.labelId}-outline" title="${label}" part="outline-label"
-                >${label}</span
-              >`
-            : nothing}
+          ${
+            label
+              ? html`<span class="outline-label" id="${this.labelId}-outline" title="${label}" part="outline-label"
+                  >${label}</span
+                >`
+              : nothing
+          }
         </div>
         <div class="outline-end"></div>
       </div>

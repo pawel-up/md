@@ -206,17 +206,19 @@ export class UiDatePickerModal extends LitElement {
       <header class="modal-header">
         <h2 id="modal-title" class="modal-title">${this.title}</h2>
         <div class="header-actions">
-          ${this.showModeToggle
-            ? html`
-                <ui-icon-button
-                  @click=${this.handleModeToggle}
-                  aria-label=${this.isInputMode ? 'Show calendar' : 'Show date input'}
-                  title=${this.isInputMode ? 'Show calendar' : 'Show date input'}
-                >
-                  <ui-icon icon=${this.isInputMode ? 'calendarToday' : 'edit'}></ui-icon>
-                </ui-icon-button>
-              `
-            : ''}
+          ${
+            this.showModeToggle
+              ? html`
+                  <ui-icon-button
+                    @click=${this.handleModeToggle}
+                    aria-label=${this.isInputMode ? 'Show calendar' : 'Show date input'}
+                    title=${this.isInputMode ? 'Show calendar' : 'Show date input'}
+                  >
+                    <ui-icon icon=${this.isInputMode ? 'calendarToday' : 'edit'}></ui-icon>
+                  </ui-icon-button>
+                `
+              : ''
+          }
           <ui-icon-button @click=${this.handleCancel} aria-label="Close" title="Close">
             <ui-icon icon="close"></ui-icon>
           </ui-icon-button>
@@ -308,9 +310,11 @@ export class UiDatePickerModal extends LitElement {
         </ui-button>
         <div id="cancel-description" class="visually-hidden">Close the date picker without saving changes</div>
         <div id="confirm-description" class="visually-hidden">
-          ${hasValidRange
-            ? 'Save the selected date range and close the picker'
-            : 'Select both start and end dates to confirm the selection'}
+          ${
+            hasValidRange
+              ? 'Save the selected date range and close the picker'
+              : 'Select both start and end dates to confirm the selection'
+          }
         </div>
       </footer>
     `

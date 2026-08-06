@@ -73,7 +73,7 @@ export default class UiSelect extends UiElement {
     const oldValue = this.#value
     if (newValue === oldValue) return
     this.#value = newValue
-    this.requestUpdate()
+    this.requestUpdate('value', oldValue)
   }
 
   /**
@@ -344,15 +344,21 @@ export default class UiSelect extends UiElement {
    * ```
    */
   validate(): void {
-    let message = ''
+    const message = 'Please select an item.'
     if (this.required && !this.value) {
-      message = 'Please select an item.'
       this.#internals.setValidity({ valueMissing: true }, message)
+      this.invalid = true
+      this.invalidText = message
     } else {
       this.#internals.setValidity({})
+      const wasAutoInvalid = this.invalidText === message
+      if (wasAutoInvalid) {
+        this.invalidText = undefined
+        this.invalid = false
+      } else if (this.required && this.invalid) {
+        this.invalid = false
+      }
     }
-    this.invalid = !this.#internals.validity.valid
-    this.invalidText = message
   }
 
   protected override willUpdate(changedProperties: PropertyValues<this>): void {
@@ -364,7 +370,8 @@ export default class UiSelect extends UiElement {
       this.handleOpenChange()
     }
     if (changedProperties.has('value')) {
-      this.setCurrentOption()
+      const isExplicitValueClear = this.value === undefined
+      this.setCurrentOption(isExplicitValueClear)
       this.#internals.setFormValue(this.value ?? null)
       this.validate()
     }
@@ -382,6 +389,7 @@ export default class UiSelect extends UiElement {
     this.updateComplete.then(() => {
       this.setCurrentOption()
       this.#internals.setFormValue(this.value ?? null)
+      this.validate()
       // We need to update here as event with `value` and `selectedOption`
       // already set, the `renderValue` might have incorrect value
       // due to the DOM update.
@@ -389,17 +397,32 @@ export default class UiSelect extends UiElement {
     })
   }
 
-  protected setCurrentOption(): void {
-    const options = this.querySelectorAll<UiOption>('ui-option')
-    if (this.value) {
-      this.selectedOption = Array.from(options).find((option) => option.value === this.value) || null
+  protected setCurrentOption(isExplicitValueClear = false): void {
+    const options = Array.from(this.querySelectorAll<UiOption>('ui-option'))
+    if (this.value !== undefined) {
+      const match = options.find((option) => (option.value ?? option.renderValue) === this.value) || null
+      this.selectedOption = match
+      for (const option of options) {
+        option.selected = option === match
+      }
+    } else if (isExplicitValueClear) {
+      this.selectedOption = null
+      for (const option of options) {
+        option.selected = false
+      }
     } else {
-      const selected = Array.from(options).find((option) => option.selected)
+      const selected = options.find((option) => option.selected)
       if (selected) {
         this.selectedOption = selected
-        this.#value = selected.value
+        this.value = selected.value ?? selected.renderValue
+        for (const option of options) {
+          option.selected = option === selected
+        }
       } else {
         this.selectedOption = null
+        for (const option of options) {
+          option.selected = false
+        }
       }
     }
   }
@@ -407,8 +430,8 @@ export default class UiSelect extends UiElement {
   protected handleKeydown(e: KeyboardEvent): void {
     if (this.disabled || e.defaultPrevented) return
 
-    // Handle type-ahead for printable characters
-    if (e.key.length === 1 && !e.ctrlKey && !e.altKey && !e.metaKey) {
+    // Handle type-ahead for printable characters (excluding Space)
+    if (e.key.length === 1 && e.key !== ' ' && !e.ctrlKey && !e.altKey && !e.metaKey) {
       this.handleTypeAhead(e.key.toLowerCase())
       return
     }
@@ -736,8 +759,9 @@ export default class UiSelect extends UiElement {
 
     option.selected = true
     this.selectedOption = option
-    this.#value = option.value
+    this.value = option.value ?? option.renderValue
     this.#internals.setFormValue(this.value ?? null)
+    this.validate()
 
     this.dispatchChangeEvent(option)
   }
@@ -750,8 +774,9 @@ export default class UiSelect extends UiElement {
     }
     item.selected = true
     this.selectedOption = item
-    this.#value = item.value
+    this.value = item.value ?? item.renderValue
     this.#internals.setFormValue(this.value ?? null)
+    this.validate()
     this.open = false
 
     // Dispatch change event
@@ -827,8 +852,10 @@ export default class UiSelect extends UiElement {
   protected async handleSlotChange(): Promise<void> {
     // When options change, re-evaluate the current selection
     // only if we don't have an explicit value set
-    if (!this.value) {
+    if (this.value === undefined) {
       this.setCurrentOption()
+      this.#internals.setFormValue(this.value ?? null)
+      this.validate()
       this.requestUpdate()
     }
   }

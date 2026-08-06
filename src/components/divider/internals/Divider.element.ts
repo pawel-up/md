@@ -2,9 +2,9 @@ import { html, LitElement, TemplateResult } from 'lit'
 import { property } from 'lit/decorators.js'
 
 export enum DividerType {
-  'full' = 'full',
-  'inset' = 'inset',
-  'middle' = 'middle',
+  full = 'full',
+  inset = 'inset',
+  middle = 'middle',
 }
 
 /**

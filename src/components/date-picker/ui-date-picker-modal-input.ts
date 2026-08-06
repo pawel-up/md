@@ -366,22 +366,24 @@ export class UiDatePickerModalInput extends LitElement {
               <ui-icon slot="suffix" icon="calendarToday"></ui-icon>
             </ui-outlined-text-field>
 
-            ${this.rangeMode
-              ? html`
-                  <ui-outlined-text-field
-                    .label=${this.endLabel}
-                    .placeholder=${this.placeholder}
-                    .value=${this.endInput}
-                    .invalidText=${this.endError}
-                    ?invalid=${!!this.endError}
-                    @input=${this.handleEndInput}
-                    required
-                    aria-describedby="format-help"
-                  >
-                    <ui-icon slot="suffix" icon="calendarToday"></ui-icon>
-                  </ui-outlined-text-field>
-                `
-              : ''}
+            ${
+              this.rangeMode
+                ? html`
+                    <ui-outlined-text-field
+                      .label=${this.endLabel}
+                      .placeholder=${this.placeholder}
+                      .value=${this.endInput}
+                      .invalidText=${this.endError}
+                      ?invalid=${!!this.endError}
+                      @input=${this.handleEndInput}
+                      required
+                      aria-describedby="format-help"
+                    >
+                      <ui-icon slot="suffix" icon="calendarToday"></ui-icon>
+                    </ui-outlined-text-field>
+                  `
+                : ''
+            }
           </fieldset>
 
           <aside id="format-help" class="format-help" role="note" aria-label="Date format information">

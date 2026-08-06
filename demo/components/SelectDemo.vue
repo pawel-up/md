@@ -103,6 +103,71 @@ const clearValue = () => {
     select.value = ''
   }
 }
+
+// Required Select Demo
+const requiredSelected = ref<string | undefined>(undefined)
+const requiredValidityStatus = ref<string>('Not validated yet')
+
+const handleRequiredSelectChange = (e: Event) => {
+  const { value } = (e as CustomEvent).detail
+  requiredSelected.value = value
+  updateRequiredStatus()
+}
+
+const updateRequiredStatus = () => {
+  const select = document.querySelector('#required-select') as HTMLElement & {
+    checkValidity(): boolean
+    invalid: boolean | undefined
+    invalidText: string | undefined
+    validate(): void
+  }
+  if (select) {
+    select.validate()
+    requiredValidityStatus.value = `valid: ${select.checkValidity()}, invalid: ${select.invalid}, invalidText: "${select.invalidText || ''}"`
+  }
+}
+
+const toggleRequired = () => {
+  const select = document.querySelector('#required-select') as HTMLElement & { required: boolean }
+  if (select) {
+    select.required = !select.required
+    updateRequiredStatus()
+  }
+}
+
+const clearRequiredSelection = () => {
+  const select = document.querySelector('#required-select') as HTMLElement & { value: string | undefined }
+  if (select) {
+    select.value = undefined
+    updateRequiredStatus()
+  }
+}
+
+// Form Integration Demo
+const formResult = ref<string>('Form not submitted yet')
+
+const handleFormSubmit = (e: Event) => {
+  e.preventDefault()
+  const form = e.target as HTMLFormElement
+  const formData = new FormData(form)
+  const entries: Record<string, string> = {}
+  formData.forEach((val, key) => {
+    entries[key] = val.toString()
+  })
+  formResult.value = JSON.stringify(entries, null, 2)
+}
+
+const handleFormReset = (e: Event) => {
+  setTimeout(() => {
+    const form = e.target as HTMLFormElement
+    const formData = new FormData(form)
+    const entries: Record<string, string> = {}
+    formData.forEach((val, key) => {
+      entries[key] = val.toString()
+    })
+    formResult.value = `Form Reset! Current FormData: ${JSON.stringify(entries)}`
+  }, 50)
+}
 </script>
 
 <template>
@@ -283,6 +348,61 @@ const clearValue = () => {
       <ui-button @click="setValueOne">Set to "One"</ui-button>
       <ui-button @click="setValueTwo">Set to "Two"</ui-button>
       <ui-button @click="clearValue">Clear</ui-button>
+    </div>
+  </section>
+
+  <section>
+    <h2>Required Select & Validation</h2>
+    <p>Test validation reporting on a required select component:</p>
+    <ui-select
+      id="required-select"
+      required="true"
+      label="Required Fruit Choice"
+      @change="handleRequiredSelectChange"
+    >
+      <ui-option value="apple">Apple</ui-option>
+      <ui-option value="banana">Banana</ui-option>
+      <ui-option value="cherry">Cherry</ui-option>
+    </ui-select>
+    <p>Selected: {{ requiredSelected || 'None' }}</p>
+    <p>Validity Status: <code>{{ requiredValidityStatus }}</code></p>
+    <div class="button-group" style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+      <ui-button @click="updateRequiredStatus">Validate Field</ui-button>
+      <ui-button @click="clearRequiredSelection">Clear Selection</ui-button>
+      <ui-button @click="toggleRequired">Toggle Required</ui-button>
+    </div>
+  </section>
+
+  <section>
+    <h2>Form Integration & Submission</h2>
+    <p>Test native HTML form integration, submission, and reset behavior:</p>
+    <form @submit="handleFormSubmit" @reset="handleFormReset" style="display: flex; flex-direction: column; gap: 1rem; max-width: 400px;">
+      <ui-select name="favColor" label="Favorite Color (Required)" required="true">
+        <ui-option value="red">Red</ui-option>
+        <ui-option value="green">Green</ui-option>
+        <ui-option value="blue">Blue</ui-option>
+      </ui-select>
+
+      <ui-select name="category" label="Category (Pre-selected in HTML)">
+        <ui-option value="tech">Technology</ui-option>
+        <ui-option value="design" selected="true">Design</ui-option>
+        <ui-option value="art">Art</ui-option>
+      </ui-select>
+
+      <ui-select name="noValueAttr" label="Option without value attribute">
+        <ui-option>Alpha</ui-option>
+        <ui-option>Beta</ui-option>
+        <ui-option>Gamma</ui-option>
+      </ui-select>
+
+      <div class="button-group" style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+        <ui-button type="submit">Submit Form</ui-button>
+        <ui-button type="reset">Reset Form</ui-button>
+      </div>
+    </form>
+    <div style="margin-top: 1rem; padding: 1rem; background: var(--md-sys-color-surface-variant); border-radius: 8px;">
+      <h4>Form Submission Result:</h4>
+      <pre><code>{{ formResult }}</code></pre>
     </div>
   </section>
 </template>

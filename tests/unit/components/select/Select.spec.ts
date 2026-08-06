@@ -314,16 +314,66 @@ test.group('Form integration', () => {
     await select.updateComplete
 
     select.formResetCallback()
+    await select.updateComplete
+
     assert.isUndefined(select.value)
+    const formData = new FormData(form)
+    assert.isNull(formData.get('fruit'), 'Form data should be null after reset')
   })
 
   test('should restore state', async ({ assert }) => {
     const element = await basicFixture()
     element.formStateRestoreCallback('cherry')
+    await element.updateComplete
+
     assert.equal(element.value, 'cherry')
+    assert.equal(element.selectedItem?.value, 'cherry')
 
     element.formStateRestoreCallback(null)
+    await element.updateComplete
+
     assert.isUndefined(element.value)
+  })
+
+  test('should set initial form value when an option has selected attribute in HTML', async ({ assert }) => {
+    const form = await fixture<HTMLFormElement>(html`
+      <form>
+        <ui-select name="fruit" label="Select fruit">
+          <ui-option value="apple">Apple</ui-option>
+          <ui-option value="banana" selected>Banana</ui-option>
+        </ui-select>
+      </form>
+    `)
+    const select = form.querySelector('ui-select')!
+    await select.updateComplete
+
+    const formData = new FormData(form)
+    assert.equal(formData.get('fruit'), 'banana', 'Initial form value should be set from pre-selected option')
+  })
+
+  test('should fallback to option text content when option lacks explicit value attribute', async ({ assert }) => {
+    const form = await fixture<HTMLFormElement>(html`
+      <form>
+        <ui-select name="fruit" label="Select fruit">
+          <ui-option>Apple</ui-option>
+          <ui-option>Banana</ui-option>
+        </ui-select>
+      </form>
+    `)
+    const select = form.querySelector('ui-select')!
+    await select.updateComplete
+
+    const option = select.querySelector('ui-option') as UiOption
+    select['handleSelect'](new CustomEvent('select', { detail: { item: option } }))
+    await select.updateComplete
+
+    assert.equal(select.value, 'Apple')
+    const formData = new FormData(form)
+    assert.equal(
+      formData.get('fruit'),
+      'Apple',
+      'Form value should use option renderValue when value attribute is omitted'
+    )
   })
 })
 
@@ -357,6 +407,25 @@ test.group('Validation', () => {
     assert.isTrue(element.validity.valid)
     assert.equal(element.validationMessage, '')
     assert.isFalse(element.invalid)
+  })
+
+  test('should clear invalid state and valueMissing when selection is made', async ({ assert }) => {
+    const element = await requiredFixture()
+    element.validate()
+    await element.updateComplete
+
+    assert.isTrue(element.invalid, 'Should initially be invalid')
+    assert.isTrue(element.validity.valueMissing, 'Should initially have valueMissing')
+
+    // Simulate user selecting an option
+    const option = element.querySelector('ui-option[value="apple"]') as UiOption
+    element['handleSelect'](new CustomEvent('select', { detail: { item: option } }))
+    await element.updateComplete
+
+    assert.isFalse(element.invalid, 'Should clear invalid state after selection')
+    assert.isFalse(element.validity.valueMissing, 'Should clear valueMissing after selection')
+    assert.isTrue(element.checkValidity(), 'checkValidity should return true after selection')
+    assert.isTrue(element.validity.valid, 'validity.valid should be true after selection')
   })
 
   test('should display invalid state', async ({ assert }) => {
@@ -869,7 +938,7 @@ test.group('Selected attribute discovery', () => {
     assert.equal(element.renderValue, 'Cherry', 'render value should match value property')
   })
 
-  test('should rediscover selected options when value is cleared', async ({ assert }) => {
+  test('should clear selection when value is explicitly set to undefined', async ({ assert }) => {
     const element = await selectedAttributeFixture()
     await element.updateComplete
     await nextFrame()
@@ -877,14 +946,14 @@ test.group('Selected attribute discovery', () => {
     // First, verify it's initialized correctly
     assert.equal(element.value, 'banana')
 
-    // Now clear the value and it should fall back to selected attribute
+    // Now clear the value
     element.value = undefined
     await element.updateComplete
     await nextFrame()
 
-    assert.equal(element.value, 'banana', 'should rediscover selected option when value is cleared')
-    assert.isNotNull(element.selectedItem, 'selected item should not be null')
-    assert.equal(element.selectedItem!.value, 'banana', 'selected item should be rediscovered')
+    assert.isUndefined(element.value, 'should clear value when set to undefined')
+    assert.isNull(element.selectedItem, 'selected item should be null when value is set to undefined')
+    assert.equal(element.renderValue, '', 'render value should be empty when value is set to undefined')
   })
 
   test('should handle dynamically added options with selected attribute', async ({ assert }) => {
@@ -962,5 +1031,226 @@ test.group('Selected attribute discovery', () => {
     assert.isUndefined(element.value, 'value should be undefined when no options are selected')
     assert.isNull(element.selectedItem, 'selected item should be null when no options are selected')
     assert.equal(element.renderValue, '', 'render value should be empty when no options are selected')
+  })
+})
+
+test.group('Type-ahead search', () => {
+  test('should select matching option on type-ahead when menu is closed', async ({ assert }) => {
+    const element = await basicFixture()
+    element.dispatchEvent(new KeyboardEvent('keydown', { key: 'b' }))
+    await element.updateComplete
+
+    assert.equal(element.value, 'banana')
+    assert.equal(element.renderValue, 'Banana')
+  })
+
+  test('should focus matching option on type-ahead when menu is open', async ({ assert }) => {
+    const element = await basicFixture()
+    element.open = true
+    await element.updateComplete
+
+    element.dispatchEvent(new KeyboardEvent('keydown', { key: 'c' }))
+    await element.updateComplete
+
+    const cherryOption = element.querySelector('ui-option[value="cherry"]') as UiOption
+    assert.isTrue(cherryOption.matches(':focus'), 'Cherry option should be focused on type-ahead')
+  })
+
+  test('should accumulate characters for multi-character type-ahead search', async ({ assert }) => {
+    const element = await basicFixture()
+    element.dispatchEvent(new KeyboardEvent('keydown', { key: 'c' }))
+    element.dispatchEvent(new KeyboardEvent('keydown', { key: 'h' }))
+    await element.updateComplete
+
+    assert.equal(element.value, 'cherry')
+  })
+
+  test('should reset type-ahead buffer after timeout', async ({ assert }) => {
+    const element = await basicFixture()
+    element.dispatchEvent(new KeyboardEvent('keydown', { key: 'a' }))
+    await element.updateComplete
+    assert.equal(element.value, 'apple')
+
+    // Wait for type-ahead timer to expire
+    await new Promise((resolve) => setTimeout(resolve, 1100))
+
+    element.dispatchEvent(new KeyboardEvent('keydown', { key: 'b' }))
+    await element.updateComplete
+    assert.equal(element.value, 'banana')
+  })
+
+  test('should ignore disabled options during type-ahead', async ({ assert }) => {
+    const element = await fixture<UiSelect>(html`
+      <ui-select>
+        <ui-option value="apple">Apple</ui-option>
+        <ui-option value="banana" disabled>Banana</ui-option>
+        <ui-option value="blueberry">Blueberry</ui-option>
+      </ui-select>
+    `)
+    await element.updateComplete
+
+    element.dispatchEvent(new KeyboardEvent('keydown', { key: 'b' }))
+    await element.updateComplete
+
+    assert.equal(element.value, 'blueberry', 'should match next non-disabled option starting with b')
+  })
+})
+
+test.group('Keyboard navigation details', () => {
+  test('should select focused option on Enter key when menu is open', async ({ assert }) => {
+    const element = await basicFixture()
+    element.open = true
+    await element.updateComplete
+
+    const bananaOption = element.querySelector('ui-option[value="banana"]') as UiOption
+    bananaOption.focus()
+
+    element.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }))
+    await element.updateComplete
+
+    assert.equal(element.value, 'banana')
+    assert.isFalse(element.open)
+  })
+
+  test('should select focused option on Space key when menu is open', async ({ assert }) => {
+    const element = await basicFixture()
+    element.open = true
+    await element.updateComplete
+
+    const cherryOption = element.querySelector('ui-option[value="cherry"]') as UiOption
+    cherryOption.focus()
+
+    element.dispatchEvent(new KeyboardEvent('keydown', { key: ' ' }))
+    await element.updateComplete
+
+    assert.equal(element.value, 'cherry')
+    assert.isFalse(element.open)
+  })
+
+  test('should focus first option on Home key when menu is open', async ({ assert }) => {
+    const element = await basicFixture()
+    element.open = true
+    await element.updateComplete
+
+    const cherryOption = element.querySelector('ui-option[value="cherry"]') as UiOption
+    cherryOption.focus()
+
+    element.dispatchEvent(new KeyboardEvent('keydown', { key: 'Home' }))
+    await element.updateComplete
+
+    const appleOption = element.querySelector('ui-option[value="apple"]') as UiOption
+    assert.isTrue(appleOption.matches(':focus'))
+  })
+
+  test('should focus last option on End key when menu is open', async ({ assert }) => {
+    const element = await basicFixture()
+    element.open = true
+    await element.updateComplete
+
+    element.dispatchEvent(new KeyboardEvent('keydown', { key: 'End' }))
+    await element.updateComplete
+
+    const cherryOption = element.querySelector('ui-option[value="cherry"]') as UiOption
+    assert.isTrue(cherryOption.matches(':focus'))
+  })
+})
+
+test.group('Form-associated standards and dynamic toggles', () => {
+  test('should report correct willValidate property', async ({ assert }) => {
+    const element = await basicFixture()
+    assert.isTrue(element.willValidate)
+
+    element.disabled = true
+    await element.updateComplete
+    assert.isFalse(element.willValidate)
+  })
+
+  test('should handle explicit empty string value in form submission', async ({ assert }) => {
+    const form = await fixture<HTMLFormElement>(html`
+      <form>
+        <ui-select name="choice" value="">
+          <ui-option value="">None</ui-option>
+          <ui-option value="apple">Apple</ui-option>
+        </ui-select>
+      </form>
+    `)
+    const select = form.querySelector('ui-select')!
+    await select.updateComplete
+
+    const formData = new FormData(form)
+    assert.equal(formData.get('choice'), '')
+  })
+
+  test('should update validity when required property is toggled dynamically', async ({ assert }) => {
+    const element = await basicFixture()
+    assert.isTrue(element.checkValidity())
+
+    element.required = true
+    element.validate()
+    await element.updateComplete
+    assert.isFalse(element.checkValidity())
+    assert.isTrue(element.invalid)
+
+    element.required = false
+    element.validate()
+    await element.updateComplete
+    assert.isTrue(element.checkValidity())
+    assert.isFalse(element.invalid)
+  })
+
+  test('should handle all options disabled gracefully', async ({ assert }) => {
+    const element = await fixture<UiSelect>(html`
+      <ui-select>
+        <ui-option value="a" disabled>A</ui-option>
+        <ui-option value="b" disabled>B</ui-option>
+      </ui-select>
+    `)
+    await element.updateComplete
+
+    assert.isNull(element.getFirstSelectableOption())
+    assert.isNull(element.getLastSelectableOption())
+  })
+
+  test('should skip hidden options during navigation', async ({ assert }) => {
+    const element = await fixture<UiSelect>(html`
+      <ui-select>
+        <ui-option value="a">A</ui-option>
+        <ui-option value="b" hidden>B</ui-option>
+        <ui-option value="c">C</ui-option>
+      </ui-select>
+    `)
+    element.open = true
+    await element.updateComplete
+
+    const optionA = element.querySelector('ui-option[value="a"]') as UiOption
+    optionA.focus()
+
+    element.focusNextMenuItem()
+    await element.updateComplete
+
+    const optionC = element.querySelector('ui-option[value="c"]') as UiOption
+    assert.isTrue(optionC.matches(':focus'), 'Should skip hidden option B and focus C')
+  })
+
+  test('should re-validate required field on form reset', async ({ assert }) => {
+    const form = await fixture<HTMLFormElement>(html`
+      <form>
+        <ui-select name="choice" required value="apple">
+          <ui-option value="apple">Apple</ui-option>
+        </ui-select>
+      </form>
+    `)
+    const select = form.querySelector('ui-select')!
+    await select.updateComplete
+
+    assert.isTrue(select.checkValidity())
+
+    select.formResetCallback()
+    select.validate()
+    await select.updateComplete
+
+    assert.isUndefined(select.value)
+    assert.isFalse(select.checkValidity())
+    assert.isTrue(select.invalid)
   })
 })

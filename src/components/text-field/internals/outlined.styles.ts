@@ -91,6 +91,10 @@ export default css`
     border-top-color: transparent;
   }
 
+  .labelResting.hasSuffix .outline-notch {
+    max-width: calc(100% - 60px); /* 12px notch padding + 48px suffix area */
+  }
+
   .outline-end {
     border-width: var(--_border-width) var(--_border-width) var(--_border-width) 0;
     border-radius: 0 var(--md-sys-shape-corner-extra-small) var(--md-sys-shape-corner-extra-small) 0;
