@@ -1,5 +1,5 @@
 import { fixture, html, test } from '@pawel-up/lupa/testing'
-import { query } from '@pawel-up/lupa/commands'
+import { events } from '@pawel-up/lupa/commands'
 import { normalizeColor } from '../../../../src/lib/color.js'
 import sinon from 'sinon'
 import { UiChipElement } from '../../../../src/components/chip/ui-chip.js'
@@ -47,7 +47,7 @@ test.group('Assist chip', () => {
     const element = await basicFixture()
     const spy = sinon.spy()
     element.addEventListener('click', spy)
-    await query({ css: 'ui-chip' }).press('Space')
+    await events(element).keyboard.press('Space')
     assert.isTrue(spy.calledOnce)
   }).tags(['@md', '@chip', '@assist-chip'])
 
@@ -55,7 +55,7 @@ test.group('Assist chip', () => {
     const element = await basicFixture()
     const spy = sinon.spy()
     element.addEventListener('click', spy)
-    await query({ css: 'ui-chip' }).press('Enter')
+    await events(element).keyboard.press('Enter')
     assert.isTrue(spy.calledOnce)
   }).tags(['@md', '@chip', '@assist-chip'])
 
@@ -63,8 +63,8 @@ test.group('Assist chip', () => {
     const element = await disabledFixture()
     const spy = sinon.spy()
     element.addEventListener('click', spy)
-    await query({ css: 'ui-chip' }).press('Space')
-    await query({ css: 'ui-chip' }).press('Enter')
+    await events(element).keyboard.press('Space')
+    await events(element).keyboard.press('Enter')
     assert.isFalse(spy.called)
   }).tags(['@md', '@chip', '@assist-chip'])
 
@@ -72,7 +72,7 @@ test.group('Assist chip', () => {
     const element = await disabledFixture()
     const spy = sinon.spy()
     element.addEventListener('event', spy)
-    await query({ css: 'ui-chip' }).press('Space')
+    await events(element).keyboard.press('Space')
     assert.isFalse(spy.called)
   }).tags(['@md', '@chip', '@assist-chip'])
 

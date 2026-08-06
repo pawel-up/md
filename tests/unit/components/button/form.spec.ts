@@ -1,5 +1,5 @@
 import { fixture, html, test } from '@pawel-up/lupa/testing'
-import { query } from '@pawel-up/lupa/commands'
+import { events } from '@pawel-up/lupa/commands'
 import { UiButtonElement } from '../../../../src/components/button/ui-button.js'
 
 import '../../../../src/components/button/ui-button.js'
@@ -89,23 +89,25 @@ test.group('Form button', () => {
 
   test('submits the form with Space bar', async ({ assert }) => {
     const form = await submitFormFixture()
+    const button = form.querySelector('ui-button')!
     let event: SubmitEvent | undefined
     form.addEventListener('submit', (e: SubmitEvent) => {
       e.preventDefault()
       event = e
     })
-    await query({ css: 'ui-button' }).press('Space')
+    await events(button).keyboard.press('Space')
     assert.ok(event)
   }).tags(['@md', '@button', '@forms'])
 
   test('submits the form with Enter', async ({ assert }) => {
     const form = await submitFormFixture()
+    const button = form.querySelector('ui-button')!
     let event: SubmitEvent | undefined
     form.addEventListener('submit', (e: SubmitEvent) => {
       e.preventDefault()
       event = e
     })
-    await query({ css: 'ui-button' }).press('Enter')
+    await events(button).keyboard.press('Enter')
     assert.ok(event)
   }).tags(['@md', '@button', '@forms'])
 })
