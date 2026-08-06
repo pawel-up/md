@@ -1,3 +1,11 @@
+## [1.2.1](https://github.com/pawel-up/md/compare/v1.2.0...v1.2.1) (2026-08-06)
+
+
+### Bug Fixes
+
+* refactor Select component selection logic, update input styles, and improve validation behavior ([70bf5fd](https://github.com/pawel-up/md/commit/70bf5fd36a9dec84e83cc1a1b43aa900a4bf34e0))
+* update dependencies and include source files in package manifest ([071adcb](https://github.com/pawel-up/md/commit/071adcbe04baf3b7157e642caab724996589b358))
+
 # [1.2.0](https://github.com/pawel-up/md/compare/v1.1.2...v1.2.0) (2026-06-21)
 
 
