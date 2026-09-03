@@ -158,7 +158,11 @@ export default class UiDropdownList extends LitElement {
   }
 
   protected dropdownOpenHandler(e: Event): void {
-    if (e.composedPath()[0] === this) {
+    if (!this.open) {
+      return
+    }
+    const [source] = e.composedPath()
+    if (source === this) {
       return
     }
     this._blockFocusRestore = true
@@ -254,6 +258,7 @@ export default class UiDropdownList extends LitElement {
       this.close()
     } else if (e.code === 'Tab') {
       if (this.closeOnTab) {
+        this._blockFocusRestore = true
         this.close()
       }
     }
@@ -352,16 +357,32 @@ export default class UiDropdownList extends LitElement {
     }
   }
 
+  /**
+   * Checks whether the element is disabled.
+   */
+  protected isElementDisabled(el: HTMLElement): boolean {
+    const item = el as unknown as { disabled?: boolean }
+    if (item.disabled) {
+      return true
+    }
+    if (el.hasAttribute('disabled')) {
+      return true
+    }
+    return el.getAttribute('aria-disabled') === 'true'
+  }
+
   protected handleOpened(): void {
+    this._blockFocusRestore = false
     const { trigger, dropdown } = this
     if (trigger) {
       trigger.removeAttribute('tabindex')
     }
-    if (this.lastActiveChild) {
+    if (this.lastActiveChild && !this.isElementDisabled(this.lastActiveChild)) {
       this.lastActiveChild.setAttribute('tabindex', '0')
       this.lastActiveChild.focus()
       this.lastActiveChild = undefined
     } else if (dropdown) {
+      this.lastActiveChild = undefined
       dropdown.setAttribute('tabindex', '0')
       dropdown.focus()
     }
@@ -379,7 +400,12 @@ export default class UiDropdownList extends LitElement {
     if (dropdown) {
       const activeChild = dropdown.querySelector('[tabindex="0"]')
       if (activeChild) {
-        this.lastActiveChild = activeChild as HTMLElement
+        const activeElement = activeChild as HTMLElement
+        if (!this.isElementDisabled(activeElement)) {
+          this.lastActiveChild = activeElement
+        } else {
+          this.lastActiveChild = undefined
+        }
         activeChild.removeAttribute('tabindex')
       }
       dropdown.removeAttribute('tabindex')

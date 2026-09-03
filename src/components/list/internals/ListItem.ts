@@ -142,7 +142,12 @@ export default class UiListItem extends UiElement {
 
   protected override willUpdate(cp: PropertyValues<this>): void {
     if (cp.has('disabled')) {
-      setDisabled(this, cp.get('disabled'))
+      setDisabled(this, this.disabled)
+      if (this.disabled) {
+        this.removeAttribute('tabindex')
+      } else {
+        this.setAttribute('tabindex', '-1')
+      }
     }
   }
 
@@ -171,8 +176,27 @@ export default class UiListItem extends UiElement {
     this.endPress({ cancelled: false, actionData: { item: this } })
   }
 
+  /**
+   * Whether the list item can receive focus or be activated.
+   */
+  get isFocusable(): boolean {
+    return !this.disabled && !this.static
+  }
+
+  /**
+   * Overrides native focus to prevent focusing a disabled list item.
+   *
+   * @param options Focus options
+   */
+  override focus(options?: FocusOptions): void {
+    if (this.disabled) {
+      return
+    }
+    super.focus(options)
+  }
+
   override beginPress(options: BeginPressConfig): void {
-    if (this.disabled || this.static) {
+    if (!this.isFocusable) {
       return
     }
     super.beginPress(options)
@@ -180,7 +204,7 @@ export default class UiListItem extends UiElement {
   }
 
   override endPress(options: EndPressConfig): void {
-    if (this.disabled || this.static) {
+    if (!this.isFocusable) {
       return
     }
     super.endPress(options)
@@ -188,7 +212,7 @@ export default class UiListItem extends UiElement {
   }
 
   override handlePointerEnter(e: PointerEvent): void {
-    if (this.disabled || this.static) {
+    if (!this.isFocusable) {
       e.stopPropagation()
       e.preventDefault()
       return
@@ -197,7 +221,7 @@ export default class UiListItem extends UiElement {
   }
 
   override handlePointerLeave(e: PointerEvent): void {
-    if (this.disabled || this.static) {
+    if (!this.isFocusable) {
       e.stopPropagation()
       e.preventDefault()
       return
@@ -211,7 +235,7 @@ export default class UiListItem extends UiElement {
    * Focuses list item and makes list item focusable via keyboard.
    */
   activate(): void {
-    if (this.disabled || this.static) {
+    if (!this.isFocusable) {
       return
     }
     this.setAttribute('tabindex', '0')
@@ -222,7 +246,7 @@ export default class UiListItem extends UiElement {
    * Returns true if list item is currently focused and is focusable.
    */
   isActive(): boolean {
-    if (this.disabled || this.static) {
+    if (!this.isFocusable) {
       return false
     }
     return this.getAttribute('tabindex') === '0'
@@ -232,7 +256,7 @@ export default class UiListItem extends UiElement {
    * Removes list item from sequential keyboard navigation.
    */
   deactivate(): void {
-    if (this.disabled || this.static) {
+    if (!this.isFocusable) {
       return
     }
     this.removeAttribute('tabindex')

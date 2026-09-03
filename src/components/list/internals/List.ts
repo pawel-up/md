@@ -105,7 +105,7 @@ export default class UiList extends LitElement {
   }
 
   protected handleFocus(options?: FocusOptions): void {
-    if (this.activeListItem) {
+    if (this.activeListItem && this.isSelectable(this.activeListItem)) {
       this.activeListItem.focus(options)
     } else {
       this.activateFirstItem()
@@ -113,13 +113,23 @@ export default class UiList extends LitElement {
   }
 
   activateFirstItem(): void {
-    this.activeListItem = this.getFirstItem()
-    this.activeListItem?.activate()
+    const item = this.getFirstItem()
+    if (item) {
+      this.activeListItem = item
+      item.activate()
+    } else {
+      this.activeListItem = null
+    }
   }
 
   activateLastItem(): void {
-    this.activeListItem = this.getLastItem()
-    this.activeListItem?.activate()
+    const item = this.getLastItem()
+    if (item) {
+      this.activeListItem = item
+      item.activate()
+    } else {
+      this.activeListItem = null
+    }
   }
 
   resetActiveListItem(): void {
@@ -184,19 +194,31 @@ export default class UiList extends LitElement {
     return element.matches(this.selector)
   }
 
-  getFirstItem(): UiListItem {
-    return this.items[0]
+  /**
+   * Returns the first selectable list item.
+   */
+  getFirstItem(): UiListItem | undefined {
+    return this.items.find((item) => this.isSelectable(item))
   }
 
-  getLastItem(): UiListItem {
-    return this.items[this.items.length - 1]
+  /**
+   * Returns the last selectable list item.
+   */
+  getLastItem(): UiListItem | undefined {
+    for (let i = this.items.length - 1; i >= 0; i--) {
+      const item = this.items[i]
+      if (this.isSelectable(item)) {
+        return item
+      }
+    }
+    return undefined
   }
 
   getPreviousItem(item: UiListItem): UiListItem {
     const { items } = this
     const curIndex = items.indexOf(item)
     if (curIndex < 0) {
-      return item
+      return this.getFirstItem() || item
     }
     let i = curIndex
     let result: HTMLElement | undefined
@@ -222,7 +244,7 @@ export default class UiList extends LitElement {
     const { items } = this
     const curIndex = items.indexOf(item)
     if (curIndex < 0) {
-      return item
+      return this.getFirstItem() || item
     }
     let i = curIndex
     let next: HTMLElement | undefined
@@ -244,14 +266,46 @@ export default class UiList extends LitElement {
     return (next as UiListItem) || item
   }
 
-  protected isSelectable(element: HTMLElement): boolean {
-    if ((element as unknown as { disabled: boolean }).disabled) {
-      return false
+  /**
+   * Checks whether the element has disabled state.
+   */
+  protected isElementDisabled(element: HTMLElement): boolean {
+    const item = element as unknown as { disabled?: boolean }
+    if (item.disabled) {
+      return true
     }
     if (element.hasAttribute('disabled')) {
+      return true
+    }
+    return element.getAttribute('aria-disabled') === 'true'
+  }
+
+  /**
+   * Checks whether the element is static.
+   */
+  protected isElementStatic(element: HTMLElement): boolean {
+    const item = element as unknown as { static?: boolean }
+    return Boolean(item.static || element.hasAttribute('static'))
+  }
+
+  /**
+   * Checks whether the element is hidden.
+   */
+  protected isElementHidden(element: HTMLElement): boolean {
+    return Boolean(element.hidden && element.hasAttribute('hidden'))
+  }
+
+  /**
+   * Whether the given element can be selected/focused in the list.
+   */
+  protected isSelectable(element: HTMLElement): boolean {
+    if (this.isElementDisabled(element)) {
       return false
     }
-    if (element.hidden && element.hasAttribute('hidden')) {
+    if (this.isElementStatic(element)) {
+      return false
+    }
+    if (this.isElementHidden(element)) {
       return false
     }
     if ((element as UiListItem).collapsed) {
@@ -317,29 +371,33 @@ export default class UiList extends LitElement {
   }
 
   activateFirst(): void {
-    this.activeListItem = this.getFirstItem()
-    if (this.activeListItem) {
+    const item = this.getFirstItem()
+    if (item) {
+      this.activeListItem = item
       this.activateListItem(this.activeListItem)
     }
   }
 
   activateLast(): void {
-    this.activeListItem = this.getLastItem()
-    if (this.activeListItem) {
+    const item = this.getLastItem()
+    if (item) {
+      this.activeListItem = item
       this.activateListItem(this.activeListItem)
     }
   }
 
   activateNext(item = this.activeListItem): void {
-    this.activeListItem = item ? this.getNextItem(item) : this.getFirstItem()
-    if (this.activeListItem) {
+    const next = item ? this.getNextItem(item) : this.getFirstItem()
+    if (next && this.isSelectable(next)) {
+      this.activeListItem = next
       this.activateListItem(this.activeListItem)
     }
   }
 
   activatePrevious(item = this.activeListItem): void {
-    this.activeListItem = item ? this.getPreviousItem(item) : this.getLastItem()
-    if (this.activeListItem) {
+    const previous = item ? this.getPreviousItem(item) : this.getLastItem()
+    if (previous && this.isSelectable(previous)) {
+      this.activeListItem = previous
       this.activateListItem(this.activeListItem)
     }
   }

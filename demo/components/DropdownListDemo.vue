@@ -10,6 +10,7 @@ import '../../src/components/button/ui-button.js'
 const list1Selected = ref<string | undefined>()
 const list2Selected = ref<string | undefined>()
 const list3Selected = ref<string | undefined>()
+const list4Selected = ref<string | undefined>()
 const verticalAlign = ref<string | undefined>()
 const horizontalAlign = ref<string | undefined>()
 const noOverlap = ref(false)
@@ -30,6 +31,12 @@ const list3SelectHandler = (e: CustomEvent) => {
   const target = e.detail.item as HTMLElement | undefined
   if (!target) return
   list3Selected.value = target.dataset.item
+}
+
+const list4SelectHandler = (e: CustomEvent) => {
+  const target = e.detail.item as HTMLElement | undefined
+  if (!target) return
+  list4Selected.value = target.dataset.item
 }
 
 const noOverlapHandler = (e: Event) => {
@@ -77,6 +84,20 @@ const horizontalHandler = (e: Event) => {
           </ui-list>
         </ui-dropdown-list>
         <p>Last selected: {{ list2Selected || 'none' }}</p>
+      </div>
+
+      <h2 class="title-large">List with disabled first item</h2>
+      <div class="demo-row">
+        <ui-dropdown-list @select="list4SelectHandler">
+          <ui-button color="outlined">Open with disabled items</ui-button>
+          <ui-list slot="dropdown" role="menu">
+            <ui-list-item role="menuitem" disabled data-item="item 1">Item 1 (Disabled)</ui-list-item>
+            <ui-list-item role="menuitem" data-item="item 2">Item 2</ui-list-item>
+            <ui-list-item role="menuitem" disabled data-item="item 3">Item 3 (Disabled)</ui-list-item>
+            <ui-list-item role="menuitem" data-item="item 4">Item 4</ui-list-item>
+          </ui-list>
+        </ui-dropdown-list>
+        <p>Last selected: {{ list4Selected || 'none' }}</p>
       </div>
 
       <h2 class="title-large">A list in an <code>overflow: hidden</code> element</h2>
