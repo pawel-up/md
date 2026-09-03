@@ -1,3 +1,10 @@
+## [1.2.2](https://github.com/pawel-up/md/compare/v1.2.1...v1.2.2) (2026-09-03)
+
+
+### Bug Fixes
+
+* improve keyboard navigation and focus management ([d27af44](https://github.com/pawel-up/md/commit/d27af44452fbd126ab6b6175b66b8f351c3511c8))
+
 ## [1.2.1](https://github.com/pawel-up/md/compare/v1.2.0...v1.2.1) (2026-08-06)
 
 
