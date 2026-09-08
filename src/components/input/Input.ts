@@ -2,7 +2,7 @@ import { html, LitElement, nothing, PropertyValues, TemplateResult } from 'lit'
 import { property, queryAssignedElements, state } from 'lit/decorators.js'
 import { classMap } from 'lit/directives/class-map.js'
 import { ifDefined } from 'lit/directives/if-defined.js'
-import { SupportedAutocapitalize, SupportedAutocomplete, SupportedInputTypes } from '../../types/input.js'
+import { SupportedAutocapitalize, SupportedInputTypes } from '../../types/input.js'
 import { ARIAAutoComplete, ARIAExpanded, ARIARole } from '../../types/role.js'
 import { UiElement } from '../UiElement.js'
 import { isDisabled, setDisabled } from '../../lib/disabled.js'
@@ -193,7 +193,7 @@ export default abstract class Input extends UiElement {
    * @default off
    * @attribute
    */
-  @property({ type: String }) accessor autocomplete: SupportedAutocomplete = 'off'
+  @property({ type: String }) accessor autocomplete: 'on' | 'off' | string = 'off'
 
   /**
    * Binds this to the `<input>`'s `inputMode` property.
