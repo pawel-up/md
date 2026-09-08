@@ -1,3 +1,10 @@
+## [1.2.3](https://github.com/pawel-up/md/compare/v1.2.2...v1.2.3) (2026-09-08)
+
+
+### Bug Fixes
+
+* input autocomplete is not text ([96cdb99](https://github.com/pawel-up/md/commit/96cdb992d8b530b1e727a197b037b000bd34d6f3))
+
 ## [1.2.2](https://github.com/pawel-up/md/compare/v1.2.1...v1.2.2) (2026-09-03)
 
 
