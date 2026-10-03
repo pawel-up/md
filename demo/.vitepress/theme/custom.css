@@ -8,12 +8,12 @@
 .demo .demo-section {
   max-width: 858px;
   margin: 0 auto 80px auto;
-  --_row-height: 80px;
+  --_row-height: 120px;
 }
 
 .demo .demo-section.l {
   max-width: 1080px;
-  --_row-height: 120px;
+  --_row-height: 140px;
 }
 
 .demo .demo-section.xl {
