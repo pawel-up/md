@@ -1,3 +1,9 @@
+<style>
+.color-grid {
+  grid-template-columns: 80px 1fr 1fr 1fr;
+}
+</style>
+
 <template>
   <div class="demo">
     <section class="demo-section">
