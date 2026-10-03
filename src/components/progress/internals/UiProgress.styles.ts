@@ -3,7 +3,8 @@ import { css } from 'lit'
 export default css`
   :host {
     display: block;
-    width: auto;
+    box-sizing: border-box;
+    width: 100%;
     position: relative;
     overflow: hidden;
   }
@@ -14,6 +15,7 @@ export default css`
   }
 
   .container {
+    box-sizing: border-box;
     height: var(--ui-progress-height, 4px);
     width: inherit;
     position: relative;

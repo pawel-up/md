@@ -117,3 +117,30 @@ const nextProgress = () => {
     </div>
   </section>
 </template>
+
+<style>
+  .slow {
+    --ui-progress-indeterminate-cycle-duration: 6s;
+    --ui-circular-progress-arc-duration: 3000ms;
+  }
+
+  .blue {
+    --ui-progress-primary-progress-color: var(--md-sys-color-primary, #1976d2);
+    --ui-progress-secondary-progress-color: var(--md-sys-color-secondary, #90caf9);
+  }
+
+  .red {
+    --ui-progress-primary-progress-color: var(--md-sys-color-error, #ba1a1a);
+  }
+
+  .green {
+    --ui-progress-primary-progress-color: var(--md-sys-color-tertiary, #386a20);
+  }
+
+  .demo-section.secondary ui-progress {
+    --ui-progress-height: 12px;
+    --ui-progress-track-color: var(--md-sys-color-surface-variant);
+    --ui-progress-primary-progress-color: var(--md-sys-color-surface-variant);
+    --ui-progress-secondary-progress-color: #4a4;
+  }
+</style>

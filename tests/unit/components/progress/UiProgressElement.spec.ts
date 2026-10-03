@@ -53,6 +53,14 @@ test.group('basic', (group) => {
     assert.equal(progress.secondaryRatio, 50)
   })
 
+  test('sets the secondary ratio from a string value', async ({ assert }) => {
+    progress.max = 10
+    // @ts-expect-error Testing string assignment as passed by frameworks like Vue
+    progress.secondaryProgress = '5'
+    await nextFrame()
+    assert.equal(progress.secondaryRatio, 50)
+  })
+
   test('set the min', async ({ assert }) => {
     progress.min = 10
     progress.max = 50

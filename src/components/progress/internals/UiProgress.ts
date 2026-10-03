@@ -47,8 +47,9 @@ export default class UiProgress extends UiRange {
   protected override rangeChanged(): void {
     super.rangeChanged()
     const { secondaryProgress: sp } = this
-    if (typeof sp === 'number') {
-      const secondary = this.clampValue(sp)
+    const num = typeof sp === 'string' ? parseFloat(sp) : sp
+    if (typeof num === 'number' && !Number.isNaN(num)) {
+      const secondary = this.clampValue(num)
       this.secondaryRatioInternal = this.computeRatio(secondary) * 100
     } else {
       this.secondaryRatioInternal = undefined
