@@ -40,6 +40,19 @@ export default css`
     content-visibility: auto;
   }
 
+  :host([wavy]) {
+    --_size: var(--ui-circular-progress-size, 48px);
+  }
+
+  :host([wavy][thick]) {
+    --_size: var(--ui-circular-progress-size, 52px);
+  }
+
+  :host([thick]:not([wavy])) {
+    --_size: var(--ui-circular-progress-size, 44px);
+    --_active-indicator-width: 18;
+  }
+
   .progress,
   .spinner,
   .left,
@@ -56,13 +69,78 @@ export default css`
     transform: rotate(-90deg);
   }
 
-  circle {
+  :not(.wavy-circular) circle {
     cx: 50%;
     cy: 50%;
     r: calc(50% * (1 - var(--_active-indicator-width) / 100));
     stroke-width: calc(var(--_active-indicator-width) * 1%);
     stroke-dasharray: 100;
     fill: transparent;
+  }
+
+  .wavy-circular circle.track {
+    stroke: var(--ui-circular-progress-track-color, var(--md-sys-color-surface-variant));
+    stroke-linecap: round;
+    fill: transparent;
+  }
+
+  .wavy-circular circle.active-track.complete {
+    stroke: var(--_active-indicator-color);
+    stroke-linecap: round;
+    fill: transparent;
+  }
+
+  .wavy-circular path.active-track.wavy {
+    stroke: var(--_active-indicator-color);
+    stroke-linecap: round;
+    fill: transparent;
+    transition: stroke-dashoffset 500ms cubic-bezier(0, 0, 0.2, 1);
+  }
+
+  .wavy-circular.indeterminate {
+    animation: wavy-circle-rotate 12s linear infinite;
+    transform-origin: center;
+  }
+
+  .wavy-circular.indeterminate path.active-track.wavy {
+    animation: wavy-circle-arc 6s ease-in-out infinite;
+    transition: none;
+  }
+
+  @keyframes wavy-circle-rotate {
+    0% {
+      transform: rotate(-90deg);
+    }
+    100% {
+      transform: rotate(270deg);
+    }
+  }
+
+  @keyframes wavy-circle-arc {
+    0% {
+      stroke-dasharray: 4 100;
+      stroke-dashoffset: 0;
+    }
+    50% {
+      stroke-dasharray: 60 100;
+      stroke-dashoffset: -15;
+    }
+    100% {
+      stroke-dasharray: 4 100;
+      stroke-dashoffset: -100;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .wavy-circular.indeterminate {
+      animation: none;
+    }
+
+    .wavy-circular.indeterminate path.active-track.wavy {
+      animation: none;
+      stroke-dasharray: 50 100;
+      stroke-dashoffset: 0;
+    }
   }
 
   .active-track {

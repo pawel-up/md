@@ -121,3 +121,62 @@ test.group('transiting class', (group) => {
     assert.equal(stylesForSecondaryProgress['transitionDuration'], '0.23s')
   })
 })
+
+test.group('wavy and thick variants', () => {
+  test('renders wavy determinate variant', async ({ assert }) => {
+    const el = await fixture<UiProgress>(html`<ui-progress wavy value="50" max="100"></ui-progress>`)
+    const wavyContainer = el.shadowRoot?.querySelector('.wavy-container')
+    const wavyActive = el.shadowRoot?.querySelector('.wavy-active')
+    const wavyPath = el.shadowRoot?.querySelector('.wavy-path')
+    const wavyTrack = el.shadowRoot?.querySelector('.wavy-track')
+    const stopDot = el.shadowRoot?.querySelector('.stop-dot')
+
+    assert.ok(wavyContainer, 'wavy container should be rendered')
+    assert.ok(wavyActive, 'wavy active element should be rendered')
+    assert.ok(wavyPath, 'wavy path should be rendered')
+    assert.ok(wavyTrack, 'wavy track should be rendered')
+    assert.ok(stopDot, 'stop dot should be rendered')
+    assert.equal((wavyActive as HTMLElement)?.style.width, '50%')
+  })
+
+  test('renders wavy indeterminate variant with dual-segment track', async ({ assert }) => {
+    const el = await fixture<UiProgress>(html`<ui-progress wavy indeterminate></ui-progress>`)
+    const wavyActive = el.shadowRoot?.querySelector('.wavy-active.indeterminate')
+    const secondaryWave = el.shadowRoot?.querySelector('.wavy-active.indeterminate.secondary-wave')
+    const fullTrack = el.shadowRoot?.querySelector('.wavy-track.full-track')
+    assert.ok(wavyActive, 'primary wavy indeterminate element should be rendered')
+    assert.ok(secondaryWave, 'secondary wavy indeterminate element should be rendered')
+    assert.ok(fullTrack, 'full track should be rendered in indeterminate mode')
+  })
+
+  test('renders thick wavy variant with 8px stroke', async ({ assert }) => {
+    const el = await fixture<UiProgress>(html`<ui-progress wavy thick value="30"></ui-progress>`)
+    const container = el.shadowRoot?.querySelector('.wavy-container.thick')
+    const path = el.shadowRoot?.querySelector('.wavy-path')
+    assert.ok(container, 'container should have thick class')
+    assert.equal((path as SVGElement)?.style.strokeWidth, '8px')
+  })
+
+  test('hides stop dot when hide-stop-indicator is present', async ({ assert }) => {
+    const el = await fixture<UiProgress>(html`<ui-progress wavy hide-stop-indicator value="50"></ui-progress>`)
+    const stopDot = el.shadowRoot?.querySelector('.stop-dot')
+    assert.notOk(stopDot, 'stop dot should not be rendered when hide-stop-indicator is true')
+  })
+
+  test('renders flat complete line at 100% progress', async ({ assert }) => {
+    const el = await fixture<UiProgress>(html`<ui-progress wavy value="100"></ui-progress>`)
+    const completeLine = el.shadowRoot?.querySelector('.complete-line')
+    const stopDot = el.shadowRoot?.querySelector('.stop-dot')
+    assert.ok(completeLine, 'complete-line should be rendered at 100%')
+    assert.notOk(stopDot, 'stop dot should not be rendered when complete')
+  })
+
+  test('scales stop dot to 8px in thick variant', async ({ assert }) => {
+    const el = await fixture<UiProgress>(html`<ui-progress wavy thick value="50"></ui-progress>`)
+    const stopDot = el.shadowRoot?.querySelector('.stop-dot') as HTMLElement
+    assert.ok(stopDot, 'stop dot should be rendered')
+    const styles = getComputedStyle(stopDot)
+    assert.equal(styles.width, '8px')
+    assert.equal(styles.height, '8px')
+  })
+})

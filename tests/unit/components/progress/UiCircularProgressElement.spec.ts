@@ -471,3 +471,66 @@ test.group('Performance Considerations', (group) => {
     assert.equal(computedStyle.contentVisibility, 'auto', 'should use content-visibility: auto')
   })
 })
+
+test.group('Wavy and Thick Variants', () => {
+  test('renders wavy determinate variant', async ({ assert }) => {
+    const el = await fixture<CircularProgress>(
+      html`<ui-circular-progress wavy value="50" max="100"></ui-circular-progress>`
+    )
+    const svg = el.shadowRoot?.querySelector('svg.wavy-circular')
+    const activeTrack = el.shadowRoot?.querySelector('path.active-track.wavy')
+    const track = el.shadowRoot?.querySelector('circle.track')
+
+    assert.ok(svg, 'wavy SVG should be rendered')
+    assert.ok(activeTrack, 'wavy active track path should be rendered')
+    assert.ok(track, 'track circle should be rendered')
+    assert.equal(svg?.getAttribute('viewBox'), '0 0 48 48')
+    assert.equal(activeTrack?.getAttribute('stroke-width'), '4')
+  })
+
+  test('renders wavy indeterminate variant', async ({ assert }) => {
+    const el = await fixture<CircularProgress>(html`<ui-circular-progress wavy indeterminate></ui-circular-progress>`)
+    const svg = el.shadowRoot?.querySelector('svg.wavy-circular.indeterminate')
+    const activeTrack = el.shadowRoot?.querySelector('path.active-track.wavy')
+
+    assert.ok(svg, 'wavy indeterminate SVG should be rendered')
+    assert.ok(activeTrack, 'wavy active track path should be rendered')
+  })
+
+  test('renders thick wavy variant with 52x52 viewBox and 8 stroke', async ({ assert }) => {
+    const el = await fixture<CircularProgress>(
+      html`<ui-circular-progress wavy thick value="40"></ui-circular-progress>`
+    )
+    const svg = el.shadowRoot?.querySelector('svg.wavy-circular')
+    const activeTrack = el.shadowRoot?.querySelector('path.active-track.wavy')
+
+    assert.ok(svg, 'wavy SVG should be rendered')
+    assert.equal(svg?.getAttribute('viewBox'), '0 0 52 52')
+    assert.equal(activeTrack?.getAttribute('stroke-width'), '8')
+  })
+
+  test('renders flat complete circle at 100% progress', async ({ assert }) => {
+    const el = await fixture<CircularProgress>(
+      html`<ui-circular-progress wavy value="100" max="100"></ui-circular-progress>`
+    )
+    const completeCircle = el.shadowRoot?.querySelector('circle.active-track.complete')
+    const wavyPath = el.shadowRoot?.querySelector('path.active-track.wavy')
+
+    assert.ok(completeCircle, 'complete circle should be rendered at 100%')
+    assert.notOk(wavyPath, 'wavy path should not be rendered when complete')
+  })
+
+  test('clamps ratio to 0% and 100% when value is out of bounds', async ({ assert }) => {
+    const elMin = await fixture<CircularProgress>(
+      html`<ui-circular-progress wavy value="-10" min="0" max="100"></ui-circular-progress>`
+    )
+    const activeTrackMin = elMin.shadowRoot?.querySelector('path.active-track.wavy')
+    assert.equal(activeTrackMin?.getAttribute('stroke-dashoffset'), '100')
+
+    const elMax = await fixture<CircularProgress>(
+      html`<ui-circular-progress wavy value="150" min="0" max="100"></ui-circular-progress>`
+    )
+    const completeCircle = elMax.shadowRoot?.querySelector('circle.active-track.complete')
+    assert.ok(completeCircle, 'complete circle should be rendered when value exceeds max')
+  })
+})

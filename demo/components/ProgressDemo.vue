@@ -7,6 +7,8 @@ import '../../src/components/button/ui-button.js'
 const repeat = ref(0)
 const maxRepeat = 5
 const animating = ref(false)
+const wavyProgressValue = ref(50)
+const hideStopIndicator = ref(false)
 
 const startProgress = () => {
   const progress = document.querySelector('ui-progress') as any
@@ -114,6 +116,74 @@ const nextProgress = () => {
     <h2 class="title-large">Circular Indeterminate Progress</h2>
     <div class="demo-row">
       <ui-circular-progress indeterminate="true" aria-label="Circular indeterminate progress"></ui-circular-progress>
+    </div>
+  </section>
+
+  <section class="demo-section">
+    <h2 class="title-large">Wavy Progress (Material 3 Expressive)</h2>
+    <div class="demo-row" style="margin-bottom: 16px; display: flex; gap: 24px; align-items: center;">
+      <label style="display: flex; align-items: center; gap: 8px;">
+        Value: <strong>{{ wavyProgressValue }}%</strong>
+        <input type="range" min="0" max="100" v-model.number="wavyProgressValue" />
+      </label>
+      <label style="display: flex; align-items: center; gap: 6px;">
+        <input type="checkbox" v-model="hideStopIndicator" />
+        Hide stop indicator
+      </label>
+    </div>
+    <div class="demo-row">
+      <p>Standard 4dp (10dp height) - flattens at 100%</p>
+      <ui-progress
+        wavy
+        :value="wavyProgressValue"
+        max="100"
+        :hide-stop-indicator="hideStopIndicator ? true : undefined"
+        aria-label="Wavy progress 4dp"
+      ></ui-progress>
+    </div>
+    <div class="demo-row">
+      <p>Thick 8dp (14dp height) - flattens at 100%</p>
+      <ui-progress
+        wavy
+        thick
+        :value="wavyProgressValue"
+        max="100"
+        :hide-stop-indicator="hideStopIndicator ? true : undefined"
+        aria-label="Wavy progress 8dp"
+      ></ui-progress>
+    </div>
+    <div class="demo-row">
+      <p>Indeterminate wavy (animated traveling segment on fixed track)</p>
+      <ui-progress wavy indeterminate="true" aria-label="Wavy indeterminate progress"></ui-progress>
+    </div>
+  </section>
+
+  <section class="demo-section">
+    <h2 class="title-large">Wavy Circular Progress (Material 3 Expressive)</h2>
+    <div class="demo-row" style="display: flex; gap: 32px; align-items: center;">
+      <div>
+        <p>Standard 4dp (48dp)</p>
+        <ui-circular-progress
+          wavy
+          :value="wavyProgressValue"
+          max="100"
+          aria-label="Wavy circular 4dp"
+        ></ui-circular-progress>
+      </div>
+      <div>
+        <p>Thick 8dp (52dp)</p>
+        <ui-circular-progress
+          wavy
+          thick
+          :value="wavyProgressValue"
+          max="100"
+          aria-label="Wavy circular 8dp"
+        ></ui-circular-progress>
+      </div>
+      <div>
+        <p>Indeterminate (rotating arc)</p>
+        <ui-circular-progress wavy indeterminate="true" aria-label="Wavy circular indeterminate"></ui-circular-progress>
+      </div>
     </div>
   </section>
 </template>
