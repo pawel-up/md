@@ -38,6 +38,6 @@ Error handling:
 
 Documentation:
 
-- Every public-facing API MUST be documented with examples whenever applicable. Also add the `use when` and `don't use when` sections whenever applicable.
+- Every public-facing API MUST be documented with examples whenever applicable. Also add the `use when` and `don't use when` sections whenever applicable. Not mandatory but helpful.
 - Document interfaces as well.
 - All internal interfaces and methods also need to be documented with the summary of what the logic does. Document any gotchas.
