@@ -11,8 +11,9 @@ const wavyProgressValue = ref(50)
 const hideStopIndicator = ref(false)
 
 const startProgress = () => {
-  const progress = document.querySelector('ui-progress') as any
-  const button = document.querySelector('ui-button') as any
+  const progress = document.querySelector('ui-progress')
+  const button = document.querySelector('ui-button')
+  if (!progress || !button) return
   repeat.value = 0
   progress.value = progress.min
   progress.style.setProperty('--ui-progress-scale-duration', '0')
@@ -23,8 +24,9 @@ const startProgress = () => {
 }
 
 const nextProgress = () => {
-  const progress = document.querySelector('ui-progress') as any
-  const button = document.querySelector('ui-button') as any
+  const progress = document.querySelector('ui-progress')
+  const button = document.querySelector('ui-button')
+  if (!progress || !button) return
   animating.value = true
   if (progress.value < progress.max) {
     progress.value += progress.step || 1

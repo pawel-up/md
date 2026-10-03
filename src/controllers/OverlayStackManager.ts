@@ -148,25 +148,27 @@ export class OverlayStackManager {
   }
 
   /**
-   * Attaches window-level capture listeners for Escape and pointerdown events if not already listening.
+   * Attaches window-level listeners for Escape and pointerdown events if not already listening.
    */
   private ensureListeners(): void {
     if (this.isListening || typeof window === 'undefined') {
       return
     }
-    window.addEventListener('keydown', this.handleKeyDown, { capture: true })
+    window.addEventListener('keydown', this.handleCaptureKeyDown, { capture: true })
+    window.addEventListener('keydown', this.handleBubbleKeyDown, { capture: false })
     window.addEventListener('pointerdown', this.handlePointerDown, { capture: true })
     this.isListening = true
   }
 
   /**
-   * Detaches window-level capture listeners when no overlays remain in the stack.
+   * Detaches window-level listeners when no overlays remain in the stack.
    */
   private teardownListeners(): void {
     if (!this.isListening || typeof window === 'undefined') {
       return
     }
-    window.removeEventListener('keydown', this.handleKeyDown, { capture: true })
+    window.removeEventListener('keydown', this.handleCaptureKeyDown, { capture: true })
+    window.removeEventListener('keydown', this.handleBubbleKeyDown, { capture: false })
     window.removeEventListener('pointerdown', this.handlePointerDown, { capture: true })
     this.isListening = false
   }
@@ -174,10 +176,12 @@ export class OverlayStackManager {
   /**
    * Handles global Escape key events during window capture phase.
    *
-   * Stops immediate propagation to prevent underlying overlays and native dialogs
-   * from closing simultaneously, and requests close on the top overlay if enabled.
+   * If the event originated inside the topmost overlay, lets the event proceed down to
+   * the overlay so its local keyboard handler can process it. If it originated outside,
+   * stops immediate propagation to protect lower overlays and native dialogs, and closes
+   * the topmost overlay.
    */
-  private handleKeyDown = async (e: KeyboardEvent): Promise<void> => {
+  private handleCaptureKeyDown = async (e: KeyboardEvent): Promise<void> => {
     if (e.key !== 'Escape') {
       return
     }
@@ -186,7 +190,44 @@ export class OverlayStackManager {
       return
     }
 
-    // Stop immediate propagation to prevent lower overlays or native browser dialogs from also closing
+    const path = e.composedPath()
+    const isInsideTop = path.some(
+      (node) =>
+        node instanceof Node &&
+        (currentTop.element === node ||
+          currentTop.element.contains(node) ||
+          currentTop.element.shadowRoot?.contains(node))
+    )
+    if (isInsideTop) {
+      // Allow event to reach the topmost overlay target so local keydown handlers can run
+      return
+    }
+
+    // Event originated outside the top overlay: stop immediate propagation to prevent lower overlays
+    // or native browser dialogs from also closing, then request dismissal on top overlay
+    e.preventDefault()
+    e.stopImmediatePropagation()
+
+    if (currentTop.controller.closeOnEscape) {
+      await currentTop.controller.requestClose('escape')
+    }
+  }
+
+  /**
+   * Handles Escape key events that bubbled to window without being intercepted or prevented.
+   *
+   * Ensures that overlays without local keydown handlers (like UiDropdownList and UiDatePickerInput)
+   * are still dismissed when focused elements inside them receive an unhandled Escape key.
+   */
+  private handleBubbleKeyDown = async (e: KeyboardEvent): Promise<void> => {
+    if (e.key !== 'Escape' || e.defaultPrevented) {
+      return
+    }
+    const currentTop = this.top
+    if (!currentTop) {
+      return
+    }
+
     e.preventDefault()
     e.stopImmediatePropagation()
 

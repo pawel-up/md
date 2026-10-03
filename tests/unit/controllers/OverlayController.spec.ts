@@ -169,6 +169,20 @@ test.group('OverlayController & OverlayStackManager', (group) => {
     assert.isTrue(el1.open, 'el1 should remain open because el2 blocked dismissal')
   })
 
+  test('dismisses top overlay when Escape key originates from an element inside the overlay', async ({ assert }) => {
+    const el = await fixture<TestOverlayElement>(html`<test-overlay-element open></test-overlay-element>`)
+    await el.updateComplete
+
+    const innerDiv = el.shadowRoot?.querySelector<HTMLElement>('.content')
+    innerDiv?.dispatchEvent(
+      new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, composed: true, cancelable: true })
+    )
+    await el.updateComplete
+
+    assert.isFalse(el.open, 'top overlay should close when Escape is pressed from an inner focused element')
+    assert.equal(manager.size, 0)
+  })
+
   test('dismisses top overlay on outside pointerdown', async ({ assert }) => {
     const el = await fixture<TestOverlayElement>(html`<test-overlay-element open></test-overlay-element>`)
     await el.updateComplete

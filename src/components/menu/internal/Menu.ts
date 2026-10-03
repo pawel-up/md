@@ -3,29 +3,74 @@ import { property, state } from 'lit/decorators.js'
 import { classMap } from 'lit/directives/class-map.js'
 import { randomId } from '../../../lib/random.js'
 import UiList from '../../list/internals/List.js'
-import UiMenuItem from './MenuItem.js'
-import UiSubMenu from './SubMenu.js'
+import type UiMenuItem from './MenuItem.js'
+import type UiSubMenu from './SubMenu.js'
 import { setDisabled } from '../../../lib/disabled.js'
 import UiListItem from '../../list/internals/ListItem.js'
 import { bound } from '../../../decorators/bound.js'
 import { positionOverlay } from '../../../lib/ElementPositioning.js'
 import * as ScrollHelper from '../../../lib/ScrollHelper.js'
-import MenuItem from './MenuItem.js'
+import type MenuItem from './MenuItem.js'
+import {
+  OverlayController,
+  isPromiseLike,
+  type OverlayHost,
+  type BeforeCloseCallback,
+  type OverlayDismissReason,
+} from '../../../controllers/OverlayController.js'
 
 /**
  * Material Design 3 Menu component with sub-menu support.
- * Uses Popover API and Anchor Positioning API for modern positioning.
+ * Uses Popover API and Anchor Positioning API for modern positioning,
+ * and integrates with OverlayController for unified overlay stack management and pre-close lifecycle hooks.
+ *
+ * ## Use when:
+ * - Displaying contextual action menus, dropdown lists, or hierarchical options.
+ * - Needing coordinated overlay stack behavior where Escape dismisses in LIFO order.
+ * - Needing cancelable close lifecycle hooks (`closing`, `close`, `beforeClose`).
+ *
+ * ## Don't use when:
+ * - Displaying static non-collapsible lists; use `ui-list` instead.
+ * - Building modal dialogs with complex forms; use `ui-dialog` instead.
  *
  * @fires select - Dispatched when a menu item is selected
- * @fires close - Dispatched when the menu is closed
  * @fires open - Dispatched when the menu is opened
+ * @fires closing - Cancelable event dispatched before the menu closes
+ * @fires close - Dispatched when the menu is closed
  */
-export default class Menu extends UiList {
+export default class Menu extends UiList implements OverlayHost {
   /**
-   * Whether the menu is currently open
+   * Whether the menu is currently open.
    * @attribute
    */
   @property({ type: Boolean, reflect: true }) accessor open = false
+
+  /**
+   * Whether pressing Escape dismisses the menu.
+   *
+   * @attribute
+   * @default true
+   */
+  @property({ type: Boolean }) accessor closeOnEscape = true
+
+  /**
+   * Whether clicking outside the menu dismisses it.
+   *
+   * @attribute
+   * @default true
+   */
+  @property({ type: Boolean }) accessor closeOnOutsideClick = true
+
+  /**
+   * Optional callback to verify whether the menu can be closed.
+   * Returning false (or a Promise resolving to false) prevents dismissal.
+   */
+  @property({ attribute: false }) accessor beforeClose: BeforeCloseCallback | undefined
+
+  /**
+   * Controller managing overlay stack registration, Escape key, and outside click dismissal.
+   */
+  protected overlayController = new OverlayController(this)
 
   /**
    * Optional anchor element to position relative to in case CSS Anchor Positioning is not supported.
@@ -63,7 +108,7 @@ export default class Menu extends UiList {
   constructor() {
     super()
     this.selector = 'ui-menu-item'
-    this.addEventListener('beforetoggle', this.handleBeforeToggle.bind(this))
+    this.addEventListener('beforetoggle', this.handleBeforeToggle)
   }
 
   override connectedCallback(): void {
@@ -76,7 +121,10 @@ export default class Menu extends UiList {
     if (!this.id) {
       this.id = randomId()
     }
-    this.ariaExpanded = 'false'
+    this.ariaExpanded = String(this.open)
+    if (this.open && !this.matches(':popover-open')) {
+      this.showPopover()
+    }
   }
 
   protected override updated(changedProperties: PropertyValues<this>): void {
@@ -85,20 +133,71 @@ export default class Menu extends UiList {
     if (changedProperties.has('disabled')) {
       setDisabled(this, this.disabled)
     }
+
+    if (changedProperties.has('open')) {
+      this.ariaExpanded = String(this.open)
+      this.tabIndex = this.open ? 0 : -1
+      if (this.open) {
+        if (this.isConnected && !this.matches(':popover-open')) {
+          this.showPopover()
+        }
+      } else {
+        this.performHidePopover()
+      }
+    }
+  }
+
+  /**
+   * Determines whether the given node is contained within this menu,
+   * its active submenu, its position anchor, or its parent component host (e.g. UiSelect).
+   *
+   * @param node The node to check.
+   * @returns True if the node belongs to this overlay tree.
+   */
+  containsOverlayNode(node: Node): boolean {
+    if (this.contains(node)) {
+      return true
+    }
+    const shadowRoot = this.shadowRoot
+    if (shadowRoot && shadowRoot.contains(node)) {
+      return true
+    }
+    if (this.activeSubMenu && this.activeSubMenu.containsOverlayNode(node)) {
+      return true
+    }
+    const anchor = this.positionAnchor || this.menuItemAnchor
+    if (anchor && (anchor === node || anchor.contains(node))) {
+      return true
+    }
+    const root = this.getRootNode()
+    if (root instanceof ShadowRoot && root.host.localName === 'ui-select') {
+      if (root.contains(node) || root.host.contains(node)) {
+        return true
+      }
+    }
+    return false
   }
 
   override togglePopover(force?: boolean): boolean {
-    if (!this.open && !this.disabled) {
-      this.positionMenu()
+    const shouldOpen = force !== undefined ? force : !this.open
+    if (shouldOpen) {
+      if (this.disabled) {
+        return false
+      }
+      this.show()
+      return true
+    } else {
+      const closed = this.hide()
+      if (isPromiseLike<boolean>(closed)) {
+        void closed.then((didClose) => {
+          if (!didClose) {
+            this.reopenNativePopover()
+          }
+        })
+        return false
+      }
+      return !closed
     }
-    this.open = !this.open
-    this.ariaExpanded = String(this.open)
-    this.tabIndex = this.open ? 0 : -1
-    const result = super.togglePopover(force)
-    if (this.open) {
-      this.focus()
-    }
-    return result
   }
 
   protected queryMenuItems(): UiMenuItem[] {
@@ -108,18 +207,52 @@ export default class Menu extends UiList {
     return Array.from(slot.assignedElements({ flatten: true })).filter((el) => el.matches(selector)) as UiMenuItem[]
   }
 
+  /**
+   * Shows the menu popover.
+   */
   show(): void {
     this.showPopover()
   }
 
-  hide(): void {
-    this.hidePopover()
+  /**
+   * Hides the menu.
+   *
+   * @param reason The dismiss reason triggering the closure. Defaults to 'programmatic'.
+   * @returns True if closed, false if prevented, or a Promise resolving to a boolean.
+   */
+  hide(reason: OverlayDismissReason = 'programmatic'): boolean | Promise<boolean> {
+    return this.hidePopover(reason)
   }
 
   /**
-   * Shows the menu
+   * Closes the menu. Alias for `hide()`.
+   *
+   * @param reason The dismiss reason triggering the closure. Defaults to 'programmatic'.
+   * @returns True if closed, false if prevented, or a Promise resolving to a boolean.
+   */
+  close(reason: OverlayDismissReason = 'programmatic'): boolean | Promise<boolean> {
+    return this.hide(reason)
+  }
+
+  /**
+   * Requests dismissal of the menu via OverlayController,
+   * firing cancelable closing events and evaluating beforeClose guards.
+   *
+   * @param reason The reason triggering the close request. Defaults to 'programmatic'.
+   * @param onPrevented Optional callback invoked if dismissal is prevented.
+   * @returns True if closed, false if prevented, or a Promise resolving to a boolean.
+   */
+  requestClose(reason: OverlayDismissReason = 'programmatic', onPrevented?: () => void): boolean | Promise<boolean> {
+    return this.overlayController.requestClose(reason, onPrevented)
+  }
+
+  /**
+   * Shows the menu popover and registers with the overlay stack.
    */
   override showPopover(): void {
+    if (this.open && this.matches(':popover-open')) {
+      return
+    }
     this.tabIndex = 0 // Make menu focusable
     this.ariaExpanded = 'true'
     this.positionMenu()
@@ -138,15 +271,53 @@ export default class Menu extends UiList {
   }
 
   /**
-   * Hides the menu
+   * Hides the menu popover.
+   * Coordinates dismissal with OverlayController, respecting beforeClose guards and cancelable events.
+   *
+   * @param reason Optional dismiss reason. Defaults to 'programmatic'.
+   * @returns True if closed, false if prevented, or a Promise resolving to a boolean.
    */
-  override hidePopover(): void {
+  override hidePopover(reason: OverlayDismissReason = 'programmatic'): boolean | Promise<boolean> {
+    if (!this.open && !this.matches(':popover-open')) {
+      return true
+    }
+
+    if (this.overlayController.closing) {
+      this.performHidePopover()
+      return true
+    }
+
+    const result = this.overlayController.requestClose(reason)
+    if (isPromiseLike<boolean>(result)) {
+      return result.then((closed) => {
+        if (closed) {
+          this.performHidePopover()
+        }
+        return closed
+      })
+    }
+
+    if (result) {
+      this.performHidePopover()
+    }
+    return result
+  }
+
+  /**
+   * Performs DOM cleanup and native popover hiding.
+   */
+  protected performHidePopover(): void {
     this.tabIndex = -1
     this.ariaExpanded = 'false'
-    super.hidePopover()
     this.open = false
     this.closeSubMenu()
-    this.dispatchEvent(new CustomEvent('close'))
+    if (this.matches(':popover-open')) {
+      try {
+        super.hidePopover()
+      } catch {
+        // Ignored if popover was already hidden
+      }
+    }
     ScrollHelper.removeListeners(this)
   }
 
@@ -266,11 +437,62 @@ export default class Menu extends UiList {
   /**
    * Handles beforetoggle event from popover
    */
+  /**
+   * Reopens native popover when closure was prevented by an event or beforeClose guard.
+   */
+  private reopenNativePopover(): void {
+    queueMicrotask(() => {
+      if (this.open && !this.matches(':popover-open') && this.isConnected) {
+        try {
+          super.showPopover()
+        } catch {
+          // Ignored if popover cannot be reopened in current DOM state
+        }
+      }
+    })
+  }
+
+  /**
+   * Handles beforetoggle event from native popover API.
+   * Reopens native popover if closure is prevented by closing event or beforeClose guard.
+   */
+  @bound
   protected handleBeforeToggle(e: Event): void {
     const toggleEvent = e as ToggleEvent
     if (toggleEvent.newState === 'closed') {
-      this.open = false
-      this.closeSubMenu()
+      if (this.overlayController.closing) {
+        this.performHidePopover()
+        return
+      }
+
+      if (this.open) {
+        if (!this.closeOnOutsideClick) {
+          this.reopenNativePopover()
+          return
+        }
+
+        const closed = this.overlayController.requestClose('outside-click', () => {
+          this.reopenNativePopover()
+        })
+
+        if (isPromiseLike<boolean>(closed)) {
+          void closed.then((didClose) => {
+            if (!didClose) {
+              this.reopenNativePopover()
+            } else {
+              this.performHidePopover()
+            }
+          })
+          return
+        }
+
+        if (!closed) {
+          this.reopenNativePopover()
+          return
+        }
+      }
+
+      this.performHidePopover()
     }
   }
 
@@ -283,7 +505,14 @@ export default class Menu extends UiList {
     switch (e.key) {
       case 'Escape':
         e.preventDefault()
-        this.hide()
+        e.stopImmediatePropagation()
+        if (this.activeSubMenu) {
+          void this.activeSubMenu.hide('escape')
+          break
+        }
+        if (this.closeOnEscape) {
+          void this.hide('escape')
+        }
         break
       case 'ArrowRight':
         e.preventDefault()
@@ -294,6 +523,7 @@ export default class Menu extends UiList {
         this.closeSubMenu()
         break
       default:
+        if (e.defaultPrevented) return
         // Let the parent UiList handle other keys
         super.handleKeydown(e)
     }
@@ -329,6 +559,9 @@ export default class Menu extends UiList {
    * Sets the active sub-menu
    */
   setActiveSubMenu(subMenu: UiSubMenu | null): void {
+    if (this.activeSubMenu && this.activeSubMenu !== subMenu) {
+      this.activeSubMenu.removeEventListener('select', this.handleSubMenuSelect as EventListener)
+    }
     this.activeSubMenu = subMenu
     subMenu?.addEventListener('select', this.handleSubMenuSelect as EventListener)
   }
@@ -339,8 +572,9 @@ export default class Menu extends UiList {
       this.clearSelection()
       item.selected = true
     }
+    const result = super.notifySelect(item, index)
     this.hide()
-    return super.notifySelect(item, index)
+    return result
   }
 
   /**

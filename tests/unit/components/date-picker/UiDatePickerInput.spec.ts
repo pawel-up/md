@@ -175,4 +175,37 @@ test.group('UiDatePickerInput - OverlayController Integration', (group) => {
     assert.isFalse(el.open)
     assert.equal(closeReason, 'programmatic')
   })
+
+  test('respects closeOnEscape=false', async ({ assert }) => {
+    const el = await fixture<UiDatePickerInput>(
+      html`<ui-date-picker-input open .closeOnEscape=${false}></ui-date-picker-input>`
+    )
+    await el.updateComplete
+
+    const input = el.shadowRoot?.querySelector('ui-outlined-text-field') as HTMLElement
+    input.dispatchEvent(
+      new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, composed: true, cancelable: true })
+    )
+    await el.updateComplete
+
+    assert.isTrue(el.open, 'should remain open when closeOnEscape is false')
+  })
+
+  test('stops Escape key propagation and protects underlying overlay', async ({ assert }) => {
+    const underlyingEl = await fixture<UiDatePickerInput>(html`<ui-date-picker-input open></ui-date-picker-input>`)
+    await underlyingEl.updateComplete
+
+    const el = await fixture<UiDatePickerInput>(html`<ui-date-picker-input open></ui-date-picker-input>`)
+    await el.updateComplete
+
+    const input = el.shadowRoot?.querySelector('ui-outlined-text-field') as HTMLElement
+    input.dispatchEvent(
+      new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, composed: true, cancelable: true })
+    )
+    await el.updateComplete
+    await underlyingEl.updateComplete
+
+    assert.isFalse(el.open, 'date picker should be closed on Escape')
+    assert.isTrue(underlyingEl.open, 'underlying overlay should remain open')
+  })
 })

@@ -290,8 +290,12 @@ export default class UiDialog extends UiElement implements TypedEvents<DialogEve
     if (e.defaultPrevented) {
       return
     }
-    if (e.key === 'Escape' && this.closeOnEscape) {
-      void this.overlayController.requestClose('escape')
+    if (e.key === 'Escape') {
+      e.preventDefault()
+      e.stopImmediatePropagation()
+      if (this.closeOnEscape) {
+        void this.overlayController.requestClose('escape')
+      }
     }
   }
 
@@ -389,6 +393,20 @@ export default class UiDialog extends UiElement implements TypedEvents<DialogEve
   }
 
   /**
+   * Handles the native `<dialog>` element cancel event (e.g. triggered by native Escape key).
+   *
+   * Prevents default browser closure so dismissal lifecycle is fully controlled
+   * by the OverlayController, respecting `closeOnEscape` and `beforeClose`.
+   */
+  @bound
+  protected handleDialogCancel(e: Event): void {
+    e.preventDefault()
+    if (this.closeOnEscape) {
+      void this.overlayController.requestClose('escape', () => this.reopenNativeDialog())
+    }
+  }
+
+  /**
    * Reopens the native `<dialog>` element when closing was prevented by a guard.
    */
   private reopenNativeDialog(): void {
@@ -451,6 +469,7 @@ export default class UiDialog extends UiElement implements TypedEvents<DialogEve
     return html`
       <dialog
         @close="${this.handleDialogClose}"
+        @cancel="${this.handleDialogCancel}"
         @pointerdown="${this.handleDialogPointerDown}"
         part="dialog"
         class="${dialogClass}"

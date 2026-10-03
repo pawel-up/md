@@ -293,8 +293,12 @@ export class UiDatePickerInput extends LitElement implements OverlayHost {
   private handleKeyDown(event: KeyboardEvent): void {
     switch (event.key) {
       case 'Escape':
-        if (this.open && this.closeOnEscape) {
-          void this.overlayController.requestClose('escape')
+        if (this.open) {
+          event.preventDefault()
+          event.stopImmediatePropagation()
+          if (this.closeOnEscape) {
+            void this.overlayController.requestClose('escape')
+          }
         }
         break
       case 'ArrowDown':

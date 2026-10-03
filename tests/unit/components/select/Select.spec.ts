@@ -1254,3 +1254,117 @@ test.group('Form-associated standards and dynamic toggles', () => {
     assert.isTrue(select.invalid)
   })
 })
+
+test.group('Overlay management and dismissal guards', () => {
+  test('dismisses select dropdown on Escape key', async ({ assert }) => {
+    const element = await basicFixture()
+    element.open = true
+    await element.updateComplete
+
+    window.dispatchEvent(
+      new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, composed: true, cancelable: true })
+    )
+    await element.updateComplete
+
+    assert.isFalse(element.open, 'select should close on Escape')
+  })
+
+  test('respects closeOnEscape=false', async ({ assert }) => {
+    const element = await basicFixture()
+    element.closeOnEscape = false
+    element.open = true
+    await element.updateComplete
+
+    window.dispatchEvent(
+      new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, composed: true, cancelable: true })
+    )
+    await element.updateComplete
+
+    assert.isTrue(element.open, 'select should remain open when closeOnEscape is false')
+  })
+
+  test('dismisses select dropdown on outside pointerdown', async ({ assert }) => {
+    const element = await basicFixture()
+    element.open = true
+    await element.updateComplete
+
+    document.body.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, composed: true }))
+    await element.updateComplete
+
+    assert.isFalse(element.open, 'select should close on outside pointerdown')
+  })
+
+  test('respects closeOnOutsideClick=false', async ({ assert }) => {
+    const element = await basicFixture()
+    element.closeOnOutsideClick = false
+    element.open = true
+    await element.updateComplete
+
+    document.body.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, composed: true }))
+    await element.updateComplete
+
+    assert.isTrue(element.open, 'select should remain open when closeOnOutsideClick is false')
+  })
+
+  test('prevents dismissal via beforeClose callback returning false', async ({ assert }) => {
+    const element = await basicFixture()
+    element.beforeClose = () => false
+    element.open = true
+    await element.updateComplete
+
+    void element.close()
+    await element.updateComplete
+
+    assert.isTrue(element.open, 'select should remain open when beforeClose returns false')
+  })
+
+  test('prevents dismissal via async beforeClose callback', async ({ assert }) => {
+    const element = await basicFixture()
+    element.beforeClose = async () => {
+      await Promise.resolve()
+      return false
+    }
+    element.open = true
+    await element.updateComplete
+
+    const closed = await element.close()
+    await element.updateComplete
+
+    assert.isFalse(closed)
+    assert.isTrue(element.open, 'select should remain open when async beforeClose resolves to false')
+  })
+
+  test('prevents dismissal via cancelable closing event', async ({ assert }) => {
+    const element = await basicFixture()
+    let closingFired = false
+    element.addEventListener('closing', (e: Event) => {
+      closingFired = true
+      e.preventDefault()
+    })
+    element.open = true
+    await element.updateComplete
+
+    void element.close()
+    await element.updateComplete
+
+    assert.isTrue(closingFired)
+    assert.isTrue(element.open, 'select should remain open when closing event is prevented')
+  })
+
+  test('does not steal focus back when closed via outside blur', async ({ assert }) => {
+    const element = await basicFixture()
+    element.open = true
+    await element.updateComplete
+
+    const externalInput = document.createElement('input')
+    document.body.appendChild(externalInput)
+    externalInput.focus()
+
+    element.dispatchEvent(new FocusEvent('blur', { relatedTarget: externalInput }))
+    await element.updateComplete
+
+    assert.isFalse(element.open)
+    assert.equal(document.activeElement, externalInput, 'focus should remain on external element')
+    externalInput.remove()
+  })
+})

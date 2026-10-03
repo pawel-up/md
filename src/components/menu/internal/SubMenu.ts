@@ -6,6 +6,7 @@ import UiListItem from '../../list/internals/ListItem.js'
 import { findElementInShadowRoots } from '../../../lib/Dom.js'
 import type MenuItem from './MenuItem.js'
 import { positionOverlay } from '../../../lib/ElementPositioning.js'
+import { type OverlayDismissReason } from '../../../controllers/OverlayController.js'
 
 /**
  * Material Design 3 Sub-Menu component.
@@ -77,39 +78,43 @@ export default class UiSubMenu extends Menu {
     this.updateAnchorPositioning()
 
     // Close any other open submenus in the parent menu
-    if (this.parentMenu) {
+    if (this.parentMenu && this.parentMenu.activeSubMenu !== this) {
       this.parentMenu.closeSubMenu()
       this.parentMenu.setActiveSubMenu(this)
     }
 
     // Show the popover
     this.showPopover()
-    this.open = true
     this.focus()
-
-    this.dispatchEvent(
-      new CustomEvent('open', {
-        bubbles: true,
-        composed: true,
-        detail: { submenu: this },
-      })
-    )
   }
 
   /**
-   * Hides the submenu
+   * Hides the submenu.
+   *
+   * @param reason The dismiss reason triggering the closure. Defaults to 'programmatic'.
+   * @returns True if closed, false if prevented, or a Promise resolving to a boolean.
    */
-  override hide(): void {
-    super.hide()
+  override hide(reason: OverlayDismissReason = 'programmatic'): boolean | Promise<boolean> {
+    return super.hide(reason)
+  }
 
-    // Clear parent menu's active submenu reference
+  /**
+   * Performs DOM cleanup, native popover hiding, parent submenu state clearing,
+   * and focus restoration to the anchor menu item.
+   */
+  protected override performHidePopover(): void {
+    const shouldRestoreFocus = this.matches(':focus-within') || this.contains(document.activeElement)
+    super.performHidePopover()
     const parentMenu = this.parentMenu
-    if (parentMenu) {
+    if (parentMenu && parentMenu.activeSubMenu === this) {
       parentMenu.setActiveSubMenu(null)
     }
     const anchor = this.menuItemAnchor
     if (anchor) {
       anchor.closeSubMenu()
+      if (shouldRestoreFocus) {
+        anchor.focus()
+      }
     }
   }
 
@@ -124,16 +129,15 @@ export default class UiSubMenu extends Menu {
    * Handles selection events - bubbles them up to parent menu
    */
   override notifySelect(item: UiListItem): boolean {
-    // First hide this submenu
-    this.hide()
+    // Call parent implementation to dispatch the select event and hide this submenu
+    const result = super.notifySelect(item)
 
-    // If we have a parent menu, hide it too and bubble the selection
+    // If we have a parent menu, hide it too
     if (this.parentMenu) {
-      this.parentMenu.hide()
+      void this.parentMenu.hide('programmatic')
     }
 
-    // Call parent implementation to dispatch the select event
-    return super.notifySelect(item)
+    return result
   }
 
   /**
@@ -145,21 +149,17 @@ export default class UiSubMenu extends Menu {
     switch (e.key) {
       case 'Escape':
         e.preventDefault()
-        this.hide()
-        // Return focus to parent menu item
-        if (this.menuItemAnchor) {
-          this.menuItemAnchor.focus()
+        e.stopImmediatePropagation()
+        if (this.closeOnEscape) {
+          void this.hide('escape')
         }
         break
       case 'ArrowLeft':
         e.preventDefault()
-        this.hide()
-        // Return focus to parent menu item
-        if (this.menuItemAnchor) {
-          this.menuItemAnchor.focus()
-        }
+        void this.hide('programmatic')
         break
       default:
+        if (e.defaultPrevented) return
         // Let the parent handle other keys
         super.handleKeydown(e)
     }

@@ -207,6 +207,14 @@ export class OverlayController implements ReactiveController {
       return false
     }
 
+    if (reason === 'escape' && !this.closeOnEscape) {
+      return false
+    }
+
+    if (reason === 'outside-click' && !this.closeOnOutsideClick) {
+      return false
+    }
+
     this.isClosing = true
 
     const hostWithCustom = this.host as {
@@ -261,6 +269,13 @@ export class OverlayController implements ReactiveController {
     }
   }
 
+  /**
+   * Whether this overlay is currently in the process of closing.
+   */
+  get closing(): boolean {
+    return this.isClosing
+  }
+
   private finalizeClose(customDetail: Record<string, unknown>): void {
     this.host.open = false
     this.unregisterFromStack()
@@ -268,7 +283,7 @@ export class OverlayController implements ReactiveController {
     this.host.dispatchEvent(
       new CustomEvent('close', {
         bubbles: false,
-        composed: true,
+        composed: false,
         detail: customDetail,
       })
     )

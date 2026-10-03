@@ -776,6 +776,23 @@ test.group('UiDialog - overlay controller & stack integration', (group) => {
     assert.isTrue(element.open, 'dialog remains open when closeOnEscape is false')
   })
 
+  test('does not close dialog when Escape originates from an inner element and closeOnEscape is false', async ({
+    assert,
+  }) => {
+    const element = await modalFixture()
+    element.closeOnEscape = false
+    element.open = true
+    await element.updateComplete
+
+    const content = element.shadowRoot?.querySelector('.content') as HTMLElement
+    content.dispatchEvent(
+      new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, composed: true, cancelable: true })
+    )
+    await element.updateComplete
+
+    assert.isTrue(element.open, 'dialog remains open when Escape originates inside and closeOnEscape is false')
+  })
+
   test('does not close on backdrop click by default (closeOnOutsideClick = false)', async ({ assert }) => {
     const element = await modalFixture()
     element.open = true

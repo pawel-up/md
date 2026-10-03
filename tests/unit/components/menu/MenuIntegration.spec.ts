@@ -420,3 +420,97 @@ test.group('Error handling', () => {
     assert.isFalse(submenu.open)
   })
 })
+
+test.group('Menu overlay lifecycle & dismissal', () => {
+  test('dismisses menu on Escape key', async ({ assert }) => {
+    const menu = await fixture<Menu>(html`
+      <ui-menu>
+        <ui-menu-item>Item 1</ui-menu-item>
+        <ui-menu-item>Item 2</ui-menu-item>
+      </ui-menu>
+    `)
+    menu.show()
+    await nextFrame()
+
+    window.dispatchEvent(
+      new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, composed: true, cancelable: true })
+    )
+    await nextFrame()
+
+    assert.isFalse(menu.open, 'menu should close on Escape')
+  })
+
+  test('respects closeOnEscape=false', async ({ assert }) => {
+    const menu = await fixture<Menu>(html`
+      <ui-menu .closeOnEscape=${false}>
+        <ui-menu-item>Item 1</ui-menu-item>
+      </ui-menu>
+    `)
+    menu.show()
+    await nextFrame()
+
+    window.dispatchEvent(
+      new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, composed: true, cancelable: true })
+    )
+    await nextFrame()
+
+    assert.isTrue(menu.open, 'menu should remain open when closeOnEscape is false')
+  })
+
+  test('prevents dismissal via beforeClose callback returning false', async ({ assert }) => {
+    const menu = await fixture<Menu>(html`
+      <ui-menu>
+        <ui-menu-item>Item 1</ui-menu-item>
+      </ui-menu>
+    `)
+    menu.beforeClose = () => false
+    menu.show()
+    await nextFrame()
+
+    void menu.hide('programmatic')
+    await nextFrame()
+
+    assert.isTrue(menu.open, 'menu should remain open when beforeClose returns false')
+  })
+
+  test('prevents dismissal via async beforeClose callback', async ({ assert }) => {
+    const menu = await fixture<Menu>(html`
+      <ui-menu>
+        <ui-menu-item>Item 1</ui-menu-item>
+      </ui-menu>
+    `)
+    menu.beforeClose = async () => {
+      await Promise.resolve()
+      return false
+    }
+    menu.show()
+    await nextFrame()
+
+    const closed = await menu.hide('programmatic')
+    await nextFrame()
+
+    assert.isFalse(closed)
+    assert.isTrue(menu.open, 'menu should remain open when async beforeClose returns false')
+  })
+
+  test('prevents dismissal via cancelable closing event', async ({ assert }) => {
+    const menu = await fixture<Menu>(html`
+      <ui-menu>
+        <ui-menu-item>Item 1</ui-menu-item>
+      </ui-menu>
+    `)
+    let closingFired = false
+    menu.addEventListener('closing', (e: Event) => {
+      closingFired = true
+      e.preventDefault()
+    })
+    menu.show()
+    await nextFrame()
+
+    void menu.hide('programmatic')
+    await nextFrame()
+
+    assert.isTrue(closingFired)
+    assert.isTrue(menu.open, 'menu should remain open when closing event is prevented')
+  })
+})

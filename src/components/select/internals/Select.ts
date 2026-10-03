@@ -7,6 +7,11 @@ import { UiElement } from '../../UiElement.js'
 import type UiOption from './Option.js'
 import type { UiMenuElement } from '../../menu/ui-menu.js'
 import { randomId } from '../../../lib/random.js'
+import {
+  isPromiseLike,
+  type BeforeCloseCallback,
+  type OverlayDismissReason,
+} from '../../../controllers/OverlayController.js'
 
 import '../../text-field/ui-outlined-text-field.js'
 import '../../menu/ui-menu.js'
@@ -21,9 +26,29 @@ export interface UiSelectChangeEvent {
 /**
  * Material Design 3 Select component that behaves like an outlined text field with dropdown.
  *
+ * ## Use when:
+ * - Allowing users to choose a single option from a list of predefined values.
+ * - Needing form integration with validation, floating labels, supporting text, and leading icons.
+ * - Needing dismiss guards (`beforeClose`) or cancelable dismissal events (`closing`).
+ *
+ * ## Don't use when:
+ * - Presenting long lists where multiple selections are needed; use multi-select list instead.
+ * - Navigating hierarchical application actions; use `ui-menu` instead.
+ * - The number of choices is small (e.g. 2-3 options); consider radio buttons or segmented buttons.
+ *
+ * @example
+ * ```html
+ * <ui-select label="Fruit" value="apple">
+ *   <ui-option value="apple">Apple</ui-option>
+ *   <ui-option value="banana">Banana</ui-option>
+ *   <ui-option value="orange">Orange</ui-option>
+ * </ui-select>
+ * ```
+ *
  * @fires change - Dispatched when the selection changes. The event is non-bubbling and non-cancelable.
  *                 The `event.detail` object contains the `value` and `item` properties.
  * @fires open - Dispatched when the dropdown opens
+ * @fires closing - Cancelable event dispatched before the dropdown closes
  * @fires close - Dispatched when the dropdown closes
  */
 export default class UiSelect extends UiElement {
@@ -181,6 +206,41 @@ export default class UiSelect extends UiElement {
    * ```
    */
   @property({ type: Boolean, reflect: true }) accessor open = false
+
+  /**
+   * Whether pressing Escape dismisses the select dropdown.
+   *
+   * @attribute
+   * @default true
+   * @example
+   * ```html
+   * <ui-select .closeOnEscape=${false}></ui-select>
+   * ```
+   */
+  @property({ type: Boolean }) accessor closeOnEscape = true
+
+  /**
+   * Whether clicking outside the select dismisses the dropdown.
+   *
+   * @attribute
+   * @default true
+   * @example
+   * ```html
+   * <ui-select .closeOnOutsideClick=${false}></ui-select>
+   * ```
+   */
+  @property({ type: Boolean }) accessor closeOnOutsideClick = true
+
+  /**
+   * Optional callback to verify whether the select dropdown can be closed.
+   * Returning false prevents dismissal.
+   *
+   * @example
+   * ```html
+   * <ui-select .beforeClose=${(reason) => confirm('Discard selection?')}></ui-select>
+   * ```
+   */
+  @property({ attribute: false }) accessor beforeClose: BeforeCloseCallback | undefined
 
   @state() accessor selectedOption: UiOption | null = null
 
@@ -508,7 +568,7 @@ export default class UiSelect extends UiElement {
     // Check if focus is moving to the menu or one of its children
     const relatedTarget = e.relatedTarget as HTMLElement
 
-    if (relatedTarget && this.contains(relatedTarget)) {
+    if (relatedTarget && (this.contains(relatedTarget) || this.shadowRoot?.contains(relatedTarget))) {
       // Focus is moving to the menu, keep it open
       return
     }
@@ -527,6 +587,41 @@ export default class UiSelect extends UiElement {
       return
     }
     this.open = true
+  }
+
+  /**
+   * Opens the select dropdown menu.
+   */
+  show(): void {
+    this.open = true
+  }
+
+  /**
+   * Requests dismissal of the select dropdown menu.
+   *
+   * @param reason The dismiss reason triggering closure. Defaults to 'programmatic'.
+   * @returns True if closed, false if prevented, or a Promise resolving to a boolean.
+   */
+  close(reason: OverlayDismissReason = 'programmatic'): boolean | Promise<boolean> {
+    if (!this.open) return true
+    const menu = this.menu
+    if (!menu) {
+      this.open = false
+      return true
+    }
+    const result = menu.hide(reason)
+    if (isPromiseLike<boolean>(result)) {
+      return result.then((closed) => {
+        if (closed) {
+          this.open = false
+        }
+        return closed
+      })
+    }
+    if (result) {
+      this.open = false
+    }
+    return result
   }
 
   protected async handleOpenChange(): Promise<void> {
@@ -551,10 +646,29 @@ export default class UiSelect extends UiElement {
       }
       this.dispatchEvent(new CustomEvent('open'))
     } else {
-      menu.hidePopover()
-      this.dispatchEvent(new CustomEvent('close'))
-      // Return focus to the select element when menu closes
-      this.focus()
+      const shouldRestoreFocus =
+        this.matches(':focus-within') ||
+        (menu && (menu.matches(':focus-within') || menu.contains(document.activeElement)))
+      const closed = menu.hidePopover()
+      const finishClose = (didClose: boolean): void => {
+        if (!didClose) {
+          // Revert open state because closure was prevented
+          this.open = true
+          this.setAttribute('aria-expanded', 'true')
+          return
+        }
+        this.dispatchEvent(new CustomEvent('close'))
+        // Return focus to the select element only if focus was within the component or menu
+        if (shouldRestoreFocus) {
+          this.focus()
+        }
+      }
+
+      if (isPromiseLike<boolean>(closed)) {
+        void closed.then(finishClose)
+      } else {
+        finishClose(closed)
+      }
     }
   }
 
@@ -784,6 +898,19 @@ export default class UiSelect extends UiElement {
     // Focus will be returned to select element by handleOpenChange when open=false
   }
 
+  protected handleMenuClosing(e: CustomEvent): void {
+    const cancelableEvent = new CustomEvent('closing', {
+      bubbles: false,
+      cancelable: true,
+      composed: false,
+      detail: e.detail,
+    })
+    const allowed = this.dispatchEvent(cancelableEvent)
+    if (!allowed) {
+      e.preventDefault()
+    }
+  }
+
   protected handleMenuClose(): void {
     this.open = false
     // Focus will be returned to select element by handleOpenChange when open=false
@@ -841,7 +968,11 @@ export default class UiSelect extends UiElement {
       .positionAnchor=${this.shadowRoot?.querySelector<HTMLElement>('.input') || undefined}
       popover="auto"
       selector="ui-option"
+      .closeOnEscape=${this.closeOnEscape}
+      .closeOnOutsideClick=${this.closeOnOutsideClick}
+      .beforeClose=${this.beforeClose}
       @select="${this.handleSelect}"
+      @closing="${this.handleMenuClosing}"
       @close="${this.handleMenuClose}"
       @toggle="${this.handleMenuToggle}"
     >

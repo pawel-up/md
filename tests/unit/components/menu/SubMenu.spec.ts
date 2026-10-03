@@ -33,16 +33,18 @@ async function withAnchorFixture(): Promise<HTMLElement> {
 
 async function withParentMenuFixture(): Promise<HTMLElement> {
   return fixture(html`
-    <ui-menu id="parent-menu">
-      <ui-menu-item id="trigger-item" submenu="child-submenu">
-        <span>Parent Item</span>
-      </ui-menu-item>
+    <div>
+      <ui-menu id="parent-menu">
+        <ui-menu-item id="trigger-item" submenu="child-submenu">
+          <span>Parent Item</span>
+        </ui-menu-item>
 
-      <ui-sub-menu id="child-submenu" anchor="trigger-item">
-        <ui-menu-item>Child Item 1</ui-menu-item>
-        <ui-menu-item>Child Item 2</ui-menu-item>
-      </ui-sub-menu>
-    </ui-menu>
+        <ui-sub-menu id="child-submenu" anchor="trigger-item">
+          <ui-menu-item>Child Item 1</ui-menu-item>
+          <ui-menu-item>Child Item 2</ui-menu-item>
+        </ui-sub-menu>
+      </ui-menu>
+    </div>
   `)
 }
 
@@ -441,5 +443,188 @@ test.group('Fallback positioning', () => {
       configurable: true,
       writable: true,
     })
+  })
+})
+
+test.group('SubMenu overlay lifecycle & dismissal', () => {
+  test('dismisses submenu on Escape and returns focus to anchor menu item', async ({ assert }) => {
+    const container = await withParentMenuFixture()
+    const parentMenu = container.querySelector('#parent-menu') as Menu
+    const triggerItem = container.querySelector('#trigger-item') as UiMenuItem
+    const submenu = container.querySelector('#child-submenu') as UiSubMenu
+    await nextFrame()
+
+    parentMenu.show()
+    await nextFrame()
+    triggerItem.openSubMenu()
+    await nextFrame()
+
+    assert.isTrue(submenu.open, 'submenu should be open')
+    assert.isTrue(parentMenu.open, 'parent menu should be open')
+
+    submenu.dispatchEvent(
+      new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, composed: true, cancelable: true })
+    )
+    await nextFrame()
+
+    assert.isFalse(submenu.open, 'submenu should be closed on Escape')
+    assert.isTrue(parentMenu.open, 'parent menu should remain open')
+  })
+
+  test('respects closeOnEscape=false on submenu', async ({ assert }) => {
+    const container = await withParentMenuFixture()
+    const parentMenu = container.querySelector('#parent-menu') as Menu
+    const triggerItem = container.querySelector('#trigger-item') as UiMenuItem
+    const submenu = container.querySelector('#child-submenu') as UiSubMenu
+    await nextFrame()
+
+    submenu.closeOnEscape = false
+    parentMenu.show()
+    await nextFrame()
+    triggerItem.openSubMenu()
+    await nextFrame()
+
+    assert.isTrue(submenu.open)
+
+    submenu.dispatchEvent(
+      new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, composed: true, cancelable: true })
+    )
+    await nextFrame()
+
+    assert.isTrue(submenu.open, 'submenu should remain open when closeOnEscape is false')
+  })
+
+  test('prevents dismissal via beforeClose callback', async ({ assert }) => {
+    const container = await withParentMenuFixture()
+    const parentMenu = container.querySelector('#parent-menu') as Menu
+    const triggerItem = container.querySelector('#trigger-item') as UiMenuItem
+    const submenu = container.querySelector('#child-submenu') as UiSubMenu
+    await nextFrame()
+
+    submenu.beforeClose = () => false
+    parentMenu.show()
+    await nextFrame()
+    triggerItem.openSubMenu()
+    await nextFrame()
+
+    void submenu.hide('programmatic')
+    await nextFrame()
+
+    assert.isTrue(submenu.open, 'submenu should remain open when beforeClose returns false')
+  })
+
+  test('prevents dismissal via async beforeClose callback', async ({ assert }) => {
+    const container = await withParentMenuFixture()
+    const parentMenu = container.querySelector('#parent-menu') as Menu
+    const triggerItem = container.querySelector('#trigger-item') as UiMenuItem
+    const submenu = container.querySelector('#child-submenu') as UiSubMenu
+    await nextFrame()
+
+    submenu.beforeClose = async () => {
+      await Promise.resolve()
+      return false
+    }
+    parentMenu.show()
+    await nextFrame()
+    triggerItem.openSubMenu()
+    await nextFrame()
+
+    const closed = await submenu.hide('programmatic')
+    await nextFrame()
+
+    assert.isFalse(closed)
+    assert.isTrue(submenu.open, 'submenu should remain open when async beforeClose resolves to false')
+  })
+
+  test('prevents dismissal via cancelable closing event', async ({ assert }) => {
+    const container = await withParentMenuFixture()
+    const parentMenu = container.querySelector('#parent-menu') as Menu
+    const triggerItem = container.querySelector('#trigger-item') as UiMenuItem
+    const submenu = container.querySelector('#child-submenu') as UiSubMenu
+    await nextFrame()
+
+    let closingFired = false
+    submenu.addEventListener('closing', (e: Event) => {
+      closingFired = true
+      e.preventDefault()
+    })
+    parentMenu.show()
+    await nextFrame()
+    triggerItem.openSubMenu()
+    await nextFrame()
+
+    void submenu.hide('programmatic')
+    await nextFrame()
+
+    assert.isTrue(closingFired)
+    assert.isTrue(submenu.open, 'submenu should remain open when closing event is prevented')
+  })
+
+  test('dismisses submenu on Escape when Escape originates from anchor menu item in parent menu', async ({
+    assert,
+  }) => {
+    const container = await withParentMenuFixture()
+    const parentMenu = container.querySelector('#parent-menu') as Menu
+    const triggerItem = container.querySelector('#trigger-item') as UiMenuItem
+    const submenu = container.querySelector('#child-submenu') as UiSubMenu
+    await nextFrame()
+
+    parentMenu.show()
+    await nextFrame()
+    triggerItem.openSubMenu()
+    await nextFrame()
+
+    assert.isTrue(submenu.open, 'submenu should be open')
+    assert.isTrue(parentMenu.open, 'parent menu should be open')
+
+    triggerItem.dispatchEvent(
+      new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, composed: true, cancelable: true })
+    )
+    await nextFrame()
+
+    assert.isFalse(submenu.open, 'submenu should close when Escape is pressed from trigger item')
+    assert.isTrue(parentMenu.open, 'parent menu should remain open')
+  })
+
+  test('calling show() when submenu is already active in parent menu does not close self', async ({ assert }) => {
+    const container = await withParentMenuFixture()
+    const parentMenu = container.querySelector('#parent-menu') as Menu
+    const triggerItem = container.querySelector('#trigger-item') as UiMenuItem
+    const submenu = container.querySelector('#child-submenu') as UiSubMenu
+    await nextFrame()
+
+    parentMenu.show()
+    await nextFrame()
+    triggerItem.openSubMenu()
+    await nextFrame()
+
+    assert.isTrue(submenu.open, 'submenu should be open')
+    const closeSpy = sinon.spy(submenu, 'hide')
+
+    submenu.show()
+    await nextFrame()
+
+    assert.isTrue(submenu.open, 'submenu should remain open')
+    assert.isFalse(closeSpy.called, 'hide should not be called when re-showing active submenu')
+  })
+
+  test('setActiveSubMenu cleans up select event listener from previous submenu', async ({ assert }) => {
+    const parentMenu = await fixture<Menu>(html`<ui-menu></ui-menu>`)
+    const sub1 = await fixture<UiSubMenu>(html`<ui-sub-menu></ui-sub-menu>`)
+    const sub2 = await fixture<UiSubMenu>(html`<ui-sub-menu></ui-sub-menu>`)
+
+    const handlerSpy = sinon.spy(parentMenu, 'handleSubMenuSelect')
+
+    parentMenu.setActiveSubMenu(sub1)
+    // Switch to sub2
+    parentMenu.setActiveSubMenu(sub2)
+
+    // Event on sub1 should not trigger parent listener
+    sub1.dispatchEvent(new CustomEvent('select', { detail: { index: 0 } }))
+    assert.equal(handlerSpy.callCount, 0, 'event from replaced submenu should not trigger handler')
+
+    // Event on sub2 should trigger parent listener
+    sub2.dispatchEvent(new CustomEvent('select', { detail: { index: 0 } }))
+    assert.equal(handlerSpy.callCount, 1, 'event from current submenu should trigger handler')
   })
 })
