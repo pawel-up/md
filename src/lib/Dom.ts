@@ -80,3 +80,53 @@ export function adoptStyles(...styles: CSSResultOrNative[]): void {
   }
   document.adoptedStyleSheets = [...document.adoptedStyleSheets, ...sheets]
 }
+
+/**
+ * Coordinate bounds representing a rectangular region in viewport pixels.
+ */
+export interface RectBounds {
+  left: number
+  top: number
+  right: number
+  bottom: number
+}
+
+/**
+ * Checks whether the given (x, y) coordinates fall within rectangular bounds.
+ *
+ * @param x The horizontal coordinate (e.g. clientX).
+ * @param y The vertical coordinate (e.g. clientY).
+ * @param rect The bounding box coordinates.
+ * @returns True if the point is within the rectangle, false otherwise.
+ */
+export function isPointInsideRect(x: number, y: number, rect: RectBounds): boolean {
+  return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom
+}
+
+/**
+ * Checks whether the given (x, y) coordinates fall outside rectangular bounds.
+ *
+ * @param x The horizontal coordinate (e.g. clientX).
+ * @param y The vertical coordinate (e.g. clientY).
+ * @param rect The bounding box coordinates.
+ * @returns True if the point is outside the rectangle, false otherwise.
+ */
+export function isPointOutsideRect(x: number, y: number, rect: RectBounds): boolean {
+  return !isPointInsideRect(x, y, rect)
+}
+
+/**
+ * Returns the effective visual bounding box of an element, falling back to
+ * offsetWidth/offsetHeight if getBoundingClientRect reports 0 dimension.
+ *
+ * @param el The element to measure.
+ * @returns RectBounds covering the element.
+ */
+export function getElementBounds(el: HTMLElement): RectBounds {
+  const rect = el.getBoundingClientRect()
+  const left = rect.left
+  const top = rect.top
+  const right = rect.width > 0 ? rect.right : left + el.offsetWidth
+  const bottom = rect.height > 0 ? rect.bottom : top + el.offsetHeight
+  return { left, top, right, bottom }
+}

@@ -3,11 +3,19 @@ import { property, query, queryAssignedElements, queryAssignedNodes, state } fro
 import { type ClassInfo, classMap } from 'lit/directives/class-map.js'
 import { UiElement } from '../../UiElement.js'
 import { isDisabled, setDisabled } from '../../../lib/disabled.js'
+import { isPointOutsideRect, getElementBounds } from '../../../lib/Dom.js'
 import type UiButton from '../../button/internals/button.js'
 import type { TypedEvents } from '../../../types/types.js'
 import type { ButtonType } from '../../button/internals/button.js'
 import '../../button/ui-button.js'
 import { bound } from '../../../decorators/bound.js'
+
+import {
+  OverlayController,
+  type OverlayDismissReason,
+  type OverlayHost,
+  type BeforeCloseCallback,
+} from '../../../controllers/index.js'
 
 export interface UiDialogClosingReason {
   /**
@@ -20,6 +28,10 @@ export interface UiDialogClosingReason {
    * This is the value expected from the dialog.
    */
   value?: unknown
+  /**
+   * The reason for closing the dialog.
+   */
+  reason?: OverlayDismissReason
 }
 
 interface DialogEventMap {
@@ -77,7 +89,7 @@ interface DialogEventMap {
  *  dispatched before the dialog closes. If prevented, the dialog will not close.
  * @fires close - A non-bubbling, non-cancellable event with the `UiDialogClosingReason` as the detail.
  */
-export default class UiDialog extends UiElement implements TypedEvents<DialogEventMap> {
+export default class UiDialog extends UiElement implements TypedEvents<DialogEventMap>, OverlayHost {
   get disabled(): boolean {
     return isDisabled(this)
   }
@@ -115,6 +127,31 @@ export default class UiDialog extends UiElement implements TypedEvents<DialogEve
    * @attribute
    */
   @property({ type: Boolean }) accessor open = false
+
+  /**
+   * Whether pressing the Escape key dismisses the dialog.
+   *
+   * @attribute
+   * @default true
+   */
+  @property({ type: Boolean }) accessor closeOnEscape = true
+
+  /**
+   * Whether clicking outside the dialog dismisses it.
+   * In modal mode, clicking on the backdrop is considered an outside click.
+   *
+   * @attribute
+   * @default false
+   */
+  @property({ type: Boolean }) accessor closeOnOutsideClick = false
+
+  /**
+   * Optional callback to verify whether the dialog can be closed.
+   * Returning `false` prevents dismissal.
+   */
+  @property({ attribute: false }) accessor beforeClose: BeforeCloseCallback | undefined
+
+  protected overlayController = new OverlayController(this)
 
   /**
    * Imperative access to create a dismiss button.
@@ -226,7 +263,7 @@ export default class UiDialog extends UiElement implements TypedEvents<DialogEve
   @bound
   protected handleFormSubmit(): void {
     if (this.submitClose) {
-      this.handleInteraction('confirm')
+      void this.handleInteraction('confirm')
     }
   }
 
@@ -245,7 +282,7 @@ export default class UiDialog extends UiElement implements TypedEvents<DialogEve
       return
     }
     const { value = '' } = button
-    this.handleInteraction(value as 'dismiss' | 'confirm')
+    void this.handleInteraction(value as 'dismiss' | 'confirm')
   }
 
   override handleKeyDown(e: KeyboardEvent): void {
@@ -253,8 +290,8 @@ export default class UiDialog extends UiElement implements TypedEvents<DialogEve
     if (e.defaultPrevented) {
       return
     }
-    if (e.key === 'Escape') {
-      this.handleInteraction('dismiss')
+    if (e.key === 'Escape' && this.closeOnEscape) {
+      void this.overlayController.requestClose('escape')
     }
   }
 
@@ -290,91 +327,134 @@ export default class UiDialog extends UiElement implements TypedEvents<DialogEve
     this.hasButton = !!buttons && !!buttons.length
   }
 
-  protected handleInteraction(value: 'dismiss' | 'confirm'): void {
-    if (!['dismiss', 'confirm'].includes(value)) {
-      return
-    }
-
+  /**
+   * Generates the event detail for the `closing` and `close` events.
+   *
+   * @param reason The reason triggering the close.
+   * @returns The event detail object.
+   */
+  getCloseEventDetail(reason: OverlayDismissReason): UiDialogClosingReason {
     const detail: UiDialogClosingReason = {
-      cancelled: value === 'dismiss',
+      cancelled: reason !== 'confirm',
+      reason,
     }
     if (this.dialogValue !== undefined) {
       detail.value = this.dialogValue
     }
-
-    // Dispatch cancelable closing event first
-    const closingEvent = new CustomEvent<UiDialogClosingReason>('closing', {
-      cancelable: true,
-      composed: false,
-      bubbles: false,
-      detail,
-    })
-    const canClose = this.dispatchEvent(closingEvent)
-
-    // Only proceed with closing if the event wasn't canceled
-    if (!canClose) {
-      return
-    }
-
-    this.open = false
-    this.dispatchEvent(
-      new CustomEvent<UiDialogClosingReason>('close', {
-        composed: true,
-        detail,
-      })
-    )
+    return detail
   }
 
+  /**
+   * Executes the dialog closing lifecycle through the overlay controller:
+   * dispatches cancelable `closing` event, invokes `beforeClose` callback if configured,
+   * sets `open = false`, unregisters from stack, and dispatches the `close` event.
+   *
+   * @param reason The dismiss reason triggering the closure.
+   * @param onPrevented Optional callback invoked if closure is prevented by event or guard.
+   * @returns True if closed, false if prevented, or a Promise resolving to a boolean.
+   */
+  protected performClose(reason: OverlayDismissReason, onPrevented?: () => void): boolean | Promise<boolean> {
+    return this.overlayController.requestClose(reason, onPrevented)
+  }
+
+  /**
+   * Handles user interaction buttons or requests to dismiss or confirm.
+   *
+   * @param value 'dismiss' or 'confirm'
+   * @param reason Optional specific dismiss reason
+   * @returns True if dialog was closed, false if prevented, or a Promise resolving to a boolean.
+   */
+  protected handleInteraction(value: 'dismiss' | 'confirm', reason?: OverlayDismissReason): boolean | Promise<boolean> {
+    if (!['dismiss', 'confirm'].includes(value)) {
+      return false
+    }
+
+    const dismissReason: OverlayDismissReason = reason ?? (value === 'dismiss' ? 'close-button' : 'confirm')
+    return this.performClose(dismissReason)
+  }
+
+  /**
+   * Handles the native `<dialog>` element close event.
+   *
+   * If the dialog was closed natively while `this.open` is still true,
+   * runs the closing lifecycle. If prevented by an event listener
+   * or `beforeClose` guard, restores native dialog visibility.
+   */
   protected handleDialogClose(): void {
     if (!this.open) {
       return
     }
 
-    const detail: UiDialogClosingReason = {
-      cancelled: true,
-    }
-    if (this.dialogValue !== undefined) {
-      detail.value = this.dialogValue
-    }
+    void this.performClose('close-button', () => this.reopenNativeDialog())
+  }
 
-    // Dispatch cancelable closing event first
-    const closingEvent = new CustomEvent<UiDialogClosingReason>('closing', {
-      cancelable: true,
-      composed: false,
-      bubbles: false,
-      detail,
-    })
-    const canClose = this.dispatchEvent(closingEvent)
-
-    // Only proceed with closing if the event wasn't canceled
-    if (!canClose) {
-      // If closing was prevented, reopen the dialog
+  /**
+   * Reopens the native `<dialog>` element when closing was prevented by a guard.
+   */
+  private reopenNativeDialog(): void {
+    if (this.modal) {
       this.dialog.showModal()
+    } else {
+      this.dialog.show()
+    }
+  }
+
+  /**
+   * Handles pointerdown events on the `<dialog>` element.
+   *
+   * For modal dialogs, clicks on the `::backdrop` pseudo-element target the
+   * `<dialog>` element itself. This method checks if the pointer coordinates
+   * fall outside the dialog bounding box, treating them as an outside click.
+   *
+   * @param e The PointerEvent to inspect.
+   */
+  @bound
+  protected handleDialogPointerDown(e: PointerEvent): void {
+    if (!this.shouldHandleOutsideClick) {
       return
     }
 
-    this.open = false
-    this.dispatchEvent(
-      new CustomEvent<UiDialogClosingReason>('close', {
-        composed: true,
-        detail,
-      })
-    )
+    if (this.isChildNodeClicked(e)) {
+      return
+    }
+
+    if (this.isBackdropClick(e)) {
+      void this.overlayController.requestClose('outside-click')
+    }
+  }
+
+  private get shouldHandleOutsideClick(): boolean {
+    return Boolean(this.closeOnOutsideClick && this.dialog && this.overlayController.isTop)
+  }
+
+  private isChildNodeClicked(e: PointerEvent): boolean {
+    const path = e.composedPath()
+    return path.some((node) => node instanceof Element && node !== this.dialog && this.dialog.contains(node))
+  }
+
+  private isBackdropClick(e: PointerEvent): boolean {
+    const bounds = getElementBounds(this.dialog)
+    return isPointOutsideRect(e.clientX, e.clientY, bounds)
   }
 
   protected handleDismiss(): void {
-    this.handleInteraction('dismiss')
+    void this.handleInteraction('dismiss')
   }
 
   protected handleConfirm(): void {
-    this.handleInteraction('confirm')
+    void this.handleInteraction('confirm')
   }
 
   override render(): TemplateResult {
     const { modal } = this
     const dialogClass = modal ? 'modal' : 'non-modal'
     return html`
-      <dialog @close="${this.handleDialogClose}" part="dialog" class="${dialogClass}">
+      <dialog
+        @close="${this.handleDialogClose}"
+        @pointerdown="${this.handleDialogPointerDown}"
+        part="dialog"
+        class="${dialogClass}"
+      >
         <div class="container">${this.renderContent()}</div>
       </dialog>
     `

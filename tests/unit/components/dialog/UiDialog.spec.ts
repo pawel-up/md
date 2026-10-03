@@ -1,11 +1,14 @@
-import { test, fixture, html } from '@pawel-up/lupa/testing'
+import { test, fixture, html, waitUntil } from '@pawel-up/lupa/testing'
 import sinon from 'sinon'
 import UiDialog, { UiDialogClosingReason } from '../../../../src/components/dialog/internals/Dialog.js'
 import UiButton from '../../../../src/components/button/internals/button.js'
+import type UiDropdownList from '../../../../src/components/dropdown-list/internals/UiDropdownList.js'
+import { OverlayStackManager } from '../../../../src/controllers/OverlayStackManager.js'
 
 import '../../../../src/components/dialog/ui-dialog.js'
 import '../../../../src/components/icons/ui-icon.js'
 import '../../../../src/components/button/ui-button.js'
+import '../../../../src/components/dropdown-list/ui-dropdown-list.js'
 
 async function basicFixture(): Promise<UiDialog> {
   return fixture(html` <ui-dialog> Content </ui-dialog>`)
@@ -748,5 +751,137 @@ test.group('UiDialog - accessibility', () => {
     // Dialog should remain open and accessible
     assert.isTrue(element.open, 'dialog remains open')
     await assert.isAccessible(element)
+  })
+})
+
+test.group('UiDialog - overlay controller & stack integration', (group) => {
+  group.each.teardown(() => {
+    OverlayStackManager.getInstance().reset()
+  })
+
+  test('closes dialog on Escape when closeOnEscape is true', async ({ assert }) => {
+    const element = await modalFixture()
+    element.open = true
+    await element.updateComplete
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }))
+    assert.isFalse(element.open, 'dialog is closed on Escape')
+  })
+
+  test('does not close dialog on Escape when closeOnEscape is false', async ({ assert }) => {
+    const element = await modalFixture()
+    element.closeOnEscape = false
+    element.open = true
+    await element.updateComplete
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }))
+    assert.isTrue(element.open, 'dialog remains open when closeOnEscape is false')
+  })
+
+  test('does not close on backdrop click by default (closeOnOutsideClick = false)', async ({ assert }) => {
+    const element = await modalFixture()
+    element.open = true
+    await element.updateComplete
+    const rect = element.dialog.getBoundingClientRect()
+    element.dialog.dispatchEvent(
+      new PointerEvent('pointerdown', {
+        clientX: rect.left - 50,
+        clientY: rect.top - 50,
+        bubbles: true,
+      })
+    )
+    assert.isTrue(element.open, 'dialog remains open on backdrop click by default')
+  })
+
+  test('closes on backdrop click when closeOnOutsideClick is true', async ({ assert }) => {
+    const element = await modalFixture()
+    element.closeOnOutsideClick = true
+    element.open = true
+    await element.updateComplete
+    const rect = element.dialog.getBoundingClientRect()
+    element.dialog.dispatchEvent(
+      new PointerEvent('pointerdown', {
+        clientX: rect.left - 50,
+        clientY: rect.top - 50,
+        bubbles: true,
+      })
+    )
+    assert.isFalse(element.open, 'dialog closes on backdrop click when closeOnOutsideClick is true')
+  })
+
+  test('does not close when clicking inside dialog content', async ({ assert }) => {
+    const element = await modalFixture()
+    element.closeOnOutsideClick = true
+    element.open = true
+    await element.updateComplete
+    const rect = element.dialog.getBoundingClientRect()
+    element.dialog.dispatchEvent(
+      new PointerEvent('pointerdown', {
+        clientX: rect.left + 20,
+        clientY: rect.top + 20,
+        bubbles: true,
+      })
+    )
+    assert.isTrue(element.open, 'dialog remains open when clicking inside')
+  })
+
+  test('prevents closing when beforeClose returns false', async ({ assert }) => {
+    const element = await modalFixture()
+    element.beforeClose = () => false
+    element.open = true
+    await element.updateComplete
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }))
+    assert.isTrue(element.open, 'dialog remains open when beforeClose returns false')
+  })
+
+  test('prevents closing when beforeClose resolves to false', async ({ assert }) => {
+    const element = await modalFixture()
+    let called = false
+    element.beforeClose = async () => {
+      await Promise.resolve()
+      called = true
+      return false
+    }
+    element.open = true
+    await element.updateComplete
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }))
+    await waitUntil(() => called)
+    await element.updateComplete
+    assert.isTrue(element.open, 'dialog remains open when async beforeClose resolves to false')
+  })
+
+  test('allows closing when beforeClose resolves to true', async ({ assert }) => {
+    const element = await modalFixture()
+    element.beforeClose = async () => true
+    element.open = true
+    await element.updateComplete
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }))
+    await waitUntil(() => !element.open)
+    assert.isFalse(element.open, 'dialog closes when async beforeClose resolves to true')
+  })
+
+  test('coordinates stacked overlays: dismisses child dropdown before dialog on Escape', async ({ assert }) => {
+    const element: UiDialog = await fixture(html`
+      <ui-dialog modal open>
+        <ui-dropdown-list>
+          <button slot="trigger">Trigger</button>
+          <div slot="dropdown">Dropdown Content</div>
+        </ui-dropdown-list>
+      </ui-dialog>
+    `)
+    await element.updateComplete
+    const dropdown = element.querySelector('ui-dropdown-list') as UiDropdownList
+    dropdown.open = true
+    await dropdown.updateComplete
+
+    assert.isTrue(element.open, 'dialog is open')
+    assert.isTrue(dropdown.open, 'dropdown is open')
+
+    // Press Escape: only the dropdown should close
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }))
+    assert.isFalse(dropdown.open, 'dropdown closes on first Escape')
+    assert.isTrue(element.open, 'dialog remains open on first Escape')
+
+    // Press Escape again: now the dialog should close
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }))
+    assert.isFalse(element.open, 'dialog closes on second Escape')
   })
 })

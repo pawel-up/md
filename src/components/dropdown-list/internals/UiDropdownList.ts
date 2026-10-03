@@ -5,6 +5,13 @@ import { ClassInfo, classMap } from 'lit/directives/class-map.js'
 import { StyleInfo, styleMap } from 'lit/directives/style-map.js'
 import { positionOverlay, type HorizontalAlignment, type VerticalAlignment } from '../../../lib/ElementPositioning.js'
 import * as ScrollHelper from '../../../lib/ScrollHelper.js'
+import {
+  OverlayController,
+  isPromiseLike,
+  type OverlayHost,
+  type BeforeCloseCallback,
+  type OverlayDismissReason,
+} from '../../../controllers/OverlayController.js'
 
 const itemRole = ['menuitem', 'menuitemcheckbox', 'menuitemradio']
 
@@ -29,10 +36,11 @@ export interface UiDropdownListSelection {
  * @slot dropdown - The slot for the list.
  * @fires select - Custom event with the selected item on the `detail.item` when the user selected an item.
  *                 When the event is cancelled then there's no side effects (closing the dropdown)
- * @fires dropdownopen - An event informing other dropdowns that this one was opened and other should close.
  * @fires open - An event dispatched when the open state change through a user interaction
+ * @fires closing - Cancelable event dispatched before the dropdown closes
+ * @fires close - Event dispatched when the dropdown closes
  */
-export default class UiDropdownList extends LitElement {
+export default class UiDropdownList extends LitElement implements OverlayHost {
   @queryAssignedElements()
   protected accessor triggers!: HTMLElement[]
 
@@ -48,6 +56,13 @@ export default class UiDropdownList extends LitElement {
    * @attribute
    */
   @property({ type: Boolean, reflect: true }) accessor open = false
+
+  /**
+   * Whether pressing Escape dismisses the opened list.
+   * @attribute
+   * @default true
+   */
+  @property({ type: Boolean }) accessor closeOnEscape = true
 
   /**
    * The vertical (y-axis) alignment of the dropdown content.
@@ -82,8 +97,15 @@ export default class UiDropdownList extends LitElement {
   /**
    * When set it closes the opened list when registering a click outside the list.
    * @attribute
+   * @default true
    */
-  @property({ type: Boolean }) accessor closeOnOutsideClick: boolean | undefined
+  @property({ type: Boolean }) accessor closeOnOutsideClick = true
+
+  /**
+   * Optional callback to verify whether the dropdown can be closed.
+   * Returning false prevents dismissal.
+   */
+  @property({ attribute: false }) accessor beforeClose: BeforeCloseCallback | undefined
 
   /**
    * When set it makes the drop-down to match the width of the trigger.
@@ -98,6 +120,11 @@ export default class UiDropdownList extends LitElement {
    * related to tab index.
    */
   @property({ type: Boolean }) accessor closeOnTab: boolean | undefined
+
+  /**
+   * Controller managing overlay stack registration and outside-click/escape dismissal.
+   */
+  protected overlayController = new OverlayController(this)
 
   /**
    * The first element located in the default slot.
@@ -134,16 +161,19 @@ export default class UiDropdownList extends LitElement {
 
   constructor() {
     super()
-    this.dropdownOpenHandler = this.dropdownOpenHandler.bind(this)
     this.scrollHandler = this.scrollHandler.bind(this)
-    this.clickHandler = this.clickHandler.bind(this)
     this.verticalAlign = 'auto'
+
+    this.addEventListener('closing', (e: Event) => {
+      const customEvent = e as CustomEvent<{ reason: OverlayDismissReason }>
+      if (customEvent.detail?.reason === 'outside-click') {
+        this._blockFocusRestore = true
+      }
+    })
   }
 
   override connectedCallback(): void {
     super.connectedCallback()
-    window.addEventListener('dropdownopen', this.dropdownOpenHandler)
-    window.addEventListener('click', this.clickHandler, { capture: true })
     ScrollHelper.addListeners(this, this.scrollHandler)
 
     this.setAttribute('aria-haspopup', 'menu')
@@ -152,21 +182,7 @@ export default class UiDropdownList extends LitElement {
 
   override disconnectedCallback(): void {
     super.disconnectedCallback()
-    window.removeEventListener('dropdownopen', this.dropdownOpenHandler)
-    window.removeEventListener('click', this.clickHandler, { capture: true })
     ScrollHelper.removeListeners(this)
-  }
-
-  protected dropdownOpenHandler(e: Event): void {
-    if (!this.open) {
-      return
-    }
-    const [source] = e.composedPath()
-    if (source === this) {
-      return
-    }
-    this._blockFocusRestore = true
-    this.close()
   }
 
   protected override willUpdate(cp: PropertyValues<this>): void {
@@ -254,9 +270,7 @@ export default class UiDropdownList extends LitElement {
     if (e.defaultPrevented) {
       return
     }
-    if (e.code === 'Escape') {
-      this.close()
-    } else if (e.code === 'Tab') {
+    if (e.code === 'Tab') {
       if (this.closeOnTab) {
         this._blockFocusRestore = true
         this.close()
@@ -268,14 +282,30 @@ export default class UiDropdownList extends LitElement {
     this.activate(e)
   }
 
-  close(): void {
-    this.open = false
-    this.notifyOpen()
+  /**
+   * Closes the dropdown list through the overlay controller,
+   * firing the `closing` and `close` events and respecting `beforeClose` guards.
+   *
+   * @param reason The reason triggering the close request. Defaults to 'programmatic'.
+   */
+  close(reason: OverlayDismissReason = 'programmatic'): void {
+    const result = this.overlayController.requestClose(reason)
+    if (isPromiseLike<boolean>(result)) {
+      void result.then((closed) => {
+        if (closed) {
+          this.notifyOpen()
+        }
+      })
+      return
+    }
+    if (result) {
+      this.notifyOpen()
+    }
   }
 
   protected contentCloseHandler(e: Event): void {
     e.stopPropagation()
-    this.close()
+    this.close('close-button')
   }
 
   /**
@@ -301,18 +331,6 @@ export default class UiDropdownList extends LitElement {
     if (this.open) {
       this.computePositioning()
     }
-  }
-
-  protected clickHandler(e: Event): void {
-    if (!this.open || !this.closeOnOutsideClick) {
-      return
-    }
-    const inside = e.composedPath().some((i) => i === this)
-    if (inside) {
-      return
-    }
-    this._blockFocusRestore = true
-    this.close()
   }
 
   protected toggleOpened(): void {
@@ -445,20 +463,11 @@ export default class UiDropdownList extends LitElement {
     if (event.defaultPrevented) {
       return
     }
-    this.close()
+    this.close('confirm')
   }
 
   protected notifyOpen(): void {
     this.dispatchEvent(new Event('open'))
-    if (this.open) {
-      this.dispatchEvent(
-        new Event('dropdownopen', {
-          bubbles: true,
-          composed: true,
-          cancelable: true,
-        })
-      )
-    }
   }
 
   protected override render(): TemplateResult {

@@ -6,6 +6,12 @@ import type { DateSelectEvent } from './internals/DatePickerCalendar.js'
 import './internals/DatePickerCalendar.js'
 import '../../components/text-field/ui-outlined-text-field.js'
 import '../../components/icons/ui-icon.js'
+import {
+  OverlayController,
+  type OverlayHost,
+  type BeforeCloseCallback,
+  type OverlayDismissReason,
+} from '../../controllers/OverlayController.js'
 
 /**
  * A docked date picker that opens from a text field input.
@@ -33,6 +39,16 @@ import '../../components/icons/ui-icon.js'
  *   formattedValue: string
  * }
  * ```
+ *
+ * ### `closing`
+ * Cancelable event fired before the calendar dropdown closes.
+ *
+ * ### `close`
+ * Fired when the calendar dropdown closes.
+ *
+ * @fires change - Fired when the selected date changes
+ * @fires closing - Cancelable event fired before the calendar dropdown closes
+ * @fires close - Fired when the calendar dropdown closes
  *
  * ## Usage
  *
@@ -77,7 +93,7 @@ import '../../components/icons/ui-icon.js'
  * ```
  */
 @customElement('ui-date-picker-input')
-export class UiDatePickerInput extends LitElement {
+export class UiDatePickerInput extends LitElement implements OverlayHost {
   static override styles = inputStyles
   static override shadowRootOptions: ShadowRootInit = {
     mode: 'open',
@@ -149,7 +165,48 @@ export class UiDatePickerInput extends LitElement {
    */
   @property({ type: Object }) accessor dateFormat: ((date: Date) => string) | undefined = undefined
 
-  @state() private accessor isOpen = false
+  /**
+   * Whether the calendar dropdown is open.
+   * @attribute
+   */
+  @property({ type: Boolean, reflect: true }) accessor open = false
+
+  /**
+   * Backward-compatibility alias for `open`.
+   * @deprecated Use `open` instead.
+   */
+  get isOpen(): boolean {
+    return this.open
+  }
+
+  set isOpen(val: boolean) {
+    this.open = val
+  }
+
+  /**
+   * Whether pressing Escape closes the date picker dropdown.
+   * @attribute
+   * @default true
+   */
+  @property({ type: Boolean }) accessor closeOnEscape = true
+
+  /**
+   * Whether clicking outside the date picker closes the dropdown.
+   * @attribute
+   * @default true
+   */
+  @property({ type: Boolean }) accessor closeOnOutsideClick = true
+
+  /**
+   * Optional callback to verify whether the date picker dropdown can be closed.
+   * Returning false prevents dismissal.
+   */
+  @property({ attribute: false }) accessor beforeClose: BeforeCloseCallback | undefined
+
+  /**
+   * Controller managing overlay stack registration and outside-click/escape dismissal.
+   */
+  protected overlayController = new OverlayController(this)
 
   @state() private accessor inputValue = ''
 
@@ -166,12 +223,6 @@ export class UiDatePickerInput extends LitElement {
   override connectedCallback(): void {
     super.connectedCallback()
     this.updateInputValue()
-    document.addEventListener('click', this.handleDocumentClick.bind(this))
-  }
-
-  override disconnectedCallback(): void {
-    super.disconnectedCallback()
-    document.removeEventListener('click', this.handleDocumentClick.bind(this))
   }
 
   override willUpdate(changedProperties: Map<string | number | symbol, unknown>): void {
@@ -181,7 +232,7 @@ export class UiDatePickerInput extends LitElement {
   }
 
   override updated(changedProperties: Map<string | number | symbol, unknown>): void {
-    if (changedProperties.has('isOpen') && this.isOpen) {
+    if (changedProperties.has('open') && this.open) {
       // Set anchor name on text field for CSS Anchor Positioning API
       if (this.textField) {
         // Using setProperty since anchorName is not in TypeScript types yet
@@ -198,15 +249,23 @@ export class UiDatePickerInput extends LitElement {
     }
   }
 
-  private handleDocumentClick(event: Event): void {
-    if (!this.contains(event.target as Node)) {
-      this.isOpen = false
-    }
+  /**
+   * Closes the calendar dropdown through the overlay controller,
+   * firing the `closing` and `close` events and respecting `beforeClose` guards.
+   *
+   * @param reason The reason triggering the close request. Defaults to 'programmatic'.
+   */
+  close(reason: OverlayDismissReason = 'programmatic'): boolean | Promise<boolean> {
+    return this.overlayController.requestClose(reason)
   }
 
   private handleInputClick(): void {
     if (!this.disabled) {
-      this.isOpen = !this.isOpen
+      if (this.open) {
+        void this.close('programmatic')
+      } else {
+        this.open = true
+      }
     }
   }
 
@@ -223,29 +282,31 @@ export class UiDatePickerInput extends LitElement {
 
   private handleCalendarDateSelect(event: CustomEvent<DateSelectEvent>): void {
     this.value = event.detail.date
-    this.isOpen = false
+    void this.overlayController.requestClose('confirm')
     this.dispatchChangeEvent()
   }
 
   private handleCalendarDateCancel(): void {
-    this.isOpen = false
+    void this.overlayController.requestClose('close-button')
   }
 
   private handleKeyDown(event: KeyboardEvent): void {
     switch (event.key) {
       case 'Escape':
-        this.isOpen = false
+        if (this.open && this.closeOnEscape) {
+          void this.overlayController.requestClose('escape')
+        }
         break
       case 'ArrowDown':
-        if (!this.isOpen) {
+        if (!this.open) {
           event.preventDefault()
-          this.isOpen = true
+          this.open = true
         }
         break
       case 'Enter':
-        if (this.isOpen) {
+        if (this.open) {
           event.preventDefault()
-          this.isOpen = false
+          void this.overlayController.requestClose('confirm')
         }
         break
     }
@@ -271,7 +332,7 @@ export class UiDatePickerInput extends LitElement {
   }
 
   private renderDropdown(): TemplateResult | null {
-    if (!this.isOpen) return null
+    if (!this.open) return null
 
     const currentDate = this.value || new Date()
 
@@ -296,7 +357,6 @@ export class UiDatePickerInput extends LitElement {
   override render(): TemplateResult {
     return html`
       <div class="input-container">
-        ${this.isOpen ? html`<div class="backdrop" @click=${() => (this.isOpen = false)}></div>` : ''}
         <ui-outlined-text-field
           .label=${this.label}
           .name=${this.name}

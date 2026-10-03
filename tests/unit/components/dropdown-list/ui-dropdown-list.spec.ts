@@ -6,6 +6,7 @@ import '../../../../src/components/button/ui-button.js'
 import { UiDropdownListElement } from '../../../../src/components/dropdown-list/ui-dropdown-list.js'
 import { UiListElement } from '../../../../src/components/list/ui-list.js'
 import { UiListItemElement } from '../../../../src/components/list/ui-list-item.js'
+import { OverlayStackManager } from '../../../../src/controllers/OverlayStackManager.js'
 
 test.group('UiDropdownList - Keyboard Interaction and Disabled Elements', () => {
   test('keyboard trigger auto-focuses first enabled item when first item is disabled', async ({ assert }) => {
@@ -228,5 +229,160 @@ test.group('UiDropdownList - Keyboard Interaction and Disabled Elements', () => 
 
     // Should focus item 2 (the first enabled item), NOT item 1
     assert.equal(list.activeListItem?.id, 'item2', 'should skip newly disabled item 1')
+  })
+})
+
+test.group('UiDropdownList - OverlayController Integration', (group) => {
+  group.each.teardown(() => {
+    OverlayStackManager.getInstance().reset()
+  })
+
+  test('dismisses on Escape key', async ({ assert }) => {
+    const el = await fixture<UiDropdownListElement>(html`
+      <ui-dropdown-list>
+        <ui-button id="trigger">Open</ui-button>
+        <ui-list slot="dropdown" role="menu">
+          <ui-list-item role="menuitem">Item 1</ui-list-item>
+        </ui-list>
+      </ui-dropdown-list>
+    `)
+    el.open = true
+    await el.updateComplete
+
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }))
+    await el.updateComplete
+
+    assert.isFalse(el.open, 'dropdown should be closed on Escape')
+  })
+
+  test('dismisses on outside pointerdown', async ({ assert }) => {
+    const el = await fixture<UiDropdownListElement>(html`
+      <ui-dropdown-list>
+        <ui-button id="trigger">Open</ui-button>
+        <ui-list slot="dropdown" role="menu">
+          <ui-list-item role="menuitem">Item 1</ui-list-item>
+        </ui-list>
+      </ui-dropdown-list>
+    `)
+    el.open = true
+    await el.updateComplete
+
+    document.body.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, composed: true }))
+    await el.updateComplete
+
+    assert.isFalse(el.open, 'dropdown should close on outside click')
+  })
+
+  test('respects closeOnOutsideClick=false', async ({ assert }) => {
+    const el = await fixture<UiDropdownListElement>(html`
+      <ui-dropdown-list .closeOnOutsideClick=${false}>
+        <ui-button id="trigger">Open</ui-button>
+        <ui-list slot="dropdown" role="menu">
+          <ui-list-item role="menuitem">Item 1</ui-list-item>
+        </ui-list>
+      </ui-dropdown-list>
+    `)
+    el.open = true
+    await el.updateComplete
+
+    document.body.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, composed: true }))
+    await el.updateComplete
+
+    assert.isTrue(el.open, 'dropdown should remain open when closeOnOutsideClick is false')
+  })
+
+  test('prevents closing when beforeClose returns false', async ({ assert }) => {
+    const el = await fixture<UiDropdownListElement>(html`
+      <ui-dropdown-list>
+        <ui-button id="trigger">Open</ui-button>
+        <ui-list slot="dropdown" role="menu">
+          <ui-list-item role="menuitem">Item 1</ui-list-item>
+        </ui-list>
+      </ui-dropdown-list>
+    `)
+    el.open = true
+    el.beforeClose = () => false
+    await el.updateComplete
+
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }))
+    await el.updateComplete
+
+    assert.isTrue(el.open, 'dropdown should remain open when beforeClose returns false')
+  })
+
+  test('prevents closing when closing event is canceled', async ({ assert }) => {
+    const el = await fixture<UiDropdownListElement>(html`
+      <ui-dropdown-list>
+        <ui-button id="trigger">Open</ui-button>
+        <ui-list slot="dropdown" role="menu">
+          <ui-list-item role="menuitem">Item 1</ui-list-item>
+        </ui-list>
+      </ui-dropdown-list>
+    `)
+    el.open = true
+    el.addEventListener('closing', (e) => {
+      e.preventDefault()
+    })
+    await el.updateComplete
+
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }))
+    await el.updateComplete
+
+    assert.isTrue(el.open, 'dropdown should remain open when closing event is defaultPrevented')
+  })
+
+  test('close() dispatches close event and respects beforeClose', async ({ assert }) => {
+    const el = await fixture<UiDropdownListElement>(html`
+      <ui-dropdown-list>
+        <ui-button id="trigger">Open</ui-button>
+        <ui-list slot="dropdown" role="menu">
+          <ui-list-item role="menuitem">Item 1</ui-list-item>
+        </ui-list>
+      </ui-dropdown-list>
+    `)
+    el.open = true
+    await el.updateComplete
+
+    el.beforeClose = () => false
+    el.close()
+    await el.updateComplete
+    assert.isTrue(el.open, 'should not close when beforeClose returns false')
+
+    el.beforeClose = undefined
+    let closeReason: string | undefined
+    el.addEventListener('close', (e: Event) => {
+      const customEvent = e as CustomEvent<{ reason: string }>
+      closeReason = customEvent.detail.reason
+    })
+    el.close()
+    await el.updateComplete
+    assert.isFalse(el.open)
+    assert.equal(closeReason, 'programmatic')
+  })
+
+  test('item selection closes and dispatches close event with reason confirm', async ({ assert }) => {
+    const el = await fixture<UiDropdownListElement>(html`
+      <ui-dropdown-list>
+        <ui-button id="trigger">Open</ui-button>
+        <ui-list slot="dropdown" role="menu">
+          <ui-list-item role="menuitem" id="item1">Item 1</ui-list-item>
+        </ui-list>
+      </ui-dropdown-list>
+    `)
+    el.open = true
+    await el.updateComplete
+
+    let closeReason: string | undefined
+    el.addEventListener('close', (e: Event) => {
+      const customEvent = e as CustomEvent<{ reason: string }>
+      closeReason = customEvent.detail.reason
+    })
+
+    const item = el.querySelector('#item1') as HTMLElement
+    item.click()
+    await el.updateComplete
+
+    assert.isFalse(el.open)
+    assert.equal(closeReason, 'confirm')
   })
 })
