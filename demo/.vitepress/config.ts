@@ -62,6 +62,7 @@ export default defineConfig({
         ],
       },
     ],
+    aside: false,
   },
   vue: {
     template: {
