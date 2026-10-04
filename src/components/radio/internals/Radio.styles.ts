@@ -78,6 +78,7 @@ export default css`
   .ripple {
     border-radius: var(--md-sys-shape-corner-full);
     z-index: 3;
+    visibility: inherit;
   }
 
   :host([invalid]) label {

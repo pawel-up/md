@@ -1,10 +1,8 @@
 import { html, TemplateResult } from 'lit'
-import { queryAsync, state } from 'lit/decorators.js'
-import { when } from 'lit/directives/when.js'
+import { query } from 'lit/decorators.js'
 import { classMap } from 'lit/directives/class-map.js'
 import { RadioSelectionController } from '../../../controllers/RadioSelectionController.js'
 import CheckedElement from '../../checkbox/internals/CheckedElement.js'
-import { ripple } from '../../effects/rippleDirective.js'
 import UiRipple from '../../ripple/internals/ripple.js'
 import { EndPressConfig } from '../../../controllers/ActionController.js'
 import '../../ripple/ui-ripple.js'
@@ -39,14 +37,7 @@ export default class RadioElement extends CheckedElement {
 
   protected override readonly _validationError = 'Please select one of these options.'
 
-  @queryAsync('ui-ripple') protected accessor ripple!: Promise<UiRipple | null>
-
-  @state() protected accessor showRipple = false
-
-  protected readonly getRipple = (): Promise<UiRipple | null> => {
-    this.showRipple = true
-    return this.ripple
-  }
+  @query('ui-ripple') protected accessor ripple!: UiRipple | null
 
   override endPress(config: EndPressConfig): void {
     const downConfig: EndPressConfig = { ...config }
@@ -77,31 +68,37 @@ export default class RadioElement extends CheckedElement {
     this.setAttribute('aria-checked', String(value))
   }
 
-  override async handleKeyDown(e: KeyboardEvent): Promise<void> {
+  override handleKeyDown(e: KeyboardEvent): void {
     super.handleKeyDown(e)
     this.selection.handleKeyDown(e)
     if (['Space'].includes(e.code)) {
-      const _ripple = await this.getRipple()
-      _ripple?.beginPress()
+      this.ripple?.beginPress()
     }
   }
 
-  override async handleKeyUp(e: KeyboardEvent): Promise<void> {
+  override handleKeyUp(e: KeyboardEvent): void {
     super.handleKeyUp(e)
     if (['Space'].includes(e.code)) {
-      const _ripple = await this.getRipple()
-      _ripple?.endPress()
+      this.ripple?.endPress()
     }
   }
 
-  protected override async handleFocus(): Promise<void> {
-    const _ripple = await this.getRipple()
-    _ripple?.beginFocus()
+  protected override handleFocus(): void {
+    this.ripple?.beginFocus()
   }
 
-  protected override async handleBlur(): Promise<void> {
-    const _ripple = await this.getRipple()
-    _ripple?.endFocus()
+  protected override handleBlur(): void {
+    this.ripple?.endFocus()
+  }
+
+  override handlePointerEnter(e: PointerEvent): void {
+    super.handlePointerEnter(e)
+    this.ripple?.beginHover(e)
+  }
+
+  override handlePointerLeave(e: PointerEvent): void {
+    super.handlePointerLeave(e)
+    this.ripple?.endHover()
   }
 
   protected override render(): TemplateResult {
@@ -112,20 +109,15 @@ export default class RadioElement extends CheckedElement {
     }
     return html`
       <ui-focus-ring part="focus-ring" .control="${this as HTMLElement}"></ui-focus-ring>
-      <div class=${classMap(surfaceClasses)} ${ripple(this.getRipple)}>
+      <div class=${classMap(surfaceClasses)}>
         <div class="container"></div>
         <div class="state"></div>
-        ${when(this.showRipple, this.renderRipple)}
+        <ui-ripple class="ripple" ?disabled="${this.disabled}"></ui-ripple>
         <div class="content">
           <div class="outer"></div>
           <div class="inner"></div>
         </div>
       </div>
     `
-  }
-
-  protected renderRipple = (): TemplateResult => {
-    const { disabled } = this
-    return html`<ui-ripple class="ripple" ?disabled="${disabled}"></ui-ripple>`
   }
 }
