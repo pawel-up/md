@@ -1,5 +1,6 @@
 import { fixture, html, test } from '@pawel-up/lupa/testing'
 import { UiButtonGroupElement } from '../../../../src/components/button/ui-button-group.js'
+import type { UiButtonGroupChangeEvent } from '../../../../src/components/button/ui-button-group.js'
 import type { UiButtonElement } from '../../../../src/components/button/ui-button.js'
 
 import '../../../../src/components/button/ui-button.js'
@@ -686,7 +687,7 @@ test.group('Button Group', () => {
     }
   }).tags(['@md', '@button-group'])
 
-  test('dispatches change event when button selection toggles', async ({ assert }) => {
+  test('dispatches change custom event with target in detail when button selection toggles', async ({ assert }) => {
     const el = await fixture<UiButtonGroupElement>(html`
       <ui-button-group type="connected">
         <ui-button id="b1" toggle>1</ui-button>
@@ -694,17 +695,41 @@ test.group('Button Group', () => {
       </ui-button-group>
     `)
     const b1 = el.querySelector<UiButtonElement>('#b1')
+    const b2 = el.querySelector<UiButtonElement>('#b2')
     assert.isNotNull(b1)
-    if (b1) {
+    assert.isNotNull(b2)
+    if (b1 && b2) {
       let changeFired = false
-      el.addEventListener('change', () => {
+      let changeEvent: UiButtonGroupChangeEvent | undefined
+      el.addEventListener('change', (e: Event) => {
         changeFired = true
+        changeEvent = e as UiButtonGroupChangeEvent
       })
 
       b1.click()
       assert.isTrue(changeFired)
       assert.isTrue(b1.selected)
       assert.deepEqual(el.selectedButtons, [b1])
+      const ev1 = changeEvent as UiButtonGroupChangeEvent | undefined
+      assert.isDefined(ev1)
+      if (ev1) {
+        assert.instanceOf(ev1, CustomEvent)
+        assert.isTrue(ev1.bubbles)
+        assert.isTrue(ev1.composed)
+        assert.equal(ev1.detail?.target, b1)
+      }
+
+      changeFired = false
+      changeEvent = undefined
+      b2.click()
+      assert.isTrue(changeFired)
+      assert.isTrue(b2.selected)
+      assert.isFalse(b1.selected)
+      const ev2 = changeEvent as UiButtonGroupChangeEvent | undefined
+      assert.isDefined(ev2)
+      if (ev2) {
+        assert.equal(ev2.detail?.target, b2)
+      }
     }
   }).tags(['@md', '@button-group'])
 

@@ -24,7 +24,8 @@ import styles from './internals/group.styles.js'
  * Don't use when:
  * - Standalone buttons without visual grouping are needed.
  *
- * @fires change - Fired when the selection state of the group changes via user interaction.
+ * @fires {UiButtonGroupChangeEvent} change - Fired when the selection state of the group changes via user interaction.
+ *                                            The event detail contains the target button element that was toggled.
  *
  * @example
  * ```html
@@ -53,4 +54,10 @@ declare global {
   }
 }
 
-export type { MdGroupType, MdGroupShape } from './internals/group.js'
+export type {
+  MdGroupType,
+  MdGroupShape,
+  UiButtonGroupChangeDetail,
+  UiButtonGroupChangeEvent,
+  ButtonGroupEventMap,
+} from './internals/group.js'

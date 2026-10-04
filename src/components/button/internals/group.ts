@@ -3,8 +3,32 @@ import { property, queryAssignedElements } from 'lit/decorators.js'
 import UiButtonElement from './button.js'
 import type { MdButtonShape, MdButtonSize } from './button.js'
 
+import type { TypedEvents } from '../../../types/types.js'
+
 export type MdGroupType = 'standard' | 'connected'
 export type MdGroupShape = MdButtonShape
+
+/**
+ * Event detail for the button group `change` event.
+ */
+export interface UiButtonGroupChangeDetail {
+  /**
+   * The button element whose selection state was changed.
+   */
+  target: UiButtonElement
+}
+
+/**
+ * Custom event dispatched when the button group selection changes via user interaction.
+ */
+export type UiButtonGroupChangeEvent = CustomEvent<UiButtonGroupChangeDetail>
+
+/**
+ * Event map for events dispatched by the button group.
+ */
+export interface ButtonGroupEventMap {
+  change: UiButtonGroupChangeEvent
+}
 
 /**
  * A group of buttons that can be selected, following Material Design 3 Expressive guidelines.
@@ -34,7 +58,8 @@ export type MdGroupShape = MdButtonShape
  * Don't use when:
  * - Standalone buttons without visual grouping are needed.
  *
- * @fires change - Fired when the selection state of the group changes via user interaction.
+ * @fires {UiButtonGroupChangeEvent} change - Fired when the selection state of the group changes via user interaction.
+ *                                            The event detail contains the target button element that was toggled.
  *
  * @example
  * ```html
@@ -45,7 +70,7 @@ export type MdGroupShape = MdButtonShape
  * </ui-button-group>
  * ```
  */
-export default class ButtonGroup extends LitElement {
+export default class ButtonGroup extends LitElement implements TypedEvents<ButtonGroupEventMap> {
   /**
    * If true, multiple buttons can be selected.
    * When set to false, the group deselects all other buttons when one is selected.
@@ -196,7 +221,13 @@ export default class ButtonGroup extends LitElement {
       if (target.selected) {
         this.activate(target)
       }
-      this.dispatchEvent(new Event('change', { bubbles: true, composed: true }))
+      this.dispatchEvent(
+        new CustomEvent<UiButtonGroupChangeDetail>('change', {
+          bubbles: true,
+          composed: true,
+          detail: { target },
+        })
+      )
     }
   }
 
