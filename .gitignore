@@ -60,9 +60,8 @@ build/
 .eslintcache
 coverage
 lit-plugin.log
-docs/
+.codereviews
 
 # VitePress
 demo/.vitepress/cache/
 demo/.vitepress/dist/
-.codereviews

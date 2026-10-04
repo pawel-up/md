@@ -1,6 +1,8 @@
+import process from 'node:process'
 import { defineConfig } from 'vitepress'
 
 export default defineConfig({
+  base: process.env.BASE_PATH || (process.env.GITHUB_ACTIONS ? '/md/' : '/'),
   vite: {
     esbuild: { target: 'es2022' },
     build: { target: 'es2022' },
