@@ -368,6 +368,47 @@ test.group('Rendering', () => {
   })
 })
 
+test.group('Shape and interaction styling', () => {
+  test('should use slight roundiness (4px) in default unselected state', async ({ assert }) => {
+    const element = await basicFixture()
+    await nextFrame()
+
+    const surface = element.shadowRoot!.querySelector('.surface.menu-item') as HTMLElement
+    const surfaceRadius = window.getComputedStyle(surface).borderRadius
+    assert.equal(surfaceRadius, '4px')
+  })
+
+  test('should use more roundiness (12px) in selected state', async ({ assert }) => {
+    const element = await selectedFixture()
+    await nextFrame()
+
+    const surface = element.shadowRoot!.querySelector('.surface.menu-item') as HTMLElement
+    const surfaceRadius = window.getComputedStyle(surface).borderRadius
+    assert.equal(surfaceRadius, '12px')
+  })
+
+  test('should maintain identical margin to container border in both default and selected states', async ({
+    assert,
+  }) => {
+    const element = await basicFixture()
+    const selectedElement = await selectedFixture()
+    await nextFrame()
+
+    const surface = element.shadowRoot!.querySelector('.surface.menu-item') as HTMLElement
+    const selectedSurface = selectedElement.shadowRoot!.querySelector('.surface.menu-item') as HTMLElement
+
+    const defaultMarginLeft = window.getComputedStyle(surface).marginLeft
+    const defaultMarginRight = window.getComputedStyle(surface).marginRight
+    const selectedMarginLeft = window.getComputedStyle(selectedSurface).marginLeft
+    const selectedMarginRight = window.getComputedStyle(selectedSurface).marginRight
+
+    assert.equal(defaultMarginLeft, '6px')
+    assert.equal(defaultMarginRight, '6px')
+    assert.equal(selectedMarginLeft, defaultMarginLeft)
+    assert.equal(selectedMarginRight, defaultMarginRight)
+  })
+})
+
 test.group('Selection functionality', () => {
   test('should have selected property with default value false', async ({ assert }) => {
     const element = await basicFixture()
