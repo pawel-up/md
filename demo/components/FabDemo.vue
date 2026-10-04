@@ -169,6 +169,7 @@ const generatedCode = computed(() => {
               v-if="triggerType === 'icon'"
               :color="triggerColor"
               :aria-label="isOpen && mode === 'menu' ? 'Close menu' : 'Quick actions'"
+              size="m"
             >
               <ui-icon>{{ isOpen && mode === 'menu' ? 'close' : 'add' }}</ui-icon>
             </ui-icon-button>
@@ -177,6 +178,7 @@ const generatedCode = computed(() => {
             <ui-button
               v-else
               :color="triggerColor"
+              size="m"
             >
               <ui-icon slot="icon">{{ isOpen && mode === 'menu' ? 'close' : 'add' }}</ui-icon>
               {{ isOpen && mode === 'menu' ? 'Close' : 'Quick Actions' }}
