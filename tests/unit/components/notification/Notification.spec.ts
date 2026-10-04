@@ -1,4 +1,4 @@
-import { nextFrame, test } from '@pawel-up/lupa/testing'
+import { aTimeout, nextFrame, test } from '@pawel-up/lupa/testing'
 import { SnackNotifications } from '../../../../src/components/notification/SnackNotifications.js'
 import sinon from 'sinon'
 
@@ -14,7 +14,7 @@ test.group('SnackNotifications', (group) => {
     assert.equal(snack.parentElement, document.body)
 
     // Wait for the scheduled open
-    await nextFrame()
+    await aTimeout()
     assert.isTrue(snack.open)
   }).tags(['@md', '@notification'])
 
