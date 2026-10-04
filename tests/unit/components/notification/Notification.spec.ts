@@ -22,13 +22,13 @@ test.group('SnackNotifications', (group) => {
     const snack1 = SnackNotifications.notify('First')
     const snack2 = SnackNotifications.notify('Second')
 
-    await nextFrame()
+    await aTimeout()
     assert.isTrue(snack1.open)
     assert.isUndefined(snack2.open)
 
     // Dismiss first snackbar
     snack1.dispatchEvent(new Event('dismiss'))
-    await nextFrame()
+    await aTimeout()
 
     // Now second snackbar should be open
     assert.isTrue(snack2.open)
@@ -55,7 +55,7 @@ test.group('SnackNotifications', (group) => {
       actionCallback: callbackSpy,
     })
 
-    await nextFrame()
+    await aTimeout()
     assert.equal(snack.action, 'Click Me')
 
     // Simulate action trigger on the snackbar element
@@ -71,7 +71,7 @@ test.group('SnackNotifications', (group) => {
       closed: closedSpy,
     })
 
-    await nextFrame()
+    await aTimeout()
     assert.isTrue(snack.open)
 
     // A closed snackbar will transition and dispatch open while target.open is false/falsy
@@ -84,7 +84,7 @@ test.group('SnackNotifications', (group) => {
 
   test('cancels active notification', async ({ assert }) => {
     const snack = SnackNotifications.notify('To Cancel')
-    await nextFrame()
+    await aTimeout()
     assert.isTrue(snack.open)
 
     SnackNotifications.cancel(snack)
@@ -96,11 +96,11 @@ test.group('SnackNotifications', (group) => {
   test('cancels queued notification', async ({ assert }) => {
     const snack1 = SnackNotifications.notify('Active')
     const snack2 = SnackNotifications.notify('Queued')
-    await nextFrame()
+    await aTimeout()
 
     SnackNotifications.cancel(snack2)
     snack1.dispatchEvent(new Event('dismiss'))
-    await nextFrame()
+    await aTimeout()
 
     // Since snack2 was cancelled, it shouldn't open and shouldn't remain in DOM
     assert.isUndefined(snack2.open)

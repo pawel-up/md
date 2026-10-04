@@ -45,6 +45,7 @@ export default defineConfig({
           { text: 'Date Picker', link: '/components/date-picker' },
           { text: 'Dialog', link: '/components/dialog' },
           { text: 'Dropdown List', link: '/components/dropdown-list' },
+          { text: 'FAB', link: '/components/fab' },
           { text: 'Focus Ring', link: '/components/focus-ring' },
           { text: 'Icon Button', link: '/components/icon-button' },
           { text: 'Inputs', link: '/components/inputs' },

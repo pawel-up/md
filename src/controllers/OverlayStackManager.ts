@@ -191,13 +191,7 @@ export class OverlayStackManager {
     }
 
     const path = e.composedPath()
-    const isInsideTop = path.some(
-      (node) =>
-        node instanceof Node &&
-        (currentTop.element === node ||
-          currentTop.element.contains(node) ||
-          currentTop.element.shadowRoot?.contains(node))
-    )
+    const isInsideTop = path.some((node) => node instanceof Node && currentTop.contains(node))
     if (isInsideTop) {
       // Allow event to reach the topmost overlay target so local keydown handlers can run
       return
