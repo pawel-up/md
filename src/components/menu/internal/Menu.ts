@@ -277,7 +277,7 @@ export default class Menu extends UiList implements OverlayHost {
       } else if (el.localName === 'ui-menu-group') {
         hasGroups = true
         const group = el as HTMLElement & { items?: UiMenuItem[] }
-        if (group.items && Array.isArray(group.items)) {
+        if (group.items && group.items.length > 0) {
           items.push(...group.items)
         } else {
           items.push(...(Array.from(group.querySelectorAll(this.selector)) as UiMenuItem[]))

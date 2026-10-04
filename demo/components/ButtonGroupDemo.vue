@@ -54,7 +54,7 @@ const color = ref('filled')
     <h2 class="display-large">Anatomy</h2>
     <div class="frame">
       <div class="demo-row">
-        <ui-button-group :size="size">
+        <ui-button-group :size="size" :shape="shape">
           <ui-button color="tonal"><ui-icon slot="icon" icon="edit"></ui-icon></ui-button>
           <ui-button color="tonal"><ui-icon slot="icon" icon="edit"></ui-icon></ui-button>
           <ui-button color="tonal"><ui-icon slot="icon" icon="edit"></ui-icon>Three</ui-button>
@@ -63,7 +63,7 @@ const color = ref('filled')
         </ui-button-group>
       </div>
       <div class="demo-row">
-        <ui-button-group type="connected" :size="size">
+        <ui-button-group type="connected" :size="size" :shape="shape">
           <ui-button color="filled"><ui-icon slot="icon" icon="edit"></ui-icon>Label</ui-button>
           <ui-button color="filled"><ui-icon slot="icon" icon="edit"></ui-icon>Label</ui-button>
           <ui-button color="filled"><ui-icon slot="icon" icon="edit"></ui-icon>Label</ui-button>
@@ -80,7 +80,7 @@ const color = ref('filled')
       <div class="frame">
         <h4 class="title-medium">Multi selection</h4>
         <div class="demo-row">
-          <ui-button-group type="connected" :size="size" multiple="true">
+          <ui-button-group type="connected" :size="size" :shape="shape" multiple>
             <ui-button :color="color" toggle="true"><ui-icon slot="icon" icon="edit"></ui-icon>Label</ui-button>
             <ui-button :color="color" toggle="true"><ui-icon slot="icon" icon="edit"></ui-icon>Label</ui-button>
             <ui-button :color="color" toggle="true"><ui-icon slot="icon" icon="edit"></ui-icon>Label</ui-button>
@@ -91,7 +91,7 @@ const color = ref('filled')
 
         <h4 class="title-medium">Single selection</h4>
         <div class="demo-row">
-          <ui-button-group type="connected" :size="size">
+          <ui-button-group type="connected" :size="size" :shape="shape">
             <ui-button :color="color" toggle="true"><ui-icon slot="icon" icon="edit"></ui-icon>Label</ui-button>
             <ui-button :color="color" toggle="true"><ui-icon slot="icon" icon="edit"></ui-icon>Label</ui-button>
             <ui-button :color="color" toggle="true"><ui-icon slot="icon" icon="edit"></ui-icon>Label</ui-button>
@@ -108,7 +108,7 @@ const color = ref('filled')
       <div class="frame">
         <h4 class="title-medium">Multi selection</h4>
         <div class="demo-row">
-          <ui-button-group type="standard" :size="size" multiple="true">
+          <ui-button-group type="standard" :size="size" :shape="shape" multiple>
             <ui-button :color="color" toggle="true"><ui-icon slot="icon" icon="edit"></ui-icon>Label</ui-button>
             <ui-button :color="color" toggle="true"><ui-icon slot="icon" icon="edit"></ui-icon>Label</ui-button>
             <ui-button :color="color" toggle="true"><ui-icon slot="icon" icon="edit"></ui-icon>Label</ui-button>
@@ -119,7 +119,7 @@ const color = ref('filled')
 
         <h4 class="title-medium">Single selection</h4>
         <div class="demo-row">
-          <ui-button-group type="standard" :size="size">
+          <ui-button-group type="standard" :size="size" :shape="shape">
             <ui-button :color="color" toggle="true"><ui-icon slot="icon" icon="edit"></ui-icon>Label</ui-button>
             <ui-button :color="color" toggle="true"><ui-icon slot="icon" icon="edit"></ui-icon>Label</ui-button>
             <ui-button :color="color" toggle="true"><ui-icon slot="icon" icon="edit"></ui-icon>Label</ui-button>
