@@ -41,3 +41,12 @@ Documentation:
 - Every public-facing API MUST be documented with examples whenever applicable. Also add the `use when` and `don't use when` sections whenever applicable. Not mandatory but helpful.
 - Document interfaces as well.
 - All internal interfaces and methods also need to be documented with the summary of what the logic does. Document any gotchas.
+
+Predictable API contracts:
+
+- Do not create fallbacks to imagined default value. Only the element's contract defined as public properties and methods can be used internally.
+- Prefer web author standards over custom standards: 
+  - Web authors prefer `thisisevent` event name over `this-is-event`.
+  - The same goes to attributes. Web authors would use `thisisattribute` instead of `this-is-attribute`.
+- Reuse existing event and attributes names if possible:
+  - The `change` event is generally use to inform that something changed.
