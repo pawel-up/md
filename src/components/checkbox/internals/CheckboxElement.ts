@@ -60,16 +60,12 @@ export default class CheckboxElement extends CheckedElement {
 
   override handlePointerEnter(e: PointerEvent): void {
     super.handlePointerEnter(e)
-    if (this.ripple) {
-      this.ripple.beginHover(e)
-    }
+    this.ripple?.beginHover(e)
   }
 
   override handlePointerLeave(e: PointerEvent): void {
     super.handlePointerLeave(e)
-    if (this.ripple) {
-      this.ripple.endHover()
-    }
+    this.ripple?.endHover()
   }
 
   protected override render(): TemplateResult {

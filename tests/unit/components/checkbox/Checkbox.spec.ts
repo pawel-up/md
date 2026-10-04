@@ -76,4 +76,26 @@ test.group('Checkbox', () => {
     const formData = new FormData(form)
     assert.equal(formData.get('agree'), 'yes')
   }).tags(['@md', '@checkbox'])
+
+  test('activates ripple hover state on pointerenter and pointerleave', async ({ assert }) => {
+    const checkbox = await basicFixture()
+    const ripple = checkbox.shadowRoot?.querySelector('ui-ripple')
+    assert.isNotNull(ripple)
+    if (!ripple) return
+
+    checkbox.dispatchEvent(new PointerEvent('pointerenter', { pointerType: 'mouse', bubbles: true }))
+    await nextFrame()
+
+    const rippleSurface = ripple.shadowRoot?.querySelector('.surface')
+    assert.isNotNull(rippleSurface)
+    if (!rippleSurface) return
+
+    assert.isTrue(rippleSurface.classList.contains('hovered'))
+    assert.equal(window.getComputedStyle(ripple).visibility, 'visible')
+
+    checkbox.dispatchEvent(new PointerEvent('pointerleave', { pointerType: 'mouse', bubbles: true }))
+    await nextFrame()
+
+    assert.isFalse(rippleSurface.classList.contains('hovered'))
+  }).tags(['@md', '@checkbox'])
 })

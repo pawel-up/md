@@ -9,6 +9,10 @@ export default css`
     display: flex;
   }
 
+  :host([unbounded]) {
+    visibility: inherit;
+  }
+
   :host([disabled]) {
     opacity: 0;
   }

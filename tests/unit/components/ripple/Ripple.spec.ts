@@ -14,6 +14,12 @@ test.group('Ripple', () => {
     assert.isFalse(ripple.disabled)
   }).tags(['@md', '@ripple'])
 
+  test('unbounded ripple maintains visible computed visibility', async ({ assert }) => {
+    const ripple = await fixture<UiRippleElement>(html`<ui-ripple unbounded></ui-ripple>`)
+    assert.isTrue(ripple.unbounded)
+    assert.equal(window.getComputedStyle(ripple).visibility, 'visible')
+  }).tags(['@md', '@ripple'])
+
   test('sets states on hover methods', async ({ assert }) => {
     const ripple = await basicFixture()
     const surface = ripple.shadowRoot!.querySelector('.surface')!
