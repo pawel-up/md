@@ -1,3 +1,23 @@
+# [1.3.0](https://github.com/pawel-up/md/compare/v1.2.3...v1.3.0) (2026-10-04)
+
+
+### Bug Fixes
+
+* finishing IconButton implementation ([9dc237c](https://github.com/pawel-up/md/commit/9dc237cc0e3668868b804720011f4188020b054a))
+* fixing double hover styling issue ([4a5507e](https://github.com/pawel-up/md/commit/4a5507e7bb447b3f69d0bd76f679516c6d272158))
+* improve Escape key handling and overlay dismissal logic ([deda3e9](https://github.com/pawel-up/md/commit/deda3e90315f69acfdcb8b00061905170eeed56b))
+* support string values for secondary progress ([6ae70c0](https://github.com/pawel-up/md/commit/6ae70c09870e660c3ad44ae48b2183744d1462a9))
+* support unbounded ripple visibility and checkbox hover states ([df87221](https://github.com/pawel-up/md/commit/df8722175aef61b723152d245ac1ae9edf219e4c))
+
+
+### Features
+
+* add a11y updates for button groups ([7a3f993](https://github.com/pawel-up/md/commit/7a3f9930edef097736660d776c307afb13b0dd6d))
+* add Floating Action Button (FAB) component ([ea63f09](https://github.com/pawel-up/md/commit/ea63f090588307f33f0133cbcd02c40cab864e8e))
+* add Material Design 3 Expressive wavy and thick variants to progress components ([7947e17](https://github.com/pawel-up/md/commit/7947e174cd121c3198601e377be228b506574098))
+* add support for grouped and multi-select menus with keyboard navigation and density scaling ([7855fef](https://github.com/pawel-up/md/commit/7855fefb95ba2b82d16cb0bf7280d0ace8909d09))
+* implement OverlayController and OverlayStackManager for unified popup handling ([9d4f539](https://github.com/pawel-up/md/commit/9d4f539157f66ec12134c77f191473f980167b35))
+
 ## [1.2.3](https://github.com/pawel-up/md/compare/v1.2.2...v1.2.3) (2026-09-08)
 
 
