@@ -11,7 +11,7 @@ import listStyles from '../list/internals/ListItem.styles.js'
  */
 @customElement('ui-menu-item')
 export class UiMenuItemElement extends Element {
-  static override styles: CSSResultOrNative[] = [styles, listStyles]
+  static override styles: CSSResultOrNative[] = [listStyles, styles]
 }
 
 declare global {

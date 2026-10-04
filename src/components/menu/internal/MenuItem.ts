@@ -43,6 +43,18 @@ export default class UiMenuItem extends UiListItem {
   @property({ type: Boolean }) accessor showSelectionIcon = false
 
   /**
+   * Density level of the menu item (web only).
+   * @attribute
+   */
+  @property({ type: String, reflect: true }) accessor density: '0' | '-1' | '-2' | '-3' | undefined
+
+  /**
+   * Color mapping variant.
+   * @attribute
+   */
+  @property({ type: String, reflect: true }) accessor variant: 'standard' | 'vibrant' | undefined
+
+  /**
    * Whether the menu item has a sub-menu
    */
   get hasSubMenu(): boolean {
@@ -126,15 +138,29 @@ export default class UiMenuItem extends UiListItem {
   }
 
   /**
-   * Updates the selection state styling
+   * Updates the selection state styling and accessibility attributes
    */
-  protected updateSelectionState(): void {
+  public updateSelectionState(): void {
+    const parentMenu = this.closest('ui-menu, ui-sub-menu') as Menu | null
+    const isMultiSelect = Boolean(parentMenu?.multiSelect)
+
+    if (isMultiSelect) {
+      this.setAttribute('role', 'menuitemcheckbox')
+      this.setAttribute('aria-checked', String(this.selected))
+      this.removeAttribute('aria-selected')
+    } else {
+      this.setAttribute('role', 'menuitem')
+      if (this.selected) {
+        this.setAttribute('aria-selected', 'true')
+      } else {
+        this.setAttribute('aria-selected', 'false')
+      }
+    }
+
     if (this.selected) {
       this.classList.add('select')
-      this.setAttribute('aria-selected', 'true')
     } else {
       this.classList.remove('select')
-      this.setAttribute('aria-selected', 'false')
     }
   }
 
@@ -244,9 +270,7 @@ export default class UiMenuItem extends UiListItem {
 
     return html`
       ${this.renderFocusRing()} ${this.renderRipple()}
-      <div class=${classMap(classes)} role="menuitem">
-        ${this.renderStart()} ${this.renderBody()} ${this.renderEnd()}
-      </div>
+      <div class=${classMap(classes)}>${this.renderStart()} ${this.renderBody()} ${this.renderEnd()}</div>
     `
   }
 
@@ -259,11 +283,13 @@ export default class UiMenuItem extends UiListItem {
   }
 
   protected override renderStart(): TemplateResult {
-    const showCheckIcon = this.showSelectionIcon && this.selected
+    const parentMenu = this.closest('ui-menu, ui-sub-menu') as Menu | null
+    const isSelectable = Boolean(this.showSelectionIcon || parentMenu?.multiSelect || parentMenu?.selectOnActivate)
+    const showCheckIcon = isSelectable && this.selected
 
     return html`<div class="start">
       ${showCheckIcon ? html`<ui-icon class="selection-check">check</ui-icon>` : ''}
-      <slot name="start" @slotchange=${this.handleEndSlotChange}></slot>
+      <slot name="start" @slotchange=${this.handleStartSlotChange}></slot>
     </div>`
   }
 }

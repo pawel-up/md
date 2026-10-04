@@ -4,25 +4,45 @@ export default css`
   :host {
     display: block;
     position: relative;
+    --md-focus-ring-shape: var(--md-sys-shape-corner-full, 9999px);
   }
 
-  .menu-item {
+  :host([density='0']) {
+    --md-menu-item-density-height: 48px;
+  }
+
+  :host([density='-1']) {
+    --md-menu-item-density-height: 44px;
+  }
+
+  :host([density='-2']) {
+    --md-menu-item-density-height: 40px;
+  }
+
+  :host([density='-3']) {
+    --md-menu-item-density-height: 36px;
+  }
+
+  .surface.menu-item {
     position: relative;
     display: flex;
     align-items: center;
-    min-height: 48px;
-    padding: 0 16px;
+    height: var(--md-menu-item-density-height, var(--md-menu-item-height, 48px));
+    min-height: var(--md-menu-item-density-height, var(--md-menu-item-height, 48px));
+    margin: 0 6px;
+    padding: 0 12px;
+    border-radius: var(--md-sys-shape-corner-full, 9999px);
     cursor: pointer;
     outline: none;
-    transition: background-color 0.2s ease;
+    box-sizing: border-box;
+    transition:
+      background-color 0.15s ease,
+      color 0.15s ease;
   }
 
-  .menu-item:hover {
-    background-color: var(--md-sys-color-surface-variant);
-  }
-
+  .menu-item:hover,
   .menu-item:focus {
-    background-color: var(--md-sys-color-surface-variant);
+    background-color: var(--md-sys-color-surface-container-highest, var(--md-sys-color-surface-variant));
   }
 
   .menu-item[disabled] {
@@ -51,9 +71,11 @@ export default css`
   }
 
   /* Focus Ring */
-  md-focus-ring {
+  ui-focus-ring {
     --md-focus-ring-color: var(--md-sys-color-primary);
     --md-focus-ring-width: 2px;
+    --md-focus-ring-shape: var(--md-sys-shape-corner-full, 9999px);
+    margin: 0 6px;
     z-index: 2;
   }
 
@@ -66,21 +88,40 @@ export default css`
   /* Selected state */
   :host(.select) .menu-item,
   :host([selected]) .menu-item {
-    background-color: var(--md-sys-color-secondary-container);
-    color: var(--md-sys-color-on-secondary-container);
+    background-color: var(--md-menu-item-selected-bg, var(--md-sys-color-secondary-container));
+    color: var(--md-menu-item-selected-color, var(--md-sys-color-on-secondary-container));
   }
 
   :host(.select) .menu-item:hover,
   :host([selected]) .menu-item:hover {
-    background-color: var(--md-sys-color-secondary-container);
+    background-color: var(--md-menu-item-selected-bg, var(--md-sys-color-secondary-container));
+    opacity: 0.92;
+  }
+
+  /* Vibrant selected state */
+  :host([variant='vibrant'].select) .menu-item,
+  :host([variant='vibrant'][selected]) .menu-item {
+    background-color: var(--md-sys-color-tertiary);
+    color: var(--md-sys-color-on-tertiary);
+  }
+
+  :host([variant='vibrant'].select) .menu-item:hover,
+  :host([variant='vibrant'][selected]) .menu-item:hover {
+    background-color: var(--md-sys-color-tertiary);
     opacity: 0.92;
   }
 
   /* Selection check icon */
   .selection-check {
-    color: var(--md-sys-color-on-surface-variant);
-    fill: var(--md-sys-color-on-surface-variant);
+    color: var(--md-sys-color-on-secondary-container);
+    fill: var(--md-sys-color-on-secondary-container);
     width: 24px;
     height: 24px;
+  }
+
+  :host([variant='vibrant'].select) .selection-check,
+  :host([variant='vibrant'][selected]) .selection-check {
+    color: var(--md-sys-color-on-tertiary);
+    fill: var(--md-sys-color-on-tertiary);
   }
 `

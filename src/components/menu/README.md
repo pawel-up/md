@@ -113,11 +113,80 @@ This approach allows for deep nesting and ensures proper keyboard event propagat
 </ui-menu>
 ```
 
+### Grouped Menus (MD3 Expressive Gaps)
+
+Material Design 3 introduces **Grouped Menus**, organizing related actions into separate elevated card containers separated by 8dp expressive gaps instead of traditional line dividers.
+
+Wrap menu items in `<ui-menu-group>` elements with optional `header` text or slot:
+
+```html
+<ui-button popovertarget="grouped-menu">Open Grouped Menu</ui-button>
+
+<ui-menu id="grouped-menu">
+  <ui-menu-group header="Actions" aria-label="Actions">
+    <ui-menu-item>
+      <span slot="start"><ui-icon>edit</ui-icon></span>
+      <span>Edit</span>
+    </ui-menu-item>
+    <ui-menu-item>
+      <span slot="start"><ui-icon>share</ui-icon></span>
+      <span>Share</span>
+    </ui-menu-item>
+  </ui-menu-group>
+
+  <ui-menu-group header="Manage" aria-label="Manage">
+    <ui-menu-item>
+      <span slot="start"><ui-icon>archive</ui-icon></span>
+      <span>Archive</span>
+    </ui-menu-item>
+    <ui-menu-item>
+      <span slot="start"><ui-icon>delete</ui-icon></span>
+      <span>Delete</span>
+    </ui-menu-item>
+  </ui-menu-group>
+</ui-menu>
+```
+
+**Seamless Single-List Keyboard Navigation**:
+The parent `<ui-menu>` automatically detects `<ui-menu-group>` children, flattens all nested items into a unified list, and synchronizes `density` and `variant`. Users can press <kbd>↓</kbd> or <kbd>↑</kbd> to seamlessly transition across group boundaries without interruptions or extra keystrokes.
+
+### Multi-Select Menus
+
+Set `multiselect` (or `multiSelect`) on `<ui-menu>` to allow multiple selections. In multi-select mode:
+- Selecting an item toggles its `selected` attribute without automatically closing the popover.
+- Items automatically adopt `role="menuitemcheckbox"` and `aria-checked="true|false"`.
+- Selected items display the MD3 pill-shaped selection background highlight.
+- Access currently selected items at any time via the `.selectedItems` property.
+
+```html
+<ui-menu id="filter-menu" multiselect>
+  <ui-menu-item selected>Status: Active</ui-menu-item>
+  <ui-menu-item>Status: Pending</ui-menu-item>
+  <ui-menu-item>Status: Archived</ui-menu-item>
+</ui-menu>
+```
+
+### Variants and Density
+
+Menus support standard and vibrant color variants, as well as MD3 density scale (0 to -3):
+
+```html
+<!-- Vibrant Variant -->
+<ui-menu variant="vibrant">
+  <ui-menu-item>Featured Action</ui-menu-item>
+</ui-menu>
+
+<!-- Density Scale: 0 (48px), -1 (44px), -2 (40px), -3 (36px) -->
+<ui-menu density="-2">
+  <ui-menu-item>Compact item</ui-menu-item>
+</ui-menu>
+```
+
 ## Components
 
 ### `<ui-menu>`
 
-The main menu container that holds menu items and submenus.
+The main menu container that holds menu items, groups, and submenus.
 
 #### Menu Attributes
 
@@ -125,6 +194,13 @@ The main menu container that holds menu items and submenus.
 - `disabled` (boolean) - Whether the menu is disabled
 - `popover` (string) - Native popover attribute, typically set to "auto"
 - `id` (string) - Required for popover targeting
+- `multiselect` / `multiSelect` (boolean) - Enables multi-selection mode
+- `variant` (`'standard' | 'vibrant'`) - Color variant (default: `'standard'`)
+- `density` (`'0' | '-1' | '-2' | '-3'`) - Density scale (default: `'0'`)
+
+#### Menu Properties
+
+- `selectedItems` (`UiMenuItem[]`) - Array of currently selected items in the menu
 
 #### Menu Events
 
@@ -138,6 +214,27 @@ The main menu container that holds menu items and submenus.
 - `hide()` - Programmatically hide the menu
 - `togglePopover(force?)` - Toggle the menu's popover state
 
+### `<ui-menu-group>`
+
+Container for visual and semantic grouping inside `<ui-menu>` with 8dp expressive gaps.
+
+> **Accessibility**: `<ui-menu-group>` sets `role="group"`. Consumers must provide `aria-label` or `aria-labelledby` directly on `<ui-menu-group>` to ensure screen readers and accessibility evaluators (such as axe-core) can properly identify the group name.
+
+#### Menu Group Attributes
+
+- `aria-label` (string) - Accessible label for the group (consumer-provided)
+- `variant` (`'standard' | 'vibrant'`) - Inherited automatically from parent `<ui-menu>`
+- `density` (`'0' | '-1' | '-2' | '-3'`) - Inherited automatically from parent `<ui-menu>`
+
+#### Menu Group Slots
+
+- Default slot - Child `<ui-menu-item>` elements
+- `header` - Custom header content (overrides `header` attribute)
+
+#### Menu Group Properties
+
+- `items` (`UiMenuItem[]`) - Child menu items within this group
+
 ### `<ui-menu-item>`
 
 Individual menu items that can trigger actions or open submenus.
@@ -145,8 +242,11 @@ Individual menu items that can trigger actions or open submenus.
 #### Menu Item Attributes
 
 - `disabled` (boolean) - Whether the menu item is disabled
+- `selected` (boolean) - Whether the item is selected
 - `submenu` (string) - ID of the associated submenu element
 - `id` (string) - Required when the item has a submenu (for anchoring)
+- `variant` (`'standard' | 'vibrant'`) - Inherited automatically
+- `density` (`'0' | '-1' | '-2' | '-3'`) - Inherited automatically
 
 #### Menu Item Slots
 
@@ -183,6 +283,7 @@ Submenu containers that extend the main menu component with additional positioni
 - `show()` - Programmatically show the submenu
 - `hide()` - Programmatically hide the submenu
 - `setParentMenu(menu)` - Set the parent menu for proper event handling
+
 
 ## Keyboard Navigation
 

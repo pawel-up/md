@@ -605,6 +605,120 @@
         </ui-sub-menu>
       </ui-menu>
     </section>
+
+    <section class="demo-section">
+      <h2 class="title-large">Grouped Menus (MD3 Expressive Update)</h2>
+      <p>
+        Menus structured into visual and logical groups with <code>&lt;ui-menu-group&gt;</code>, using 8dp expressive gaps instead of dividers:
+      </p>
+      <ui-button id="grouped-menu-trigger" color="filled" popovertarget="grouped-menu">Open Grouped Menu</ui-button>
+      <ui-menu id="grouped-menu" popover="auto" @select="handleGroupedMenuSelect">
+        <ui-menu-group aria-label="Actions">
+          <ui-menu-item>
+            <span slot="start"><ui-icon>edit</ui-icon></span>
+            <span>Edit Post</span>
+          </ui-menu-item>
+          <ui-menu-item>
+            <span slot="start"><ui-icon>share</ui-icon></span>
+            <span>Share Link</span>
+          </ui-menu-item>
+          <ui-menu-item>
+            <span slot="start"><ui-icon>bookmark</ui-icon></span>
+            <span>Save to Bookmarks</span>
+          </ui-menu-item>
+        </ui-menu-group>
+        <ui-menu-group aria-label="Danger Zone">
+          <ui-menu-item>
+            <span slot="start"><ui-icon>archive</ui-icon></span>
+            <span>Archive</span>
+          </ui-menu-item>
+          <ui-menu-item>
+            <span slot="start"><ui-icon>delete</ui-icon></span>
+            <span>Delete</span>
+          </ui-menu-item>
+        </ui-menu-group>
+      </ui-menu>
+      <p v-if="groupedMenuOutput">{{ groupedMenuOutput }}</p>
+    </section>
+
+    <section class="demo-section">
+      <h2 class="title-large">Multi-Select Menu</h2>
+      <p>
+        Multi-select mode keeps the menu open on click and uses checkboxes (<code>role="menuitemcheckbox"</code>) with pill-shaped selection indicators:
+      </p>
+      <ui-button id="multiselect-menu-trigger" color="filled" popovertarget="multiselect-menu">Open Multi-Select Menu</ui-button>
+      <ui-menu id="multiselect-menu" multiselect popover="auto" @select="handleMultiSelectMenu">
+        <ui-menu-item value="Option 1" selected>
+          <span>Option 1</span>
+        </ui-menu-item>
+        <ui-menu-item value="Option 2">
+          <span>Option 2</span>
+        </ui-menu-item>
+        <ui-menu-item value="Option 3" selected>
+          <span>Option 3</span>
+        </ui-menu-item>
+        <ui-menu-item value="Option 4">
+          <span>Option 4</span>
+        </ui-menu-item>
+      </ui-menu>
+      <p v-if="multiSelectOutput">{{ multiSelectOutput }}</p>
+    </section>
+
+    <section class="demo-section">
+      <h2 class="title-large">Vibrant Menu Variant</h2>
+      <p>
+        MD3 Vibrant menus use Primary Container surfaces and contrasting on-primary-container text:
+      </p>
+      <ui-button id="vibrant-menu-trigger" color="filled" popovertarget="vibrant-menu">Open Vibrant Menu</ui-button>
+      <ui-menu id="vibrant-menu" variant="vibrant" popover="auto" @select="handleVibrantMenuSelect">
+        <ui-menu-item>
+          <span slot="start"><ui-icon>bolt</ui-icon></span>
+          <span>Boost Speed</span>
+        </ui-menu-item>
+        <ui-menu-item>
+          <span slot="start"><ui-icon>auto_awesome</ui-icon></span>
+          <span>Magic Enhance</span>
+        </ui-menu-item>
+        <ui-menu-item>
+          <span slot="start"><ui-icon>star</ui-icon></span>
+          <span>Upgrade to Pro</span>
+        </ui-menu-item>
+      </ui-menu>
+      <p v-if="vibrantMenuOutput">{{ vibrantMenuOutput }}</p>
+    </section>
+
+    <section class="demo-section">
+      <h2 class="title-large">Menu Density Variations</h2>
+      <p>
+        MD3 Density scale (0 = 48px, -1 = 44px, -2 = 40px, -3 = 36px):
+      </p>
+      <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 12px;">
+        <ui-button id="density-0-trigger" color="filled" popovertarget="density-0-menu">Density 0 (48px)</ui-button>
+        <ui-button id="density-1-trigger" color="tonal" popovertarget="density-1-menu">Density -1 (44px)</ui-button>
+        <ui-button id="density-2-trigger" color="tonal" popovertarget="density-2-menu">Density -2 (40px)</ui-button>
+        <ui-button id="density-3-trigger" color="tonal" popovertarget="density-3-menu">Density -3 (36px)</ui-button>
+      </div>
+
+      <ui-menu id="density-0-menu" density="0" popover="auto">
+        <ui-menu-item><span slot="start"><ui-icon>format_size</ui-icon></span><span>Comfortable (48px)</span></ui-menu-item>
+        <ui-menu-item><span slot="start"><ui-icon>check</ui-icon></span><span>Default Setting</span></ui-menu-item>
+      </ui-menu>
+
+      <ui-menu id="density-1-menu" density="-1" popover="auto">
+        <ui-menu-item><span slot="start"><ui-icon>format_size</ui-icon></span><span>Slightly Compact (44px)</span></ui-menu-item>
+        <ui-menu-item><span slot="start"><ui-icon>check</ui-icon></span><span>Setting Applied</span></ui-menu-item>
+      </ui-menu>
+
+      <ui-menu id="density-2-menu" density="-2" popover="auto">
+        <ui-menu-item><span slot="start"><ui-icon>format_size</ui-icon></span><span>Compact (40px)</span></ui-menu-item>
+        <ui-menu-item><span slot="start"><ui-icon>check</ui-icon></span><span>Setting Applied</span></ui-menu-item>
+      </ui-menu>
+
+      <ui-menu id="density-3-menu" density="-3" popover="auto">
+        <ui-menu-item><span slot="start"><ui-icon>format_size</ui-icon></span><span>Dense / Desktop (36px)</span></ui-menu-item>
+        <ui-menu-item><span slot="start"><ui-icon>check</ui-icon></span><span>Setting Applied</span></ui-menu-item>
+      </ui-menu>
+    </section>
   </div>
 </template>
 
@@ -613,6 +727,7 @@ import { ref } from 'vue'
 import '../../src/components/menu/ui-menu.js'
 import '../../src/components/menu/ui-sub-menu.js'
 import '../../src/components/menu/ui-menu-item.js'
+import '../../src/components/menu/ui-menu-group.js'
 import '../../src/components/button/ui-button.js'
 import '../../src/components/icons/ui-icon.js'
 
@@ -627,6 +742,9 @@ const iconMenuSelectOutput = ref('')
 const iconMenuSelectedOption = ref('Premium')
 const autoCheckMenuOutput = ref('')
 const autoCheckSelectedOption = ref('High')
+const groupedMenuOutput = ref('')
+const multiSelectOutput = ref('Selected (2): Option 1, Option 3')
+const vibrantMenuOutput = ref('')
 
 const handleBasicMenuSelect = (e: CustomEvent) => {
   const item = e.detail.item as HTMLElement
@@ -664,5 +782,23 @@ const handleAutoCheckMenuSelect = (e: CustomEvent) => {
   const item = e.detail.item as HTMLElement
   autoCheckSelectedOption.value = item.textContent?.trim() || ''
   autoCheckMenuOutput.value = `Selected: ${autoCheckSelectedOption.value}`
+}
+
+const handleGroupedMenuSelect = (e: CustomEvent) => {
+  const item = e.detail.item as HTMLElement
+  groupedMenuOutput.value = `Selected: ${item.textContent?.trim()}`
+}
+
+const handleMultiSelectMenu = (e: CustomEvent) => {
+  const menu = e.target as any
+  const selected = (menu.selectedItems || []).map((it: any) => it.value || it.textContent?.trim())
+  multiSelectOutput.value = selected.length
+    ? `Selected (${selected.length}): ${selected.join(', ')}`
+    : 'Selected (0): None'
+}
+
+const handleVibrantMenuSelect = (e: CustomEvent) => {
+  const item = e.detail.item as HTMLElement
+  vibrantMenuOutput.value = `Selected: ${item.textContent?.trim()}`
 }
 </script>

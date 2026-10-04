@@ -2,7 +2,7 @@ import { html, PropertyValues, TemplateResult } from 'lit'
 import { property, state } from 'lit/decorators.js'
 import { classMap } from 'lit/directives/class-map.js'
 import { randomId } from '../../../lib/random.js'
-import UiList from '../../list/internals/List.js'
+import UiList, { type UiListItemsChange } from '../../list/internals/List.js'
 import type UiMenuItem from './MenuItem.js'
 import type UiSubMenu from './SubMenu.js'
 import { setDisabled } from '../../../lib/disabled.js'
@@ -95,6 +95,28 @@ export default class Menu extends UiList implements OverlayHost {
   @property({ type: Boolean }) accessor selectOnActivate = false
 
   /**
+   * Whether the menu allows selecting multiple items.
+   * Multi-select menus remain open when items are activated.
+   * @attribute
+   */
+  @property({ type: Boolean, reflect: true }) accessor multiSelect = false
+
+  /**
+   * Density level of the menu items (web only).
+   * Valid values are '0' (default, 48px), '-1' (44px), '-2' (40px), '-3' (36px).
+   * @attribute
+   */
+  @property({ type: String, reflect: true }) accessor density: '0' | '-1' | '-2' | '-3' = '0'
+
+  /**
+   * Color mapping variant.
+   * - 'standard': Surface-based color mapping (default)
+   * - 'vibrant': Tertiary-based color mapping with higher visual emphasis
+   * @attribute
+   */
+  @property({ type: String, reflect: true }) accessor variant: 'standard' | 'vibrant' = 'standard'
+
+  /**
    * Currently active sub-menu
    */
   @state() accessor activeSubMenu: UiSubMenu | null = null
@@ -109,6 +131,12 @@ export default class Menu extends UiList implements OverlayHost {
     super()
     this.selector = 'ui-menu-item'
     this.addEventListener('beforetoggle', this.handleBeforeToggle)
+    this.addEventListener('group-items-change', this.handleGroupItemsChange)
+  }
+
+  @bound
+  protected handleGroupItemsChange(): void {
+    this.updateItems()
   }
 
   override connectedCallback(): void {
@@ -132,6 +160,21 @@ export default class Menu extends UiList implements OverlayHost {
 
     if (changedProperties.has('disabled')) {
       setDisabled(this, this.disabled)
+    }
+
+    if (changedProperties.has('multiSelect')) {
+      this.queryMenuItems().forEach((item) => {
+        item.updateSelectionState()
+        item.requestUpdate()
+      })
+    }
+
+    if (changedProperties.has('density')) {
+      this.syncDensity()
+    }
+
+    if (changedProperties.has('variant')) {
+      this.syncVariant()
     }
 
     if (changedProperties.has('open')) {
@@ -201,10 +244,101 @@ export default class Menu extends UiList implements OverlayHost {
   }
 
   protected queryMenuItems(): UiMenuItem[] {
+    if (this.items && this.items.length > 0) {
+      return this.items as UiMenuItem[]
+    }
     const slot = this.shadowRoot?.querySelector('slot')
     if (!slot) return []
-    const { selector } = this
-    return Array.from(slot.assignedElements({ flatten: true })).filter((el) => el.matches(selector)) as UiMenuItem[]
+    const assigned = slot.assignedElements({ flatten: true })
+    const items: UiMenuItem[] = []
+    for (const el of assigned) {
+      if (el.matches(this.selector)) {
+        items.push(el as UiMenuItem)
+      } else if (el.localName === 'ui-menu-group') {
+        const group = el as HTMLElement & { items?: UiMenuItem[] }
+        if (group.items) {
+          items.push(...group.items)
+        } else {
+          items.push(...(Array.from(group.querySelectorAll(this.selector)) as UiMenuItem[]))
+        }
+      }
+    }
+    return items
+  }
+
+  protected override updateItems(): void {
+    const elements = this.assignedElements || []
+    const items: UiMenuItem[] = []
+    let hasGroups = false
+
+    for (const el of elements) {
+      if (this.isListItem(el)) {
+        items.push(el as UiMenuItem)
+      } else if (el.localName === 'ui-menu-group') {
+        hasGroups = true
+        const group = el as HTMLElement & { items?: UiMenuItem[] }
+        if (group.items && Array.isArray(group.items)) {
+          items.push(...group.items)
+        } else {
+          items.push(...(Array.from(group.querySelectorAll(this.selector)) as UiMenuItem[]))
+        }
+      }
+    }
+
+    this.toggleAttribute('has-groups', hasGroups)
+    this.items = items
+
+    if (this.delegateFocus) {
+      items.forEach((item) => item.removeAttribute('tabindex'))
+    }
+    if (this.activeListItem && !items.includes(this.activeListItem as UiMenuItem)) {
+      this.activeListItem = null
+    }
+    if (this.highlightListItem && !items.includes(this.highlightListItem as UiMenuItem)) {
+      this.highlightListItem = null
+    }
+    this.updateChildrenVisibility()
+    this.syncDensity()
+    this.syncVariant()
+    this.dispatchEvent(
+      new CustomEvent<UiListItemsChange>('itemschange', { bubbles: false, composed: false, detail: { items } })
+    )
+  }
+
+  /**
+   * Synchronizes density setting down to slotted items and groups.
+   */
+  protected syncDensity(): void {
+    const { density } = this
+    const elements = this.assignedElements || []
+    for (const el of elements) {
+      if (el.localName === 'ui-menu-group') {
+        const group = el as HTMLElement & { density?: '0' | '-1' | '-2' | '-3' }
+        group.density = density
+      }
+    }
+    const items = this.queryMenuItems()
+    for (const item of items) {
+      item.density = density
+    }
+  }
+
+  /**
+   * Synchronizes color variant setting down to slotted items and groups.
+   */
+  protected syncVariant(): void {
+    const { variant } = this
+    const elements = this.assignedElements || []
+    for (const el of elements) {
+      if (el.localName === 'ui-menu-group') {
+        const group = el as HTMLElement & { variant?: 'standard' | 'vibrant' }
+        group.variant = variant
+      }
+    }
+    const items = this.queryMenuItems()
+    for (const item of items) {
+      item.variant = variant
+    }
   }
 
   /**
@@ -567,6 +701,13 @@ export default class Menu extends UiList implements OverlayHost {
   }
 
   override notifySelect(item: UiListItem & { selected?: boolean }, index?: number): boolean {
+    if (this.multiSelect) {
+      item.selected = !item.selected
+      ;(item as UiMenuItem).updateSelectionState?.()
+      item.requestUpdate()
+      return super.notifySelect(item, index)
+    }
+
     // Only handle selection if selectOnActivate is enabled
     if (this.selectOnActivate) {
       this.clearSelection()
@@ -588,11 +729,19 @@ export default class Menu extends UiList implements OverlayHost {
   }
 
   /**
-   * Gets the currently selected menu item
+   * Gets the currently selected menu item (for single-select menus)
    */
   get selectedItem(): UiMenuItem | null {
     const items = this.queryMenuItems()
     return items.find((item) => item.selected) || null
+  }
+
+  /**
+   * Gets all currently selected menu items (for multi-select menus)
+   */
+  get selectedItems(): UiMenuItem[] {
+    const items = this.queryMenuItems()
+    return items.filter((item) => item.selected)
   }
 
   /**
