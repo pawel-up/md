@@ -1,3 +1,10 @@
+# [1.4.0](https://github.com/pawel-up/md/compare/v1.3.0...v1.4.0) (2026-10-04)
+
+
+### Features
+
+* add strongly typed change event detail containing the target button to ui-button-group ([8b16f5e](https://github.com/pawel-up/md/commit/8b16f5e861a2106181e047a7a5bcccf85e46290d))
+
 # [1.3.0](https://github.com/pawel-up/md/compare/v1.2.3...v1.3.0) (2026-10-04)
 
 
