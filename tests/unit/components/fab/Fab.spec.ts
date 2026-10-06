@@ -836,7 +836,7 @@ test.group('Floating Action Button (FAB) - Accessibility', () => {
     const el = await fixture<UiFabElement>(html`
       <ui-fab open>
         <ui-icon-button slot="trigger" aria-label="Actions">
-          <ui-icon>add</ui-icon>
+          <ui-icon aria-hidden="true">add</ui-icon>
         </ui-icon-button>
         <ui-button slot="menu" role="menuitemcheckbox" aria-checked="true">Checkbox Item</ui-button>
         <ui-button slot="menu" role="menuitemradio" aria-checked="false">Radio Item</ui-button>

@@ -27,10 +27,14 @@ export default defineConfig({
         <head>
           <meta charset="utf-8">
           <title>Unit tests</title>
+          <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
           <!-- lupa-stylesheets -->
         </head>
         <body>
           <div id="app-root"></div>
+          <script type="module">
+            await document.fonts.load('24px "Material Symbols Outlined"')
+          </script>
           <!-- lupa-scripts -->
         </body>
       </html>
