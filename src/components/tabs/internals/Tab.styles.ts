@@ -37,7 +37,7 @@ export default css`
     --_with-icon-and-label-text-container-height: var(--md-primary-tab-with-icon-and-label-text-container-height, 64px);
     --_icon-size: var(--md-secondary-tab-icon-size, 24px);
 
-    background-color: var(--md-tab-background-color, var(--md-sys-color-surface));
+    background-color: var(--md-tab-background-color, transparent);
     color: var(--_color);
     border-radius: var(--md-tab-container-shape, 0px);
     --md-ripple-state-layer-shape: var(--md-tab-container-shape, 0px);
@@ -82,16 +82,25 @@ export default css`
     fill: var(--md-sys-color-primary);
   }
 
+  :host([selected][priority='secondary']) .icon ::slotted(*) {
+    color: var(--md-sys-color-on-surface);
+    fill: var(--md-sys-color-on-surface);
+  }
+
   :host([selected]) {
     --_active-indicator-opacity: 1;
   }
 
   :host([priority='primary']) {
     --_color: var(--md-primary-tab-label-text-color, var(--md-sys-color-on-surface-variant));
+    --_active-indicator-height: var(--md-primary-tab-active-indicator-height, 3px);
+    --_active-indicator-shape: var(--md-primary-tab-active-indicator-shape, 3px 3px 0px 0px);
   }
 
   :host([priority='secondary']) {
     --_color: var(--md-secondary-tab-label-text-color, var(--md-sys-color-on-surface-variant));
+    --_active-indicator-height: var(--md-secondary-tab-active-indicator-height, 2px);
+    --_active-indicator-shape: var(--md-secondary-tab-active-indicator-shape, 0);
   }
 
   :host([selected][priority='primary']) {
@@ -117,9 +126,9 @@ export default css`
     opacity: var(--_active-indicator-opacity);
   }
 
-  :host([priority='primary']) {
-    --_active-indicator-height: 3px;
-    --_active-indicator-shape: 3px 3px 0px 0px;
+  :host([priority='primary']) .indicator {
+    inset: auto 2px 0 2px;
+    min-width: 24px;
   }
 
   :host([disabled]) {

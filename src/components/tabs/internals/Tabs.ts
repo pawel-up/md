@@ -5,7 +5,6 @@ import { StyleInfo, styleMap } from 'lit/directives/style-map.js'
 import { Easing } from '../../motion/animation.js'
 import UiTab from './Tab.js'
 import '../../icon-button/ui-icon-button.js'
-import '../../divider/ui-divider.js'
 import '../../icons/ui-icon.js'
 import { chevronLeft, chevronRight } from '../../icons/Icons.js'
 
@@ -127,6 +126,8 @@ export default class UiTabs extends LitElement {
   @state() private accessor showLeftArrow = false
 
   @state() private accessor showRightArrow = false
+
+  @state() private accessor overflowing = false
 
   private observer: IntersectionObserver
 
@@ -492,17 +493,20 @@ export default class UiTabs extends LitElement {
 
     this.showLeftArrow = canScrollLeft
     this.showRightArrow = canScrollRight
+    this.overflowing = scrollWidth - clientWidth > 1
   }
 
   override render(): TemplateResult {
+    const containerClasses: ClassInfo = {
+      'tabs-container': true,
+      'overflowing': this.overflowing,
+    }
     return html`
-      <div class="tabs-container">
+      <div class="${classMap(containerClasses)}">
         ${this.renderScrollButton('left')}
         <div class="tabs" @scroll="${this.handleScroll}">${this.renderSlot()}</div>
-        ${this.renderScrollButton('right')}
+        ${this.renderScrollButton('right')} ${this.renderIndicator()}
       </div>
-      ${this.renderIndicator()}
-      <ui-divider class="divider"></ui-divider>
     `
   }
 

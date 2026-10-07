@@ -115,4 +115,89 @@ test.group('Tabs', () => {
 
     assert.isNotNull(tabs.shadowRoot?.querySelector('.scroll-button.left'))
   }).tags(['@md', '@tabs'])
+
+  test('aligns secondary tabs with 2dp indicator and flat shape', async ({ assert }) => {
+    const tabs = (await fixture(html`
+      <ui-tabs priority="secondary">
+        <ui-tab id="secTab1" selected>Secondary 1</ui-tab>
+        <ui-tab id="secTab2">Secondary 2</ui-tab>
+      </ui-tabs>
+    `)) as UiTabsElement
+    await tabs.updateComplete
+    const tab1 = tabs.querySelector('#secTab1') as UiTabElement
+    await tab1.updateComplete
+
+    assert.equal(tab1.priority, 'secondary')
+    const indicator = tab1.shadowRoot?.querySelector('.indicator')
+    assert.isNotNull(indicator, 'indicator rendered')
+    const styles = getComputedStyle(tab1)
+    assert.equal(styles.getPropertyValue('--_active-indicator-height').trim(), '2px')
+    assert.equal(styles.getPropertyValue('--_active-indicator-shape').trim(), '0')
+  }).tags(['@md', '@tabs'])
+
+  test('applies 2dp insets and 24dp min-width to primary tab sizing', async ({ assert }) => {
+    const tabs = await basicFixture()
+    await tabs.updateComplete
+    const tab1 = tabs.querySelector('#tab1') as UiTabElement
+    await tab1.updateComplete
+
+    const sizing = tab1.getIndicatorSizing()
+    assert.isAtLeast(sizing.width, 24)
+  }).tags(['@md', '@tabs'])
+
+  test('detects overflowing tabs dynamically and sets overflowing class', async ({ assert }) => {
+    const tabs = (await fixture(html`
+      <ui-tabs style="width: 200px;">
+        <ui-tab style="min-width: 100px;">Tab 1</ui-tab>
+        <ui-tab style="min-width: 100px;">Tab 2</ui-tab>
+        <ui-tab style="min-width: 100px;">Tab 3</ui-tab>
+      </ui-tabs>
+    `)) as UiTabsElement
+    await tabs.updateComplete
+    await waitUntil(
+      () => tabs.shadowRoot?.querySelector('.tabs-container')?.classList.contains('overflowing') === true,
+      'tabs-container should acquire overflowing class'
+    )
+
+    const container = tabs.shadowRoot?.querySelector('.tabs-container')
+    assert.isTrue(container?.classList.contains('overflowing'))
+  }).tags(['@md', '@tabs'])
+
+  test('respects custom design tokens for active indicator height and shape', async ({ assert }) => {
+    const tabs = (await fixture(html`
+      <ui-tabs
+        style="--md-primary-tab-active-indicator-height: 5px; --md-primary-tab-active-indicator-shape: 5px 5px 0 0;"
+      >
+        <ui-tab id="customTab1" selected>Custom 1</ui-tab>
+      </ui-tabs>
+    `)) as UiTabsElement
+    await tabs.updateComplete
+    const tab1 = tabs.querySelector('#customTab1') as UiTabElement
+    await tab1.updateComplete
+
+    const styles = getComputedStyle(tab1)
+    assert.equal(styles.getPropertyValue('--_active-indicator-height').trim(), '5px')
+    assert.equal(styles.getPropertyValue('--_active-indicator-shape').trim(), '5px 5px 0 0')
+  }).tags(['@md', '@tabs'])
+
+  test('centers primary indicator when content width is constrained below 24dp', async ({ assert }) => {
+    const tabs = (await fixture(html`
+      <ui-tabs>
+        <ui-tab id="narrowTab" selected>
+          <span slot="icon" style="display: inline-block; width: 16px; height: 16px;"></span>
+        </ui-tab>
+      </ui-tabs>
+    `)) as UiTabsElement
+    await tabs.updateComplete
+    const tab = tabs.querySelector('#narrowTab') as UiTabElement
+    await tab.updateComplete
+
+    const sizing = tab.getIndicatorSizing()
+    assert.equal(sizing.width, 24)
+    const contentRect = tab.shadowRoot?.querySelector('.tab-content')?.getBoundingClientRect()
+    if (contentRect) {
+      const expectedLeft = contentRect.left + (contentRect.width - 24) / 2
+      assert.closeTo(sizing.left, expectedLeft, 0.01)
+    }
+  }).tags(['@md', '@tabs'])
 })

@@ -2,12 +2,12 @@ import { css } from 'lit'
 
 export default css`
   :host {
-    display: block;
-    overflow: hidden;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
     position: relative;
+    overflow: hidden;
+    background-color: var(--md-tabs-background-color, var(--md-sys-color-surface));
   }
 
   .tabs-container {
@@ -15,6 +15,8 @@ export default css`
     align-items: center;
     position: relative;
     align-self: stretch;
+    box-sizing: border-box;
+    border-bottom: 1px solid var(--md-sys-color-outline-variant);
   }
 
   .tabs {
@@ -36,6 +38,10 @@ export default css`
     white-space: nowrap;
   }
 
+  .tabs-container.overflowing .tabs ::slotted(*) {
+    flex: 0 0 auto;
+  }
+
   .scroll-button {
     position: absolute;
     top: 0;
@@ -50,13 +56,17 @@ export default css`
 
   .scroll-button.left {
     left: 0;
-    background: linear-gradient(to right, var(--md-tab-background-color, var(--md-sys-color-surface)) 60%, transparent);
+    background: linear-gradient(
+      to right,
+      var(--md-tabs-background-color, var(--md-sys-color-surface)) 60%,
+      transparent
+    );
     justify-content: flex-start;
   }
 
   .scroll-button.right {
     right: 0;
-    background: linear-gradient(to left, var(--md-tab-background-color, var(--md-sys-color-surface)) 60%, transparent);
+    background: linear-gradient(to left, var(--md-tabs-background-color, var(--md-sys-color-surface)) 60%, transparent);
     justify-content: flex-end;
   }
 
@@ -67,7 +77,7 @@ export default css`
 
   .indicator {
     position: absolute;
-    bottom: 1px;
+    bottom: 0px;
     left: 0px;
     right: 0px;
     overflow: hidden;
@@ -79,11 +89,11 @@ export default css`
   }
 
   .indicator.primary {
-    height: 3px;
+    height: var(--md-primary-tab-active-indicator-height, 3px);
   }
 
   .indicator.secondary {
-    height: 2px;
+    height: var(--md-secondary-tab-active-indicator-height, 2px);
   }
 
   .pointer {
@@ -96,11 +106,10 @@ export default css`
   }
 
   .indicator.primary .pointer {
-    border-radius: 3px 3px 0 0;
+    border-radius: var(--md-primary-tab-active-indicator-shape, 3px 3px 0 0);
   }
 
-  .divider {
-    align-self: stretch;
-    margin: 0;
+  .indicator.secondary .pointer {
+    border-radius: var(--md-secondary-tab-active-indicator-shape, 0);
   }
 `

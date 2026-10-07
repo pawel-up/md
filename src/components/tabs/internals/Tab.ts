@@ -6,7 +6,6 @@ import type UiRipple from '../../ripple/internals/ripple.js'
 import { isDisabled, setDisabled } from '../../../lib/disabled.js'
 import { UiElement } from '../../UiElement.js'
 import type { SizingInfo, TabsPriority } from './Tabs.js'
-import { Easing } from '../../motion/animation.js'
 
 import '../../ripple/ui-ripple.js'
 import '../../focus-ring/ui-focus-ring.js'
@@ -168,45 +167,22 @@ export default class UiTab extends UiElement {
   }
 
   public getIndicatorSizing(): SizingInfo {
-    const element = this.priority === 'primary' ? this.shadowRoot?.querySelector('.tab-content') : this
+    const isPrimary = this.priority === 'primary'
+    const element = isPrimary ? this.shadowRoot?.querySelector('.tab-content') : this
     if (!element) {
       return { width: 0, left: 0 }
     }
     const rect = element.getBoundingClientRect()
+    if (isPrimary) {
+      // Inset 2dp on each side per MD3 spec, with a 24dp minimum length
+      const width = Math.max(24, rect.width - 4)
+      const left = rect.left + (rect.width - width) / 2
+      return { width, left }
+    }
     return {
       width: rect.width,
       left: rect.left,
     }
-  }
-
-  /**
-   * When `indicated` is `true` it animates the indicator to highlight the position of the tab.
-   */
-  public highlight(): void {
-    if (!this.indicated) {
-      return
-    }
-    const pointer = this.shadowRoot?.querySelector('.pointer')
-    if (!pointer) {
-      return
-    }
-    const frames: Keyframe[] = [
-      {
-        width: `40px`,
-      },
-      {
-        width: `80px`,
-      },
-      {
-        width: `40px`,
-      },
-    ]
-
-    pointer.animate(frames, {
-      duration: 360,
-      iterations: 1,
-      easing: Easing.STANDARD,
-    })
   }
 
   protected override render(): TemplateResult {
