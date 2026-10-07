@@ -1,3 +1,10 @@
+## [1.4.1](https://github.com/pawel-up/md/compare/v1.4.0...v1.4.1) (2026-10-07)
+
+
+### Bug Fixes
+
+* update tab indicator sizing and styling ([61a3a10](https://github.com/pawel-up/md/commit/61a3a10f8e380b84184991219195a3408732b199))
+
 # [1.4.0](https://github.com/pawel-up/md/compare/v1.3.0...v1.4.0) (2026-10-04)
 
 
