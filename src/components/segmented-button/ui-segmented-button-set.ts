@@ -3,6 +3,9 @@ import { customElement } from 'lit/decorators.js'
 import Element from './internals/SegmentedButtonsSet.js'
 import styles from './internals/SegmentedButtonsSet.styles.js'
 
+/**
+ * @deprecated Use the `<ui-button-group>` component instead.
+ */
 @customElement('ui-segmented-button-set')
 export class UiSegmentedButtonSetElement extends Element {
   static override styles: CSSResultOrNative[] = [styles]

@@ -6,6 +6,7 @@ import '../../src/components/icons/ui-icon.js'
 
 <template>
   <section class="demo-section">
+    <p class="deprecated"><strong>Deprecated:</strong> Use &lt;ui-button-group&gt; component instead.</p>
     <h2 class="title-large">Single selection buttons</h2>
     <div class="demo-row">
       <ui-segmented-button-set>
