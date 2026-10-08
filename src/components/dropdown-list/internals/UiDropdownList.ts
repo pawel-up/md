@@ -47,9 +47,9 @@ export default class UiDropdownList extends LitElement implements OverlayHost {
   @queryAssignedElements({ slot: 'dropdown' })
   protected accessor dropdowns!: HTMLElement[]
 
-  @state() protected accessor triggerId = `ui-trigger-${randomId()}`
+  @state() protected accessor triggerId = randomId('ui-trigger')
 
-  @state() protected accessor menuId = `ui-menu-${randomId()}`
+  @state() protected accessor menuId = randomId('ui-menu')
 
   /**
    * Whether the menu is opened.
