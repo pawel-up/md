@@ -87,18 +87,16 @@ export default class Fab extends LitElement implements OverlayHost {
 
   /**
    * Whether pressing the Escape key dismisses the FAB menu.
-   * @attribute close-on-escape
    * @default true
    */
-  @property({ type: Boolean, attribute: 'close-on-escape' })
+  @property({ attribute: false })
   accessor closeOnEscape: boolean | undefined = true
 
   /**
    * Whether clicking outside the FAB menu dismisses it.
-   * @attribute close-on-outside-click
    * @default true
    */
-  @property({ type: Boolean, attribute: 'close-on-outside-click' })
+  @property({ attribute: false })
   accessor closeOnOutsideClick: boolean | undefined = true
 
   /**

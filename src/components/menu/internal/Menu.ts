@@ -48,18 +48,16 @@ export default class Menu extends UiList implements OverlayHost {
   /**
    * Whether pressing Escape dismisses the menu.
    *
-   * @attribute
    * @default true
    */
-  @property({ type: Boolean }) accessor closeOnEscape = true
+  @property({ attribute: false }) accessor closeOnEscape = true
 
   /**
    * Whether clicking outside the menu dismisses it.
    *
-   * @attribute
    * @default true
    */
-  @property({ type: Boolean }) accessor closeOnOutsideClick = true
+  @property({ attribute: false }) accessor closeOnOutsideClick = true
 
   /**
    * Optional callback to verify whether the menu can be closed.

@@ -178,7 +178,7 @@ export class UiDatePickerCalendar extends LitElement {
    * Whether to show navigation controls (previous/next month and year buttons).
    * When false, users can only navigate using keyboard or programmatically.
    */
-  @property({ type: Boolean }) accessor showNavigation = true
+  @property({ attribute: false }) accessor showNavigation = true
 
   /**
    * Whether to show action buttons (OK/Cancel). When true, selections are pending

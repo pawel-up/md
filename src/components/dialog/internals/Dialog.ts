@@ -131,10 +131,9 @@ export default class UiDialog extends UiElement implements TypedEvents<DialogEve
   /**
    * Whether pressing the Escape key dismisses the dialog.
    *
-   * @attribute
    * @default true
    */
-  @property({ type: Boolean }) accessor closeOnEscape = true
+  @property({ attribute: false }) accessor closeOnEscape = true
 
   /**
    * Whether clicking outside the dialog dismisses it.

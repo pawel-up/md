@@ -12,9 +12,9 @@ import { OverlayStackManager, type OverlayDismissReason } from '../../../src/con
 class TestOverlayElement extends LitElement implements OverlayHost {
   @property({ type: Boolean, reflect: true }) accessor open = false
 
-  @property({ type: Boolean }) accessor closeOnEscape = true
+  @property({ attribute: false }) accessor closeOnEscape = true
 
-  @property({ type: Boolean }) accessor closeOnOutsideClick = true
+  @property({ attribute: false }) accessor closeOnOutsideClick = true
 
   @property({ attribute: false }) accessor beforeClose: BeforeCloseCallback | undefined
 

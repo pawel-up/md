@@ -140,7 +140,7 @@ export class UiDatePickerModal extends LitElement {
   /**
    * Whether to show edit/calendar toggle button
    */
-  @property({ type: Boolean }) accessor showModeToggle = true
+  @property({ attribute: false }) accessor showModeToggle = true
 
   @state() private accessor isInputMode = false
 

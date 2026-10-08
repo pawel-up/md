@@ -59,10 +59,9 @@ export default class UiDropdownList extends LitElement implements OverlayHost {
 
   /**
    * Whether pressing Escape dismisses the opened list.
-   * @attribute
    * @default true
    */
-  @property({ type: Boolean }) accessor closeOnEscape = true
+  @property({ attribute: false }) accessor closeOnEscape = true
 
   /**
    * The vertical (y-axis) alignment of the dropdown content.
@@ -96,10 +95,9 @@ export default class UiDropdownList extends LitElement implements OverlayHost {
 
   /**
    * When set it closes the opened list when registering a click outside the list.
-   * @attribute
    * @default true
    */
-  @property({ type: Boolean }) accessor closeOnOutsideClick = true
+  @property({ attribute: false }) accessor closeOnOutsideClick = true
 
   /**
    * Optional callback to verify whether the dropdown can be closed.

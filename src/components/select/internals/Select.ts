@@ -210,26 +210,24 @@ export default class UiSelect extends UiElement {
   /**
    * Whether pressing Escape dismisses the select dropdown.
    *
-   * @attribute
    * @default true
    * @example
    * ```html
    * <ui-select .closeOnEscape=${false}></ui-select>
    * ```
    */
-  @property({ type: Boolean }) accessor closeOnEscape = true
+  @property({ attribute: false }) accessor closeOnEscape = true
 
   /**
    * Whether clicking outside the select dismisses the dropdown.
    *
-   * @attribute
    * @default true
    * @example
    * ```html
    * <ui-select .closeOnOutsideClick=${false}></ui-select>
    * ```
    */
-  @property({ type: Boolean }) accessor closeOnOutsideClick = true
+  @property({ attribute: false }) accessor closeOnOutsideClick = true
 
   /**
    * Optional callback to verify whether the select dropdown can be closed.

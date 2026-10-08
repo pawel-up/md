@@ -185,17 +185,15 @@ export class UiDatePickerInput extends LitElement implements OverlayHost {
 
   /**
    * Whether pressing Escape closes the date picker dropdown.
-   * @attribute
    * @default true
    */
-  @property({ type: Boolean }) accessor closeOnEscape = true
+  @property({ attribute: false }) accessor closeOnEscape = true
 
   /**
    * Whether clicking outside the date picker closes the dropdown.
-   * @attribute
    * @default true
    */
-  @property({ type: Boolean }) accessor closeOnOutsideClick = true
+  @property({ attribute: false }) accessor closeOnOutsideClick = true
 
   /**
    * Optional callback to verify whether the date picker dropdown can be closed.

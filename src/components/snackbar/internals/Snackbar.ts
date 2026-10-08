@@ -48,9 +48,8 @@ export class Snackbar extends LitElement {
    * Whether the snackbar can be cancelled via user interaction.
    *
    * @default true
-   * @attribute
    */
-  @property({ type: Boolean }) accessor cancellable = true
+  @property({ attribute: false }) accessor cancellable = true
 
   /**
    * The time in milliseconds after which the message is removed.

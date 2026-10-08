@@ -63,8 +63,8 @@ export interface OverlayHost extends ReactiveControllerHost, HTMLElement, Overla
  * ```typescript
  * class MyOverlay extends LitElement implements OverlayHost {
  *   @property({ type: Boolean, reflect: true }) accessor open = false
- *   @property({ type: Boolean }) accessor closeOnEscape = true
- *   @property({ type: Boolean }) accessor closeOnOutsideClick = true
+ *   @property({ attribute: false }) accessor closeOnEscape = true
+ *   @property({ attribute: false }) accessor closeOnOutsideClick = true
  *
  *   private overlay = new OverlayController(this)
  * }
