@@ -247,6 +247,204 @@ test.group('Value and selection', () => {
     assert.equal(element.selectedItem!.value, 'banana')
     assert.equal(element.renderValue, 'Banana')
   })
+
+  test('should display label immediately when option is added and value is set at the same time', async ({
+    assert,
+  }) => {
+    const element = await basicFixture()
+    await element.updateComplete
+
+    const newOption = document.createElement('ui-option') as UiOption
+    newOption.value = 'opt-id-123'
+    newOption.textContent = 'Dragon Fruit'
+
+    element.value = 'opt-id-123'
+    element.appendChild(newOption)
+
+    await element.updateComplete
+
+    assert.equal(element.value, 'opt-id-123')
+    assert.equal(element.renderValue, 'Dragon Fruit')
+    const input = element.shadowRoot?.querySelector('ui-outlined-text-field')
+    assert.isNotNull(input)
+    assert.equal(input?.value, 'Dragon Fruit')
+  })
+
+  test('should update selected option and renderValue when matching option is slotted in asynchronously', async ({
+    assert,
+  }) => {
+    const element = await dynamicOptionsFixture()
+    element.value = 'opt-async'
+    await element.updateComplete
+
+    assert.equal(element.value, 'opt-async')
+    assert.isNull(element.selectedItem)
+    assert.equal(element.renderValue, '')
+
+    const opt = document.createElement('ui-option') as UiOption
+    opt.value = 'opt-async'
+    opt.textContent = 'Async Option'
+    element.appendChild(opt)
+
+    await element.updateComplete
+    await nextFrame()
+
+    assert.isNotNull(element.selectedItem)
+    assert.equal(element.renderValue, 'Async Option')
+    const input = element.shadowRoot?.querySelector('ui-outlined-text-field')
+    assert.isNotNull(input)
+    assert.equal(input?.value, 'Async Option')
+  })
+
+  test('should update renderValue when option text changes dynamically', async ({ assert }) => {
+    const element = await basicFixture()
+    element.value = 'apple'
+    await element.updateComplete
+
+    assert.equal(element.renderValue, 'Apple')
+
+    const appleOption = element.querySelector('ui-option[value="apple"]') as UiOption
+    appleOption.textContent = 'Green Apple'
+
+    await appleOption.updateComplete
+    await element.updateComplete
+    await nextFrame()
+
+    assert.equal(element.renderValue, 'Green Apple')
+    const input = element.shadowRoot?.querySelector('ui-outlined-text-field')
+    assert.isNotNull(input)
+    assert.equal(input?.value, 'Green Apple')
+  })
+
+  test('should update selection when option value changes dynamically', async ({ assert }) => {
+    const element = await basicFixture()
+    element.value = 'apple'
+    await element.updateComplete
+
+    assert.isNotNull(element.selectedItem)
+
+    const appleOption = element.querySelector('ui-option[value="apple"]') as UiOption
+    appleOption.value = 'green-apple'
+
+    await appleOption.updateComplete
+    await element.updateComplete
+    await nextFrame()
+
+    assert.isNull(element.selectedItem)
+  })
+
+  test('labelchange and valuechange events do not propagate beyond ui-select', async ({ assert }) => {
+    const parent = document.createElement('div')
+    const select = document.createElement('ui-select') as UiSelect
+    const option = document.createElement('ui-option') as UiOption
+    option.value = 'initial'
+    option.textContent = 'Initial Label'
+    select.appendChild(option)
+    parent.appendChild(select)
+    document.body.appendChild(parent)
+
+    await select.updateComplete
+    await option.updateComplete
+
+    let parentReceivedLabelChange = false
+    let parentReceivedValueChange = false
+
+    parent.addEventListener('labelchange', () => {
+      parentReceivedLabelChange = true
+    })
+    parent.addEventListener('valuechange', () => {
+      parentReceivedValueChange = true
+    })
+
+    option.textContent = 'Updated Label'
+    await option.updateComplete
+    await nextFrame()
+
+    option.value = 'updated'
+    await option.updateComplete
+    await nextFrame()
+
+    assert.isFalse(parentReceivedLabelChange)
+    assert.isFalse(parentReceivedValueChange)
+
+    parent.remove()
+  })
+
+  test('should not dispatch valuechange on initial render', async ({ assert }) => {
+    let dispatched = false
+    const option = document.createElement('ui-option') as UiOption
+    option.addEventListener('valuechange', () => {
+      dispatched = true
+    })
+    option.value = 'initial'
+    option.textContent = 'Initial'
+    document.body.appendChild(option)
+    await option.updateComplete
+
+    assert.isFalse(dispatched)
+
+    option.value = 'changed'
+    await option.updateComplete
+
+    assert.isTrue(dispatched)
+    option.remove()
+  })
+
+  test('should update select and form value when option without value has label changed', async ({ assert }) => {
+    const element = await fixture<UiSelect>(html`
+      <ui-select label="Select fruit">
+        <ui-option>Apple</ui-option>
+        <ui-option>Banana</ui-option>
+      </ui-select>
+    `)
+    element.value = 'Apple'
+    await element.updateComplete
+
+    assert.equal(element.value, 'Apple')
+    assert.equal(element.renderValue, 'Apple')
+    assert.isNotNull(element.selectedItem)
+
+    const appleOption = element.querySelector('ui-option') as UiOption
+    appleOption.textContent = 'Green Apple'
+
+    await appleOption.updateComplete
+    await element.updateComplete
+    await nextFrame()
+
+    assert.equal(element.value, 'Green Apple')
+    assert.equal(element.renderValue, 'Green Apple')
+    assert.equal(element.selectedItem, appleOption)
+    const input = element.shadowRoot?.querySelector('ui-outlined-text-field')
+    assert.isNotNull(input)
+    assert.equal(input?.value, 'Green Apple')
+  })
+
+  test('should update form value when option without explicit value has its label changed', async ({ assert }) => {
+    const form = await fixture<HTMLFormElement>(html`
+      <form>
+        <ui-select name="fruit" label="Select fruit">
+          <ui-option>Apple</ui-option>
+          <ui-option>Banana</ui-option>
+        </ui-select>
+      </form>
+    `)
+    const select = form.querySelector('ui-select') as UiSelect
+    select.value = 'Apple'
+    await select.updateComplete
+
+    let formData = new FormData(form)
+    assert.equal(formData.get('fruit'), 'Apple')
+
+    const appleOption = select.querySelector('ui-option') as UiOption
+    appleOption.textContent = 'Green Apple'
+
+    await appleOption.updateComplete
+    await select.updateComplete
+    await nextFrame()
+
+    formData = new FormData(form)
+    assert.equal(formData.get('fruit'), 'Green Apple')
+  })
 })
 
 test.group('Form integration', () => {

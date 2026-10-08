@@ -15,6 +15,8 @@ import { randomId } from '../../../lib/random.js'
  * @slot end - Content to display at the end of the option
  * @slot supporting-text - Supporting text below the main content
  * @fires select - Dispatched when the option is selected. Contains `{ item: UiOption, value: string }` in detail
+ * @fires labelchange - Dispatched when the default slot content changes to synchronize the parent select
+ * @fires valuechange - Dispatched when the option value property changes to synchronize the parent select
  *
  * @example
  * Basic option
@@ -71,15 +73,15 @@ export default class UiOption extends UiListItem {
    */
   get renderValue(): string {
     const slot = this.shadowRoot?.querySelector<HTMLSlotElement>('slot:not([name])')
-    if (!slot) return this.value || ''
-    const nodes = slot.assignedNodes({ flatten: true })
+    const nodes = slot ? slot.assignedNodes({ flatten: true }) : []
+    const targetNodes = nodes.length > 0 ? nodes : this.getDefaultSlotNodes()
     const content: string[] = []
-    for (const node of nodes) {
+    for (const node of targetNodes) {
       if (node.nodeType === Node.TEXT_NODE) {
         content.push(node.textContent || '')
       } else if (node.nodeType === Node.ELEMENT_NODE) {
         const element = node as HTMLElement
-        if (element.tagName.toLowerCase() === 'ui-icon') {
+        if (element.localName === 'ui-icon') {
           content.push(element.getAttribute('icon') || '')
         } else {
           content.push(element.textContent || '')
@@ -88,6 +90,25 @@ export default class UiOption extends UiListItem {
     }
     return content.join(' ').trim() || this.value || ''
   }
+
+  /**
+   * Returns light DOM child nodes that belong to the default (unnamed) slot.
+   * Used before the shadow DOM slot is rendered or when assigned nodes are not yet available.
+   */
+  protected getDefaultSlotNodes(): Node[] {
+    return Array.from(this.childNodes).filter((node) => {
+      if (node.nodeType === Node.TEXT_NODE) {
+        return true
+      }
+      if (node.nodeType === Node.ELEMENT_NODE) {
+        const element = node as HTMLElement
+        return !element.hasAttribute('slot') || element.getAttribute('slot') === ''
+      }
+      return false
+    })
+  }
+
+  #hasFirstUpdated = false
 
   constructor() {
     super()
@@ -107,14 +128,31 @@ export default class UiOption extends UiListItem {
   }
 
   /**
+   * Handles changes to the default unnamed slot.
+   * Dispatches a 'labelchange' event so that parent components (like ui-select)
+   * can synchronize display values.
+   */
+  protected override handleDefaultSlotChange(): void {
+    super.handleDefaultSlotChange()
+    this.dispatchEvent(new CustomEvent('labelchange', { bubbles: true, composed: false }))
+  }
+
+  /**
    * Handles property updates and triggers appropriate side effects.
-   * Currently monitors the `selected` property to update selection state.
+   * Monitors the `selected` property to update selection state,
+   * and `value` property to notify consumers.
    */
   protected override updated(changedProperties: PropertyValues<this>): void {
     super.updated(changedProperties)
 
     if (changedProperties.has('selected')) {
       this.updateSelectionState()
+    }
+
+    if (!this.#hasFirstUpdated) {
+      this.#hasFirstUpdated = true
+    } else if (changedProperties.has('value')) {
+      this.dispatchEvent(new CustomEvent('valuechange', { bubbles: true, composed: false }))
     }
   }
 

@@ -292,6 +292,13 @@ export default class UiListItem extends UiElement {
     this.requestUpdate()
   }
 
+  /**
+   * Handles changes to the default unnamed slot.
+   */
+  protected handleDefaultSlotChange(): void {
+    this.requestUpdate()
+  }
+
   getSurfaceClasses(): ClassInfo {
     const result: ClassInfo = {
       'surface': true,
@@ -356,7 +363,7 @@ export default class UiListItem extends UiElement {
     return html`
       <div class="body">
         <slot name="overline" @slotchange=${this.handleOverlineSlotChange}></slot>
-        <span class="headline"><slot></slot></span>
+        <span class="headline"><slot @slotchange=${this.handleDefaultSlotChange}></slot></span>
         <span class="supporting-text"
           ><slot name="supporting-text" @slotchange=${this.handleSupportingTextSlotChange}></slot
         ></span>

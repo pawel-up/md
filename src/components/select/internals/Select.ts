@@ -342,6 +342,8 @@ export default class UiSelect extends UiElement {
     this.addEventListener('click', this.handleClick.bind(this))
     this.addEventListener('blur', this.handleBlur.bind(this))
     this.addEventListener('keydown', this.handleKeydown.bind(this))
+    this.addEventListener('labelchange', this.handleOptionLabelChange.bind(this))
+    this.addEventListener('valuechange', this.handleOptionValueChange.bind(this))
   }
 
   override connectedCallback(): void {
@@ -980,15 +982,54 @@ export default class UiSelect extends UiElement {
     </ui-menu>`
   }
 
-  protected async handleSlotChange(): Promise<void> {
-    // When options change, re-evaluate the current selection
-    // only if we don't have an explicit value set
-    if (this.value === undefined) {
-      this.setCurrentOption()
+  /**
+   * Handles slot changes when options are added, removed, or modified.
+   * Re-evaluates selection state to synchronize with current options and value.
+   */
+  protected handleSlotChange(): void {
+    this.setCurrentOption()
+    this.#internals.setFormValue(this.value ?? null)
+    this.validate()
+    this.requestUpdate()
+  }
+
+  /**
+   * Handles label changes on child options to keep renderValue synchronized.
+   *
+   * @param e - The labelchange custom event dispatched by a child option
+   */
+  protected handleOptionLabelChange(e: Event): void {
+    e.stopPropagation()
+    const target = e.target
+    if (!(target instanceof HTMLElement) || target.localName !== 'ui-option' || target.closest('ui-select') !== this) {
+      return
+    }
+    const option = target as UiOption
+    if (this.selectedOption === option && option.value === undefined) {
+      this.value = option.renderValue
       this.#internals.setFormValue(this.value ?? null)
       this.validate()
-      this.requestUpdate()
+    } else {
+      this.setCurrentOption()
     }
+    this.requestUpdate()
+  }
+
+  /**
+   * Handles value changes on child options to re-evaluate option selection.
+   *
+   * @param e - The valuechange custom event dispatched by a child option
+   */
+  protected handleOptionValueChange(e: Event): void {
+    e.stopPropagation()
+    const target = e.target
+    if (!(target instanceof HTMLElement) || target.localName !== 'ui-option' || target.closest('ui-select') !== this) {
+      return
+    }
+    this.setCurrentOption()
+    this.#internals.setFormValue(this.value ?? null)
+    this.validate()
+    this.requestUpdate()
   }
 
   protected renderFocusRing(): TemplateResult {
