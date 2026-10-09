@@ -191,3 +191,97 @@ test.group('UiListItem - Focus Handling', () => {
     assert.isTrue(item.isFocusable)
   })
 })
+
+test.group('UiListItem and UiList - Density Scaling', () => {
+  test('should scale single-line list item height across densities', async ({ assert }) => {
+    const densities: { density: '0' | '-1' | '-2' | '-3'; expected: string }[] = [
+      { density: '0', expected: '56px' },
+      { density: '-1', expected: '52px' },
+      { density: '-2', expected: '48px' },
+      { density: '-3', expected: '44px' },
+    ]
+
+    for (const { density, expected } of densities) {
+      const item = await fixture<UiListItemElement>(html`<ui-list-item density="${density}">Single line</ui-list-item>`)
+      await item.updateComplete
+
+      const surface = item.shadowRoot!.querySelector('.surface') as HTMLElement
+      const height = window.getComputedStyle(surface).height
+      assert.equal(height, expected, `single-line list item height at density ${density} should be ${expected}`)
+    }
+  })
+
+  test('should scale two-line list item height across densities', async ({ assert }) => {
+    const densities: { density: '0' | '-1' | '-2' | '-3'; expected: string }[] = [
+      { density: '0', expected: '72px' },
+      { density: '-1', expected: '68px' },
+      { density: '-2', expected: '64px' },
+      { density: '-3', expected: '60px' },
+    ]
+
+    for (const { density, expected } of densities) {
+      const item = await fixture<UiListItemElement>(html`
+        <ui-list-item density="${density}" lines="two">
+          Title
+          <span slot="supporting-text">Subtitle</span>
+        </ui-list-item>
+      `)
+      await item.updateComplete
+
+      const surface = item.shadowRoot!.querySelector('.surface') as HTMLElement
+      const height = window.getComputedStyle(surface).height
+      assert.equal(height, expected, `two-line list item height at density ${density} should be ${expected}`)
+    }
+  })
+
+  test('should scale three-line list item height across densities', async ({ assert }) => {
+    const densities: { density: '0' | '-1' | '-2' | '-3'; expected: string }[] = [
+      { density: '0', expected: '88px' },
+      { density: '-1', expected: '84px' },
+      { density: '-2', expected: '80px' },
+      { density: '-3', expected: '76px' },
+    ]
+
+    for (const { density, expected } of densities) {
+      const item = await fixture<UiListItemElement>(html`
+        <ui-list-item density="${density}" lines="three">
+          Title
+          <span slot="supporting-text">Long description text</span>
+        </ui-list-item>
+      `)
+      await item.updateComplete
+
+      const surface = item.shadowRoot!.querySelector('.surface') as HTMLElement
+      const height = window.getComputedStyle(surface).height
+      assert.equal(height, expected, `three-line list item height at density ${density} should be ${expected}`)
+    }
+  })
+
+  test('should propagate density from ui-list to child list items', async ({ assert }) => {
+    const list = await fixture<UiListElement>(html`
+      <ui-list density="-2">
+        <ui-list-item id="item1">Item 1</ui-list-item>
+        <ui-list-item id="item2" lines="two">
+          Item 2
+          <span slot="supporting-text">Sub</span>
+        </ui-list-item>
+      </ui-list>
+    `)
+    await list.updateComplete
+    await nextFrame()
+
+    const item1 = list.querySelector('#item1') as UiListItemElement
+    const item2 = list.querySelector('#item2') as UiListItemElement
+    await item1.updateComplete
+    await item2.updateComplete
+
+    assert.equal(item1.density, '-2')
+    assert.equal(item2.density, '-2')
+
+    const surface1 = item1.shadowRoot!.querySelector('.surface') as HTMLElement
+    const surface2 = item2.shadowRoot!.querySelector('.surface') as HTMLElement
+
+    assert.equal(window.getComputedStyle(surface1).height, '48px')
+    assert.equal(window.getComputedStyle(surface2).height, '64px')
+  })
+})

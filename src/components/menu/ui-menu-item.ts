@@ -2,7 +2,8 @@ import type { CSSResultOrNative } from 'lit'
 import { customElement } from 'lit/decorators.js'
 import Element from './internal/MenuItem.js'
 import styles from './internal/MenuItem.styles.js'
-import listStyles from '../list/internals/ListItem.styles.js'
+import menuItemCommon from './internal/MenuItemCommon.styles.js'
+import listStyles from '../list/internals/ListItemCommon.styles.js'
 
 /**
  * Material Design 3 Menu Item component.
@@ -11,7 +12,7 @@ import listStyles from '../list/internals/ListItem.styles.js'
  */
 @customElement('ui-menu-item')
 export class UiMenuItemElement extends Element {
-  static override styles: CSSResultOrNative[] = [listStyles, styles]
+  static override styles: CSSResultOrNative[] = [listStyles, menuItemCommon, styles]
 }
 
 declare global {

@@ -59,6 +59,12 @@ export default class UiOption extends UiListItem {
   @property({ type: Boolean, reflect: true }) accessor selected = false
 
   /**
+   * Color mapping variant.
+   * @attribute
+   */
+  @property({ type: String, reflect: true }) accessor variant: 'standard' | 'vibrant' | undefined
+
+  /**
    * Returns the text representation of this option for display purposes.
    * This method extracts and combines text content from all child nodes,
    * including special handling for ui-icon elements.
@@ -125,6 +131,7 @@ export default class UiOption extends UiListItem {
     if (!this.id) {
       this.id = randomId('option')
     }
+    this.updateSelectionState()
   }
 
   /**
@@ -170,9 +177,11 @@ export default class UiOption extends UiListItem {
   protected updateSelectionState(): void {
     if (this.selected) {
       this.classList.add('selected')
+      this.classList.add('select')
       this.setAttribute('aria-selected', 'true')
     } else {
       this.classList.remove('selected')
+      this.classList.remove('select')
       this.setAttribute('aria-selected', 'false')
     }
   }
@@ -216,6 +225,7 @@ export default class UiOption extends UiListItem {
   override getSurfaceClasses(): ClassInfo {
     return {
       ...super.getSurfaceClasses(),
+      option: true,
       selected: this.selected,
     }
   }
@@ -227,7 +237,7 @@ export default class UiOption extends UiListItem {
   protected override renderEnd(): TemplateResult {
     return html`
       <div class="${classMap(this.getEndClasses())}">
-        ${this.selected ? html`<ui-icon icon="check" class="selection-icon"></ui-icon>` : ''}
+        ${this.selected ? html`<ui-icon icon="check" class="selection-icon selection-check"></ui-icon>` : ''}
         <slot name="end" @slotchange=${this.handleEndSlotChange}></slot>
         <slot name="end-text" class="trailing-supporting-text" @slotchange=${this.handleEndTextSlotChange}></slot>
       </div>

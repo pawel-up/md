@@ -1,12 +1,12 @@
 import type { CSSResultOrNative } from 'lit'
 import { customElement } from 'lit/decorators.js'
 import Element from './internals/Option.js'
-import styles from './internals/Option.styles.js'
-import listStyles from '../list/internals/ListItem.styles.js'
+import menuItemCommon from '../menu/internal/MenuItemCommon.styles.js'
+import listStyles from '../list/internals/ListItemCommon.styles.js'
 
 @customElement('ui-option')
 export class UiOptionElement extends Element {
-  static override styles: CSSResultOrNative[] = [styles, listStyles]
+  static override styles: CSSResultOrNative[] = [listStyles, menuItemCommon]
 }
 
 declare global {

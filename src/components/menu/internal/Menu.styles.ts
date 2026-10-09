@@ -33,18 +33,26 @@ export default css`
   }
 
   :host([density='0']) {
+    --_density-offset: 0px;
+    --md-density-offset: 0px;
     --md-menu-item-density-height: 48px;
   }
 
   :host([density='-1']) {
+    --_density-offset: -4px;
+    --md-density-offset: -4px;
     --md-menu-item-density-height: 44px;
   }
 
   :host([density='-2']) {
+    --_density-offset: -8px;
+    --md-density-offset: -8px;
     --md-menu-item-density-height: 40px;
   }
 
   :host([density='-3']) {
+    --_density-offset: -12px;
+    --md-density-offset: -12px;
     --md-menu-item-density-height: 36px;
   }
 

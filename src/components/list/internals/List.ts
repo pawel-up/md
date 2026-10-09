@@ -72,6 +72,12 @@ export default class UiList extends LitElement {
    */
   @property({ type: Boolean, reflect: true }) accessor collapsible: boolean | undefined
 
+  /**
+   * Density level of the list and its items.
+   * @attribute
+   */
+  @property({ type: String, reflect: true }) accessor density: '0' | '-1' | '-2' | '-3' | undefined
+
   constructor() {
     super()
     this.selector = 'ui-list-item'
@@ -95,6 +101,13 @@ export default class UiList extends LitElement {
     super.firstUpdated(changedProperties)
 
     this.updateItems()
+  }
+
+  protected override updated(changedProperties: PropertyValues<this>): void {
+    super.updated(changedProperties)
+    if (changedProperties.has('density')) {
+      this.syncDensity()
+    }
   }
 
   protected handleFocusEvent(event: FocusEvent): void {
@@ -152,9 +165,20 @@ export default class UiList extends LitElement {
       this.highlightListItem = null
     }
     this.updateChildrenVisibility()
+    this.syncDensity()
     this.dispatchEvent(
       new CustomEvent<UiListItemsChange>('itemschange', { bubbles: false, composed: false, detail: { items } })
     )
+  }
+
+  /**
+   * Synchronizes density setting down to slotted items.
+   */
+  protected syncDensity(): void {
+    if (this.density === undefined) return
+    for (const item of this.items) {
+      item.density = this.density
+    }
   }
 
   protected updateChildrenVisibility(): void {

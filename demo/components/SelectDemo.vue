@@ -13,6 +13,16 @@ const programmaticSelected = ref<string | undefined>(undefined)
 const keyboardTestSelected = ref<string | undefined>(undefined)
 const typeAheadSelected = ref<string | undefined>(undefined)
 
+const interactiveDensity = ref<'0' | '-1' | '-2' | '-3'>('0')
+const setDensity = (val: '0' | '-1' | '-2' | '-3') => {
+  interactiveDensity.value = val
+}
+
+const interactiveVariant = ref<'standard' | 'vibrant'>('standard')
+const toggleVariant = () => {
+  interactiveVariant.value = interactiveVariant.value === 'standard' ? 'vibrant' : 'standard'
+}
+
 const handleBasicSelectChange = (e: Event) => {
   const { value } = (e as CustomEvent).detail
   basicSelected.value = value
@@ -262,13 +272,212 @@ const handleFormReset = (e: Event) => {
   <section>
     <h2>Select without Selection Icon</h2>
     <p>Select without the check icon:</p>
-    <ui-select id="no-icon-select" @change="handleNoIconSelectChange" style="width: 100%;">
+    <ui-select id="no-icon-select" @change="handleNoIconSelectChange" style="width: 100%">
       <ui-option value="red">Red</ui-option>
       <ui-option value="green">Green</ui-option>
       <ui-option value="blue">Blue</ui-option>
       <ui-option value="yellow">Yellow</ui-option>
     </ui-select>
     <p>Selected: <span id="no-icon-result">None</span></p>
+  </section>
+
+  <section>
+    <h2>Density Variations</h2>
+    <p>
+      The Material Design 3 density scale adjusts the vertical height of dropdown options and menus:
+      <code>0</code> (48px - default), <code>-1</code> (44px), <code>-2</code> (40px), and <code>-3</code> (36px).
+      Setting <code>density</code> on <code>&lt;ui-select&gt;</code> automatically propagates to all child
+      <code>&lt;ui-option&gt;</code> elements and the internal dropdown menu.
+    </p>
+
+    <div
+      style="
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+      "
+    >
+      <div>
+        <h4 style="margin: 0 0 0.5rem 0">Density 0 (48px - Default)</h4>
+        <ui-select density="0" label="Density 0" value="apple" style="width: 100%">
+          <ui-option value="apple">Apple</ui-option>
+          <ui-option value="banana">Banana</ui-option>
+          <ui-option value="cherry">Cherry</ui-option>
+        </ui-select>
+      </div>
+
+      <div>
+        <h4 style="margin: 0 0 0.5rem 0">Density -1 (44px)</h4>
+        <ui-select density="-1" label="Density -1" value="apple" style="width: 100%">
+          <ui-option value="apple">Apple</ui-option>
+          <ui-option value="banana">Banana</ui-option>
+          <ui-option value="cherry">Cherry</ui-option>
+        </ui-select>
+      </div>
+
+      <div>
+        <h4 style="margin: 0 0 0.5rem 0">Density -2 (40px)</h4>
+        <ui-select density="-2" label="Density -2" value="apple" style="width: 100%">
+          <ui-option value="apple">Apple</ui-option>
+          <ui-option value="banana">Banana</ui-option>
+          <ui-option value="cherry">Cherry</ui-option>
+        </ui-select>
+      </div>
+
+      <div>
+        <h4 style="margin: 0 0 0.5rem 0">Density -3 (36px)</h4>
+        <ui-select density="-3" label="Density -3" value="apple" style="width: 100%">
+          <ui-option value="apple">Apple</ui-option>
+          <ui-option value="banana">Banana</ui-option>
+          <ui-option value="cherry">Cherry</ui-option>
+        </ui-select>
+      </div>
+    </div>
+
+    <div style="padding: 1rem; background: var(--md-sys-color-surface-variant); border-radius: 8px">
+      <h4 style="margin-top: 0">Interactive Density Playground</h4>
+      <p>
+        Current density: <strong>{{ interactiveDensity }}</strong>
+      </p>
+      <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap">
+        <ui-button :color="interactiveDensity === '0' ? 'filled' : 'tonal'" @click="setDensity('0')">
+          Density 0 (48px)
+        </ui-button>
+        <ui-button :color="interactiveDensity === '-1' ? 'filled' : 'tonal'" @click="setDensity('-1')">
+          Density -1 (44px)
+        </ui-button>
+        <ui-button :color="interactiveDensity === '-2' ? 'filled' : 'tonal'" @click="setDensity('-2')">
+          Density -2 (40px)
+        </ui-button>
+        <ui-button :color="interactiveDensity === '-3' ? 'filled' : 'tonal'" @click="setDensity('-3')">
+          Density -3 (36px)
+        </ui-button>
+      </div>
+      <ui-select
+        :density="interactiveDensity"
+        label="Dynamic Density Select"
+        value="inbox"
+        style="width: 100%; max-width: 320px"
+      >
+        <ui-option value="inbox">
+          <ui-icon slot="start">inbox</ui-icon>
+          Inbox
+          <span slot="supporting-text">Primary folder</span>
+        </ui-option>
+        <ui-option value="sent">
+          <ui-icon slot="start">send</ui-icon>
+          Sent
+          <span slot="supporting-text">Outbox messages</span>
+        </ui-option>
+        <ui-option value="archive">
+          <ui-icon slot="start">archive</ui-icon>
+          Archive
+          <span slot="supporting-text">Saved records</span>
+        </ui-option>
+      </ui-select>
+    </div>
+  </section>
+
+  <section>
+    <h2>Color Variants (Standard & Vibrant)</h2>
+    <p>Select supports Material Design 3 color mapping variants:</p>
+    <ul>
+      <li>
+        <code>standard</code> (default): Surface container menu background with secondary-container selection indicator.
+      </li>
+      <li>
+        <code>vibrant</code>: Tertiary container menu background with vibrant tertiary selection indicator for higher
+        visual emphasis.
+      </li>
+    </ul>
+    <p>
+      Notice the Material 3 inset pill selection and hover styling: options feature a 6px lateral inset margin, 4px
+      corner radius when unselected, and transition into a 12px rounded pill indicator when selected.
+    </p>
+
+    <div
+      style="
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+      "
+    >
+      <div>
+        <h4 style="margin: 0 0 0.5rem 0">Standard Variant</h4>
+        <ui-select variant="standard" label="Standard Select" value="standard-opt" style="width: 100%">
+          <ui-option value="standard-opt">
+            <ui-icon slot="start">palette</ui-icon>
+            Standard Option
+            <span slot="supporting-text">Secondary container highlight</span>
+          </ui-option>
+          <ui-option value="other-opt">
+            <ui-icon slot="start">brush</ui-icon>
+            Second Option
+            <span slot="supporting-text">Unselected item</span>
+          </ui-option>
+          <ui-option value="third-opt">
+            <ui-icon slot="start">format_paint</ui-icon>
+            Third Option
+          </ui-option>
+        </ui-select>
+      </div>
+
+      <div>
+        <h4 style="margin: 0 0 0.5rem 0">Vibrant Variant</h4>
+        <ui-select variant="vibrant" label="Vibrant Select" value="vibrant-opt" style="width: 100%">
+          <ui-option value="vibrant-opt">
+            <ui-icon slot="start">auto_awesome</ui-icon>
+            Vibrant Option
+            <span slot="supporting-text">Tertiary container highlight</span>
+          </ui-option>
+          <ui-option value="other-opt">
+            <ui-icon slot="start">star</ui-icon>
+            Second Option
+            <span slot="supporting-text">Unselected item</span>
+          </ui-option>
+          <ui-option value="third-opt">
+            <ui-icon slot="start">favorite</ui-icon>
+            Third Option
+          </ui-option>
+        </ui-select>
+      </div>
+    </div>
+
+    <div style="padding: 1rem; background: var(--md-sys-color-surface-variant); border-radius: 8px">
+      <h4 style="margin-top: 0">Interactive Variant Playground</h4>
+      <p>
+        Current variant: <strong>{{ interactiveVariant }}</strong>
+      </p>
+      <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem">
+        <ui-button color="filled" @click="toggleVariant">
+          Switch to {{ interactiveVariant === 'standard' ? 'Vibrant' : 'Standard' }}
+        </ui-button>
+      </div>
+      <ui-select
+        :variant="interactiveVariant"
+        label="Dynamic Variant Select"
+        value="active"
+        style="width: 100%; max-width: 320px"
+      >
+        <ui-option value="active">
+          <ui-icon slot="start">check_circle</ui-icon>
+          Active Item
+          <span slot="supporting-text">Selected with dynamic variant</span>
+        </ui-option>
+        <ui-option value="pending">
+          <ui-icon slot="start">schedule</ui-icon>
+          Pending Item
+          <span slot="supporting-text">Waiting on review</span>
+        </ui-option>
+        <ui-option value="completed">
+          <ui-icon slot="start">done_all</ui-icon>
+          Completed Item
+          <span slot="supporting-text">Processed successfully</span>
+        </ui-option>
+      </ui-select>
+    </div>
   </section>
 
   <section>
@@ -302,9 +511,7 @@ const handleFormReset = (e: Event) => {
       <ui-option value="zurich">Zurich</ui-option>
     </ui-select>
     <p>Selected: <span id="typeahead-result">None</span></p>
-    <div
-      style="margin-top: 1rem; padding: 1rem; background: var(--md-sys-color-surface-variant); border-radius: 8px;"
-    >
+    <div style="margin-top: 1rem; padding: 1rem; background: var(--md-sys-color-surface-variant); border-radius: 8px">
       <h4>Type-ahead Instructions:</h4>
       <ul>
         <li><strong>Single character:</strong> Type "a" to jump to Amsterdam, "b" to jump to Berlin, etc.</li>
@@ -354,19 +561,16 @@ const handleFormReset = (e: Event) => {
   <section>
     <h2>Required Select & Validation</h2>
     <p>Test validation reporting on a required select component:</p>
-    <ui-select
-      id="required-select"
-      required="true"
-      label="Required Fruit Choice"
-      @change="handleRequiredSelectChange"
-    >
+    <ui-select id="required-select" required="true" label="Required Fruit Choice" @change="handleRequiredSelectChange">
       <ui-option value="apple">Apple</ui-option>
       <ui-option value="banana">Banana</ui-option>
       <ui-option value="cherry">Cherry</ui-option>
     </ui-select>
     <p>Selected: {{ requiredSelected || 'None' }}</p>
-    <p>Validity Status: <code>{{ requiredValidityStatus }}</code></p>
-    <div class="button-group" style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+    <p>
+      Validity Status: <code>{{ requiredValidityStatus }}</code>
+    </p>
+    <div class="button-group" style="display: flex; gap: 0.5rem; margin-top: 0.5rem">
       <ui-button @click="updateRequiredStatus">Validate Field</ui-button>
       <ui-button @click="clearRequiredSelection">Clear Selection</ui-button>
       <ui-button @click="toggleRequired">Toggle Required</ui-button>
@@ -376,7 +580,11 @@ const handleFormReset = (e: Event) => {
   <section>
     <h2>Form Integration & Submission</h2>
     <p>Test native HTML form integration, submission, and reset behavior:</p>
-    <form @submit="handleFormSubmit" @reset="handleFormReset" style="display: flex; flex-direction: column; gap: 1rem; max-width: 400px;">
+    <form
+      @submit="handleFormSubmit"
+      @reset="handleFormReset"
+      style="display: flex; flex-direction: column; gap: 1rem; max-width: 400px"
+    >
       <ui-select name="favColor" label="Favorite Color (Required)" required="true">
         <ui-option value="red">Red</ui-option>
         <ui-option value="green">Green</ui-option>
@@ -395,12 +603,12 @@ const handleFormReset = (e: Event) => {
         <ui-option>Gamma</ui-option>
       </ui-select>
 
-      <div class="button-group" style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+      <div class="button-group" style="display: flex; gap: 0.5rem; margin-top: 0.5rem">
         <ui-button type="submit">Submit Form</ui-button>
         <ui-button type="reset">Reset Form</ui-button>
       </div>
     </form>
-    <div style="margin-top: 1rem; padding: 1rem; background: var(--md-sys-color-surface-variant); border-radius: 8px;">
+    <div style="margin-top: 1rem; padding: 1rem; background: var(--md-sys-color-surface-variant); border-radius: 8px">
       <h4>Form Submission Result:</h4>
       <pre><code>{{ formResult }}</code></pre>
     </div>

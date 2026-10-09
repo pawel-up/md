@@ -43,12 +43,6 @@ export default class UiMenuItem extends UiListItem {
   @property({ type: Boolean }) accessor showSelectionIcon = false
 
   /**
-   * Density level of the menu item (web only).
-   * @attribute
-   */
-  @property({ type: String, reflect: true }) accessor density: '0' | '-1' | '-2' | '-3' | undefined
-
-  /**
    * Color mapping variant.
    * @attribute
    */

@@ -1566,3 +1566,261 @@ test.group('Overlay management and dismissal guards', () => {
     externalInput.remove()
   })
 })
+
+test.group('Option shape and interaction styling', () => {
+  test('should use slight roundiness (4px) in default unselected state', async ({ assert }) => {
+    const select = await basicFixture()
+    const option = select.querySelector('ui-option') as UiOption
+    await option.updateComplete
+
+    const surface = option.shadowRoot!.querySelector('.surface') as HTMLElement
+    const surfaceRadius = window.getComputedStyle(surface).borderRadius
+    assert.equal(surfaceRadius, '4px')
+  })
+
+  test('should use more roundiness (12px) in selected state', async ({ assert }) => {
+    const select = await selectedAttributeFixture()
+    const selectedOption = select.querySelector('ui-option[selected]') as UiOption
+    await selectedOption.updateComplete
+
+    const surface = selectedOption.shadowRoot!.querySelector('.surface') as HTMLElement
+    const surfaceRadius = window.getComputedStyle(surface).borderRadius
+    assert.equal(surfaceRadius, '12px')
+  })
+
+  test('should maintain identical margin to container border in both default and selected states', async ({
+    assert,
+  }) => {
+    const select = await selectedAttributeFixture()
+    const defaultOption = select.querySelector('ui-option:not([selected])') as UiOption
+    const selectedOption = select.querySelector('ui-option[selected]') as UiOption
+    await defaultOption.updateComplete
+    await selectedOption.updateComplete
+
+    const surface = defaultOption.shadowRoot!.querySelector('.surface') as HTMLElement
+    const selectedSurface = selectedOption.shadowRoot!.querySelector('.surface') as HTMLElement
+
+    const defaultMarginLeft = window.getComputedStyle(surface).marginLeft
+    const defaultMarginRight = window.getComputedStyle(surface).marginRight
+    const selectedMarginLeft = window.getComputedStyle(selectedSurface).marginLeft
+    const selectedMarginRight = window.getComputedStyle(selectedSurface).marginRight
+
+    assert.equal(defaultMarginLeft, '6px')
+    assert.equal(defaultMarginRight, '6px')
+    assert.equal(selectedMarginLeft, defaultMarginLeft)
+    assert.equal(selectedMarginRight, defaultMarginRight)
+  })
+
+  test('should have 48px height matching MD3 menu item density height', async ({ assert }) => {
+    const select = await basicFixture()
+    const option = select.querySelector('ui-option') as UiOption
+    await option.updateComplete
+
+    const surface = option.shadowRoot!.querySelector('.surface') as HTMLElement
+    const height = window.getComputedStyle(surface).height
+    assert.equal(height, '48px')
+  })
+})
+
+test.group('Density and variant propagation', () => {
+  test('should propagate density from select to child options and menu', async ({ assert }) => {
+    const select: UiSelect = await fixture(html`
+      <ui-select label="Fruit" density="-2">
+        <ui-option value="apple">Apple</ui-option>
+        <ui-option value="banana">Banana</ui-option>
+      </ui-select>
+    `)
+    await select.updateComplete
+
+    const options = Array.from(select.querySelectorAll<UiOption>('ui-option'))
+    for (const option of options) {
+      assert.equal(option.density, '-2')
+      assert.equal(option.getAttribute('density'), '-2')
+    }
+
+    assert.equal(select.menu.density, '-2')
+  })
+
+  test('should propagate variant from select to child options and menu', async ({ assert }) => {
+    const select: UiSelect = await fixture(html`
+      <ui-select label="Fruit" variant="vibrant">
+        <ui-option value="apple">Apple</ui-option>
+        <ui-option value="banana">Banana</ui-option>
+      </ui-select>
+    `)
+    await select.updateComplete
+
+    const options = Array.from(select.querySelectorAll<UiOption>('ui-option'))
+    for (const option of options) {
+      assert.equal(option.variant, 'vibrant')
+      assert.equal(option.getAttribute('variant'), 'vibrant')
+    }
+
+    assert.equal(select.menu.variant, 'vibrant')
+  })
+
+  test('should default density to "0" and variant to "standard"', async ({ assert }) => {
+    const select = await basicFixture()
+    assert.equal(select.density, '0')
+    assert.equal(select.variant, 'standard')
+    assert.equal(select.menu.density, '0')
+    assert.equal(select.menu.variant, 'standard')
+
+    const options = Array.from(select.querySelectorAll<UiOption>('ui-option'))
+    for (const option of options) {
+      assert.equal(option.density, '0')
+      assert.equal(option.variant, 'standard')
+    }
+  })
+
+  test('should dynamically propagate density changes to child options and menu', async ({ assert }) => {
+    const select: UiSelect = await fixture(html`
+      <ui-select label="Fruit">
+        <ui-option value="apple">Apple</ui-option>
+        <ui-option value="banana">Banana</ui-option>
+      </ui-select>
+    `)
+    await select.updateComplete
+
+    select.density = '-1'
+    await select.updateComplete
+
+    const options = Array.from(select.querySelectorAll<UiOption>('ui-option'))
+    for (const option of options) {
+      assert.equal(option.density, '-1')
+      assert.equal(option.getAttribute('density'), '-1')
+    }
+    assert.equal(select.menu.density, '-1')
+  })
+
+  test('should dynamically propagate variant changes to child options and menu', async ({ assert }) => {
+    const select: UiSelect = await fixture(html`
+      <ui-select label="Fruit">
+        <ui-option value="apple">Apple</ui-option>
+        <ui-option value="banana">Banana</ui-option>
+      </ui-select>
+    `)
+    await select.updateComplete
+
+    select.variant = 'vibrant'
+    await select.updateComplete
+
+    const options = Array.from(select.querySelectorAll<UiOption>('ui-option'))
+    for (const option of options) {
+      assert.equal(option.variant, 'vibrant')
+      assert.equal(option.getAttribute('variant'), 'vibrant')
+    }
+    assert.equal(select.menu.variant, 'vibrant')
+  })
+
+  test('should propagate density and variant to dynamically added options', async ({ assert }) => {
+    const select: UiSelect = await fixture(html`
+      <ui-select label="Fruit" density="-2" variant="vibrant">
+        <ui-option value="apple">Apple</ui-option>
+      </ui-select>
+    `)
+    await select.updateComplete
+
+    const newOption = document.createElement('ui-option') as UiOption
+    newOption.value = 'cherry'
+    newOption.textContent = 'Cherry'
+    select.appendChild(newOption)
+    await nextFrame()
+    await select.updateComplete
+    await newOption.updateComplete
+
+    assert.equal(newOption.density, '-2')
+    assert.equal(newOption.variant, 'vibrant')
+  })
+
+  test('should harmonize supporting text colors in vibrant variant', async ({ assert }) => {
+    const select: UiSelect = await fixture(html`
+      <ui-select label="Fruit" variant="vibrant">
+        <ui-option value="apple" selected>
+          Apple
+          <span slot="supporting-text">Selected Fruit</span>
+        </ui-option>
+        <ui-option value="banana">
+          Banana
+          <span slot="supporting-text">Unselected Fruit</span>
+        </ui-option>
+      </ui-select>
+    `)
+    await select.updateComplete
+
+    const apple = select.querySelector('ui-option[value="apple"]') as UiOption
+    const banana = select.querySelector('ui-option[value="banana"]') as UiOption
+    await apple.updateComplete
+    await banana.updateComplete
+
+    const appleSupporting = apple.shadowRoot!.querySelector('.supporting-text') as HTMLElement
+    const appleSurface = apple.shadowRoot!.querySelector('.surface') as HTMLElement
+    const bananaSupporting = banana.shadowRoot!.querySelector('.supporting-text') as HTMLElement
+    const bananaSurface = banana.shadowRoot!.querySelector('.surface') as HTMLElement
+
+    const appleSupportingColor = window.getComputedStyle(appleSupporting).color
+    const appleSurfaceColor = window.getComputedStyle(appleSurface).color
+    const bananaSupportingColor = window.getComputedStyle(bananaSupporting).color
+    const bananaSurfaceColor = window.getComputedStyle(bananaSurface).color
+
+    assert.equal(appleSupportingColor, appleSurfaceColor)
+    assert.equal(bananaSupportingColor, bananaSurfaceColor)
+    assert.notEqual(appleSupportingColor, bananaSupportingColor)
+  })
+
+  test('should scale two-line option height according to density scale', async ({ assert }) => {
+    const densities: { density: '0' | '-1' | '-2' | '-3'; expected: string }[] = [
+      { density: '0', expected: '72px' },
+      { density: '-1', expected: '68px' },
+      { density: '-2', expected: '64px' },
+      { density: '-3', expected: '60px' },
+    ]
+
+    for (const { density, expected } of densities) {
+      const select: UiSelect = await fixture(html`
+        <ui-select label="Email" density="${density}">
+          <ui-option value="user" lines="two">
+            User Name
+            <span slot="supporting-text">user@example.com</span>
+          </ui-option>
+        </ui-select>
+      `)
+      await select.updateComplete
+
+      const option = select.querySelector('ui-option') as UiOption
+      await option.updateComplete
+
+      const surface = option.shadowRoot!.querySelector('.surface') as HTMLElement
+      const height = window.getComputedStyle(surface).height
+      assert.equal(height, expected, `two-line option height at density ${density} should be ${expected}`)
+    }
+  })
+
+  test('should scale three-line option height according to density scale', async ({ assert }) => {
+    const densities: { density: '0' | '-1' | '-2' | '-3'; expected: string }[] = [
+      { density: '0', expected: '88px' },
+      { density: '-1', expected: '84px' },
+      { density: '-2', expected: '80px' },
+      { density: '-3', expected: '76px' },
+    ]
+
+    for (const { density, expected } of densities) {
+      const select: UiSelect = await fixture(html`
+        <ui-select label="Article" density="${density}">
+          <ui-option value="article" lines="three">
+            Article Title
+            <span slot="supporting-text">Extended summary description goes here across multiple lines</span>
+          </ui-option>
+        </ui-select>
+      `)
+      await select.updateComplete
+
+      const option = select.querySelector('ui-option') as UiOption
+      await option.updateComplete
+
+      const surface = option.shadowRoot!.querySelector('.surface') as HTMLElement
+      const height = window.getComputedStyle(surface).height
+      assert.equal(height, expected, `three-line option height at density ${density} should be ${expected}`)
+    }
+  })
+})

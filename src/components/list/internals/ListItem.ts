@@ -83,6 +83,12 @@ export default class UiListItem extends UiElement {
    */
   @property({ type: Boolean, reflect: true }) accessor group = false
 
+  /**
+   * Density level of the list item.
+   * @attribute
+   */
+  @property({ type: String, reflect: true }) accessor density: '0' | '-1' | '-2' | '-3' | undefined
+
   @property({ type: Number, reflect: true }) override accessor tabIndex = -1
 
   /**

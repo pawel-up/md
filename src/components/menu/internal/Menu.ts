@@ -104,7 +104,7 @@ export default class Menu extends UiList implements OverlayHost {
    * Valid values are '0' (default, 48px), '-1' (44px), '-2' (40px), '-3' (36px).
    * @attribute
    */
-  @property({ type: String, reflect: true }) accessor density: '0' | '-1' | '-2' | '-3' = '0'
+  @property({ type: String, reflect: true }) override accessor density: '0' | '-1' | '-2' | '-3' = '0'
 
   /**
    * Color mapping variant.
@@ -306,7 +306,7 @@ export default class Menu extends UiList implements OverlayHost {
   /**
    * Synchronizes density setting down to slotted items and groups.
    */
-  protected syncDensity(): void {
+  protected override syncDensity(): void {
     const { density } = this
     const elements = this.assignedElements || []
     for (const el of elements) {

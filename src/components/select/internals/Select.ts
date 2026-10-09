@@ -240,6 +240,35 @@ export default class UiSelect extends UiElement {
    */
   @property({ attribute: false }) accessor beforeClose: BeforeCloseCallback | undefined
 
+  /**
+   * Density level of the select dropdown menu and its options (web only).
+   * Valid values are '0' (default, 48px), '-1' (44px), '-2' (40px), '-3' (36px).
+   * Automatically propagated to child options and the internal menu.
+   *
+   * @attribute
+   * @default '0'
+   * @example
+   * ```html
+   * <ui-select density="-1"></ui-select>
+   * ```
+   */
+  @property({ type: String, reflect: true }) accessor density: '0' | '-1' | '-2' | '-3' = '0'
+
+  /**
+   * Color mapping variant of the dropdown menu and its options.
+   * Standard uses secondary container for selected options.
+   * Vibrant uses tertiary container for menu background and tertiary for selected options.
+   * Automatically propagated to child options and the internal menu.
+   *
+   * @attribute
+   * @default 'standard'
+   * @example
+   * ```html
+   * <ui-select variant="vibrant"></ui-select>
+   * ```
+   */
+  @property({ type: String, reflect: true }) accessor variant: 'standard' | 'vibrant' = 'standard'
+
   @state() accessor selectedOption: UiOption | null = null
 
   @query('.menu') accessor menu!: UiMenuElement
@@ -429,6 +458,12 @@ export default class UiSelect extends UiElement {
     if (changedProperties.has('open')) {
       this.handleOpenChange()
     }
+    if (changedProperties.has('density')) {
+      this.syncDensity()
+    }
+    if (changedProperties.has('variant')) {
+      this.syncVariant()
+    }
     if (changedProperties.has('value')) {
       const isExplicitValueClear = this.value === undefined
       this.setCurrentOption(isExplicitValueClear)
@@ -447,6 +482,8 @@ export default class UiSelect extends UiElement {
   protected override firstUpdated(cp: PropertyValues): void {
     super.firstUpdated(cp)
     this.updateComplete.then(() => {
+      this.syncDensity()
+      this.syncVariant()
       this.setCurrentOption()
       this.#internals.setFormValue(this.value ?? null)
       this.validate()
@@ -455,6 +492,26 @@ export default class UiSelect extends UiElement {
       // due to the DOM update.
       this.requestUpdate()
     })
+  }
+
+  /**
+   * Synchronizes density setting down to slotted options.
+   */
+  protected syncDensity(): void {
+    const options = this.querySelectorAll<UiOption>('ui-option')
+    for (const option of options) {
+      option.density = this.density
+    }
+  }
+
+  /**
+   * Synchronizes color variant setting down to slotted options.
+   */
+  protected syncVariant(): void {
+    const options = this.querySelectorAll<UiOption>('ui-option')
+    for (const option of options) {
+      option.variant = this.variant
+    }
   }
 
   protected setCurrentOption(isExplicitValueClear = false): void {
@@ -968,6 +1025,8 @@ export default class UiSelect extends UiElement {
       .positionAnchor=${this.shadowRoot?.querySelector<HTMLElement>('.input') || undefined}
       popover="auto"
       selector="ui-option"
+      .density=${this.density}
+      .variant=${this.variant}
       .closeOnEscape=${this.closeOnEscape}
       .closeOnOutsideClick=${this.closeOnOutsideClick}
       .beforeClose=${this.beforeClose}
@@ -985,6 +1044,8 @@ export default class UiSelect extends UiElement {
    * Re-evaluates selection state to synchronize with current options and value.
    */
   protected handleSlotChange(): void {
+    this.syncDensity()
+    this.syncVariant()
     this.setCurrentOption()
     this.#internals.setFormValue(this.value ?? null)
     this.validate()
