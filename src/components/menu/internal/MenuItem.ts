@@ -72,7 +72,6 @@ export default class UiMenuItem extends UiListItem {
     super()
     this.addEventListener('mouseenter', this.handleMouseEnter.bind(this))
     this.addEventListener('mouseleave', this.handleMouseLeave.bind(this))
-    this.addEventListener('click', this.handleMenuItemClick.bind(this))
   }
 
   override connectedCallback(): void {
@@ -186,17 +185,14 @@ export default class UiMenuItem extends UiListItem {
     if (this.hasSubMenu) {
       e.preventDefault()
       e.stopPropagation()
-      this.toggleSubMenu()
-    } else {
-      super.handleClick(e)
+      // If the submenu is already open (e.g. opened via hover), clicking the trigger
+      // is a no-op to keep it open and prevent accidental closure when aiming to interact.
+      if (!this.subMenuOpen) {
+        this.openSubMenu()
+      }
+      return
     }
-  }
-
-  /**
-   * Handles menu item click events
-   */
-  protected handleMenuItemClick(e: MouseEvent): void {
-    this.handleClick(e)
+    super.handleClick(e)
   }
 
   /**
@@ -226,7 +222,9 @@ export default class UiMenuItem extends UiListItem {
 
     this.subMenuOpen = false
     this.updateAccessibility()
-    this.subMenuElement?.hide()
+    if (this.subMenuElement?.open) {
+      this.subMenuElement.hide()
+    }
   }
 
   /**

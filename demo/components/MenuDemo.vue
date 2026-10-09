@@ -257,7 +257,7 @@
           <span>View</span>
         </ui-menu-item>
         <!-- File Submenu (separate from main menu) -->
-        <ui-sub-menu id="file-submenu" anchor="file-item" popover="auto">
+        <ui-sub-menu id="file-submenu" anchor="file-item">
           <ui-menu-item>
             <span slot="start"><ui-icon>add</ui-icon></span>
             <span>New File</span>
@@ -276,7 +276,7 @@
           </ui-menu-item>
 
           <!-- Nested Export Submenu -->
-          <ui-sub-menu id="export-submenu" anchor="export-item" popover="auto">
+          <ui-sub-menu id="export-submenu" anchor="export-item">
             <ui-menu-item>
               <span>Export as PDF</span>
             </ui-menu-item>
@@ -289,7 +289,7 @@
           </ui-sub-menu>
         </ui-sub-menu>
         <!-- Edit Submenu -->
-        <ui-sub-menu id="edit-submenu" anchor="edit-item" popover="auto">
+        <ui-sub-menu id="edit-submenu" anchor="edit-item">
           <ui-menu-item>
             <span slot="start"><ui-icon>undo</ui-icon></span>
             <span>Undo</span>
@@ -410,7 +410,7 @@
         </ui-menu-item>
 
         <!-- Left Edge Submenu -->
-        <ui-sub-menu id="left-edge-submenu" anchor="left-edge-submenu-item" popover="auto">
+        <ui-sub-menu id="left-edge-submenu" anchor="left-edge-submenu-item">
           <ui-menu-item>
             <span slot="start"><ui-icon>add</ui-icon></span>
             <span>Create New</span>
@@ -429,7 +429,7 @@
           </ui-menu-item>
 
           <!-- Nested Actions Submenu -->
-          <ui-sub-menu id="left-edge-actions" anchor="left-edge-actions-item" popover="auto">
+          <ui-sub-menu id="left-edge-actions" anchor="left-edge-actions-item">
             <ui-menu-item>
               <span slot="start"><ui-icon>share</ui-icon></span>
               <span>Share</span>
@@ -446,7 +446,7 @@
         </ui-sub-menu>
 
         <!-- Left Edge Deeply Nested Menu -->
-        <ui-sub-menu id="left-edge-nested" anchor="left-edge-nested-item" popover="auto">
+        <ui-sub-menu id="left-edge-nested" anchor="left-edge-nested-item">
           <ui-menu-item id="left-edge-preferences-item" submenu="left-edge-preferences">
             <span slot="start"><ui-icon>tune</ui-icon></span>
             <span>Preferences</span>
@@ -461,7 +461,7 @@
           </ui-menu-item>
 
           <!-- Preferences Submenu -->
-          <ui-sub-menu id="left-edge-preferences" anchor="left-edge-preferences-item" popover="auto">
+          <ui-sub-menu id="left-edge-preferences" anchor="left-edge-preferences-item">
             <ui-menu-item>
               <span slot="start"><ui-icon>palette</ui-icon></span>
               <span>Theme Settings</span>
@@ -477,7 +477,7 @@
           </ui-sub-menu>
 
           <!-- Advanced Settings Submenu -->
-          <ui-sub-menu id="left-edge-advanced" anchor="left-edge-advanced-item" popover="auto">
+          <ui-sub-menu id="left-edge-advanced" anchor="left-edge-advanced-item">
             <ui-menu-item>
               <span slot="start"><ui-icon>memory</ui-icon></span>
               <span>Memory Management</span>
@@ -513,7 +513,7 @@
         </ui-menu-item>
 
         <!-- Right Edge Workspace Submenu -->
-        <ui-sub-menu id="right-edge-submenu" anchor="right-edge-submenu-item" popover="auto">
+        <ui-sub-menu id="right-edge-submenu" anchor="right-edge-submenu-item">
           <ui-menu-item>
             <span slot="start"><ui-icon>create_new_folder</ui-icon></span>
             <span>New Workspace</span>
@@ -532,7 +532,7 @@
           </ui-menu-item>
 
           <!-- Recent Workspaces Submenu -->
-          <ui-sub-menu id="right-edge-recent" anchor="right-edge-recent-item" popover="auto">
+          <ui-sub-menu id="right-edge-recent" anchor="right-edge-recent-item">
             <ui-menu-item>
               <span slot="start"><ui-icon>web</ui-icon></span>
               <span>API Project Alpha</span>
@@ -553,7 +553,7 @@
         </ui-sub-menu>
 
         <!-- Right Edge Tools Submenu -->
-        <ui-sub-menu id="right-edge-tools" anchor="right-edge-tools-item" popover="auto">
+        <ui-sub-menu id="right-edge-tools" anchor="right-edge-tools-item">
           <ui-menu-item id="right-edge-dev-tools-item" submenu="right-edge-dev-tools">
             <span slot="start"><ui-icon>code</ui-icon></span>
             <span>Development Tools</span>
@@ -568,7 +568,7 @@
           </ui-menu-item>
 
           <!-- Development Tools Submenu -->
-          <ui-sub-menu id="right-edge-dev-tools" anchor="right-edge-dev-tools-item" popover="auto">
+          <ui-sub-menu id="right-edge-dev-tools" anchor="right-edge-dev-tools-item">
             <ui-menu-item>
               <span slot="start"><ui-icon>terminal</ui-icon></span>
               <span>Terminal</span>
@@ -588,7 +588,7 @@
           </ui-sub-menu>
 
           <!-- Analysis Tools Submenu -->
-          <ui-sub-menu id="right-edge-analysis" anchor="right-edge-analysis-item" popover="auto">
+          <ui-sub-menu id="right-edge-analysis" anchor="right-edge-analysis-item">
             <ui-menu-item>
               <span slot="start"><ui-icon>assessment</ui-icon></span>
               <span>Reports</span>

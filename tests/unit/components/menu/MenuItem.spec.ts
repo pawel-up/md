@@ -199,6 +199,29 @@ test.group('Click handling', () => {
     assert.isTrue(defaultPrevented)
     assert.isTrue(propagationStopped)
   })
+
+  test('should keep submenu open when clicked while already open', async ({ assert }) => {
+    const container = await withSubmenuFixture()
+    const menuItem = container.querySelector('#parent-item') as UiMenuItem
+    const submenu = container.querySelector('#test-submenu') as UiSubMenu
+    await nextFrame()
+
+    // Open submenu as if hovered
+    menuItem.openSubMenu()
+    await nextFrame()
+    assert.equal(menuItem.getAttribute('aria-expanded'), 'true')
+    assert.isTrue(submenu.open)
+
+    const hideSpy = sinon.spy(submenu, 'hide')
+
+    // Click should keep it open, not close or toggle
+    menuItem.click()
+    await nextFrame()
+
+    assert.equal(menuItem.getAttribute('aria-expanded'), 'true')
+    assert.isTrue(submenu.open)
+    assert.equal(hideSpy.callCount, 0)
+  })
 })
 
 test.group('Mouse interaction', () => {

@@ -17,20 +17,27 @@ test('should toggle popover state', async ({ assert }) => {
   assert.isTrue(result)
 })
 
-test('should handle beforetoggle event', async ({ assert }) => {
+test('should handle beforetoggle event without re-entrantly calling hidePopover', async ({ assert }) => {
   const element = await basicFixture()
   element.show()
   await nextFrame()
 
-  // Simulate beforetoggle event as if popover was closed externally
-  const toggleEvent = Object.assign(new Event('beforetoggle'), {
-    newState: 'closed',
-  }) as ToggleEvent
+  const hideSpy = sinon.spy(HTMLElement.prototype, 'hidePopover')
 
-  element.dispatchEvent(toggleEvent)
-  await nextFrame()
+  try {
+    // Simulate beforetoggle event as if popover was closed externally
+    const toggleEvent = Object.assign(new Event('beforetoggle'), {
+      newState: 'closed',
+    }) as ToggleEvent
 
-  assert.isFalse(element.open)
+    element.dispatchEvent(toggleEvent)
+    await nextFrame()
+
+    assert.isFalse(element.open)
+    assert.equal(hideSpy.callCount, 0, 'super.hidePopover must not be called when closed via beforetoggle')
+  } finally {
+    hideSpy.restore()
+  }
 })
 
 test('should work with popovertarget attribute', async ({ assert }) => {

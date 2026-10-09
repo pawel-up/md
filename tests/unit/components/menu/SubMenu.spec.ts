@@ -91,6 +91,16 @@ test.group('Basic functionality', () => {
     assert.equal(element.getAttribute('role'), 'menu')
     assert.equal(element.getAttribute('aria-label'), 'Submenu')
   })
+
+  test('should set popover to manual by default', async ({ assert }) => {
+    const element = await basicFixture()
+    assert.equal(element.getAttribute('popover'), 'manual')
+  })
+
+  test('should enforce popover="manual" even if initialized with popover="auto"', async ({ assert }) => {
+    const element = await fixture<UiSubMenu>(html`<ui-sub-menu popover="auto"></ui-sub-menu>`)
+    assert.equal(element.getAttribute('popover'), 'manual')
+  })
 })
 
 test.group('Anchor functionality', () => {

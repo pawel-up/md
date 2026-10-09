@@ -37,10 +37,17 @@ export default class UiSubMenu extends Menu {
     return findElementInShadowRoots(this.anchor, this) as MenuItem | null
   }
 
+  protected override get defaultPopover(): 'auto' | 'manual' {
+    return 'manual'
+  }
+
   override connectedCallback(): void {
     super.connectedCallback()
     this.setAttribute('role', 'menu')
     this.setAttribute('aria-label', 'Submenu')
+    if (this.getAttribute('popover') !== 'manual') {
+      this.setAttribute('popover', 'manual')
+    }
   }
 
   protected override updated(changedProperties: PropertyValues<this>): void {
@@ -77,6 +84,11 @@ export default class UiSubMenu extends Menu {
     // Update positioning before showing
     this.updateAnchorPositioning()
 
+    // Submenus require popover="manual" to avoid native light-dismiss on parent anchor interaction
+    if (this.getAttribute('popover') !== 'manual') {
+      this.setAttribute('popover', 'manual')
+    }
+
     // Close any other open submenus in the parent menu
     if (this.parentMenu && this.parentMenu.activeSubMenu !== this) {
       this.parentMenu.closeSubMenu()
@@ -99,12 +111,12 @@ export default class UiSubMenu extends Menu {
   }
 
   /**
-   * Performs DOM cleanup, native popover hiding, parent submenu state clearing,
-   * and focus restoration to the anchor menu item.
+   * Cleans up internal submenu state, clears parent submenu reference,
+   * resets anchor menu item state, and restores focus if needed.
    */
-  protected override performHidePopover(): void {
+  protected override cleanupPopoverState(): void {
     const shouldRestoreFocus = this.matches(':focus-within') || this.contains(document.activeElement)
-    super.performHidePopover()
+    super.cleanupPopoverState()
     const parentMenu = this.parentMenu
     if (parentMenu && parentMenu.activeSubMenu === this) {
       parentMenu.setActiveSubMenu(null)

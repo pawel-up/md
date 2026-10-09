@@ -125,6 +125,16 @@ export default class Menu extends UiList implements OverlayHost {
     return null
   }
 
+  /**
+   * The default popover type for this menu. Subclasses (like UiSubMenu) override this.
+   */
+  // eslint-disable-next-line @typescript-eslint/class-literal-property-style
+  protected get defaultPopover(): 'auto' | 'manual' {
+    return 'auto'
+  }
+
+  #isClosingFromBeforeToggle = false
+
   constructor() {
     super()
     this.selector = 'ui-menu-item'
@@ -142,7 +152,7 @@ export default class Menu extends UiList implements OverlayHost {
     this.setAttribute('role', 'menu')
     this.setAttribute('tabindex', '-1')
     if (!this.hasAttribute('popover')) {
-      this.setAttribute('popover', 'auto')
+      this.setAttribute('popover', this.defaultPopover)
     }
     if (!this.id) {
       this.id = randomId()
@@ -183,7 +193,9 @@ export default class Menu extends UiList implements OverlayHost {
           this.showPopover()
         }
       } else {
-        this.performHidePopover()
+        if (!this.#isClosingFromBeforeToggle) {
+          this.performHidePopover()
+        }
       }
     }
   }
@@ -436,21 +448,28 @@ export default class Menu extends UiList implements OverlayHost {
   }
 
   /**
-   * Performs DOM cleanup and native popover hiding.
+   * Cleans up internal menu state when popover is closed (either programmatically or via browser event).
    */
-  protected performHidePopover(): void {
+  protected cleanupPopoverState(): void {
     this.tabIndex = -1
     this.ariaExpanded = 'false'
     this.open = false
     this.closeSubMenu()
-    if (this.matches(':popover-open')) {
+    ScrollHelper.removeListeners(this)
+  }
+
+  /**
+   * Performs DOM cleanup and native popover hiding.
+   */
+  protected performHidePopover(): void {
+    this.cleanupPopoverState()
+    if (!this.#isClosingFromBeforeToggle && this.matches(':popover-open')) {
       try {
         super.hidePopover()
       } catch {
         // Ignored if popover was already hidden
       }
     }
-    ScrollHelper.removeListeners(this)
   }
 
   positionMenu(): void {
@@ -592,39 +611,49 @@ export default class Menu extends UiList implements OverlayHost {
   protected handleBeforeToggle(e: Event): void {
     const toggleEvent = e as ToggleEvent
     if (toggleEvent.newState === 'closed') {
-      if (this.overlayController.closing) {
-        this.performHidePopover()
-        return
-      }
-
-      if (this.open) {
-        if (!this.closeOnOutsideClick) {
-          this.reopenNativePopover()
+      this.#isClosingFromBeforeToggle = true
+      try {
+        if (this.overlayController.closing) {
+          this.cleanupPopoverState()
           return
         }
 
-        const closed = this.overlayController.requestClose('outside-click', () => {
-          this.reopenNativePopover()
-        })
+        if (this.open) {
+          if (!this.closeOnOutsideClick) {
+            this.reopenNativePopover()
+            return
+          }
 
-        if (isPromiseLike<boolean>(closed)) {
-          void closed.then((didClose) => {
-            if (!didClose) {
-              this.reopenNativePopover()
-            } else {
-              this.performHidePopover()
-            }
+          const closed = this.overlayController.requestClose('outside-click', () => {
+            this.reopenNativePopover()
           })
-          return
+
+          if (isPromiseLike<boolean>(closed)) {
+            void closed.then((didClose) => {
+              if (!didClose) {
+                this.reopenNativePopover()
+              } else {
+                this.cleanupPopoverState()
+              }
+            })
+            return
+          }
+
+          if (!closed) {
+            this.reopenNativePopover()
+            return
+          }
         }
 
-        if (!closed) {
-          this.reopenNativePopover()
-          return
-        }
+        this.cleanupPopoverState()
+      } finally {
+        // Clear flag in next microtask to cover Lit's synchronous/microtask updated()
+        // lifecycle that is triggered by open = false in cleanupPopoverState(),
+        // preventing re-entrant super.hidePopover() calls while browser closes popover natively.
+        queueMicrotask(() => {
+          this.#isClosingFromBeforeToggle = false
+        })
       }
-
-      this.performHidePopover()
     }
   }
 
