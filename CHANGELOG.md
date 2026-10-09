@@ -1,3 +1,10 @@
+## [1.4.3](https://github.com/pawel-up/md/compare/v1.4.2...v1.4.3) (2026-10-09)
+
+
+### Bug Fixes
+
+* force manual popover mode on submenus to prevent unintended light-dismiss closing ([6459ea7](https://github.com/pawel-up/md/commit/6459ea784cccb45083a7ac22d67046083715e31a))
+
 ## [1.4.2](https://github.com/pawel-up/md/compare/v1.4.1...v1.4.2) (2026-10-09)
 
 
