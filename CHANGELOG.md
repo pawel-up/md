@@ -1,3 +1,12 @@
+## [1.4.2](https://github.com/pawel-up/md/compare/v1.4.1...v1.4.2) (2026-10-09)
+
+
+### Bug Fixes
+
+* and variant support to menu, list, and select components ([7d98f32](https://github.com/pawel-up/md/commit/7d98f327f5601c578f51d8c0e6784934f7e899b7))
+* boolean attr defaulting to `true`  to disable attribute reflection ([af6e7e0](https://github.com/pawel-up/md/commit/af6e7e0807269a63ede404bd16f3a4ebb5ef26bd))
+* support dynamic updates for option labels and values in select ([247538e](https://github.com/pawel-up/md/commit/247538e625a74a4fdb044cf36352f84b9569ff3b))
+
 ## [1.4.1](https://github.com/pawel-up/md/compare/v1.4.0...v1.4.1) (2026-10-07)
 
 
