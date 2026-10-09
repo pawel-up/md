@@ -59,6 +59,7 @@ export default class TextField extends Input {
         @input=${this.handleInput}
         @select=${this.retargetEvent}
         @invalid=${this.invalidHandler}
+        @keydown=${this.handleInputKeyDown}
         aria-activedescendant=${ifDefined(ariaActiveDescendantValue)}
         aria-autocomplete=${ifDefined(ariaAutoCompleteValue)}
         aria-controls=${ifDefined(ariaControlsValue)}

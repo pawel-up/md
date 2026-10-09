@@ -1,9 +1,12 @@
 import { fixture, html, nextFrame, test } from '@pawel-up/lupa/testing'
+import { events } from '@pawel-up/lupa/commands'
 import { UiFilledTextFieldElement } from '../../../../src/components/text-field/ui-filled-text-field.js'
 import { UiOutlinedTextFieldElement } from '../../../../src/components/text-field/ui-outlined-text-field.js'
+import type { UiButtonElement } from '../../../../src/components/button/ui-button.js'
 
 import '../../../../src/components/text-field/ui-filled-text-field.js'
 import '../../../../src/components/text-field/ui-outlined-text-field.js'
+import '../../../../src/components/button/ui-button.js'
 
 test.group('TextField', () => {
   async function basicFixture(): Promise<UiFilledTextFieldElement> {
@@ -119,4 +122,381 @@ test.group('TextField', () => {
     )) as UiOutlinedTextFieldElement
     assert.equal((field3 as unknown as { renderLabelText(): string }).renderLabelText(), '* Name')
   }).tags(['@md', '@text-field'])
+
+  test('submits the form on Enter keypress in single-line text field', async ({ assert }) => {
+    const form = (await fixture(html`
+      <form>
+        <ui-outlined-text-field name="email" value="user@example.com"></ui-outlined-text-field>
+      </form>
+    `)) as HTMLFormElement
+
+    const field = form.querySelector('ui-outlined-text-field')
+    assert.isNotNull(field)
+
+    let submitted = false
+    form.addEventListener('submit', (e: SubmitEvent) => {
+      e.preventDefault()
+      submitted = true
+    })
+
+    const input = field?.shadowRoot?.querySelector('input')
+    assert.isNotNull(input)
+    if (input) {
+      await events(input).keyboard.press('Enter')
+    }
+    assert.isTrue(submitted, 'form was submitted on Enter')
+  }).tags(['@md', '@text-field', '@forms'])
+
+  test('activates default ui-button[type="submit"] when pressing Enter', async ({ assert }) => {
+    const form = (await fixture(html`
+      <form>
+        <ui-outlined-text-field name="search" value="query"></ui-outlined-text-field>
+        <ui-button type="submit" name="submit-action" value="search-btn">Search</ui-button>
+      </form>
+    `)) as HTMLFormElement
+
+    const field = form.querySelector('ui-outlined-text-field')
+    const button = form.querySelector('ui-button') as UiButtonElement | null
+    assert.isNotNull(field)
+    assert.isNotNull(button)
+
+    let submittedEvent: SubmitEvent | undefined
+    form.addEventListener('submit', (e: SubmitEvent) => {
+      e.preventDefault()
+      submittedEvent = e
+    })
+
+    const input = field?.shadowRoot?.querySelector('input')
+    assert.isNotNull(input)
+    if (input) {
+      await events(input).keyboard.press('Enter')
+    }
+
+    assert.isNotNull(submittedEvent, 'submit event fired')
+    const submitter = submittedEvent?.submitter as UiButtonElement | HTMLButtonElement | undefined
+    assert.equal(submitter?.value, 'search-btn')
+  }).tags(['@md', '@text-field', '@forms'])
+
+  test('does not submit the form on Enter when field is disabled', async ({ assert }) => {
+    const form = (await fixture(html`
+      <form>
+        <ui-outlined-text-field name="email" value="user@example.com" disabled></ui-outlined-text-field>
+      </form>
+    `)) as HTMLFormElement
+
+    const field = form.querySelector('ui-outlined-text-field')
+    assert.isNotNull(field)
+
+    let submitted = false
+    form.addEventListener('submit', (e: SubmitEvent) => {
+      e.preventDefault()
+      submitted = true
+    })
+
+    const input = field?.shadowRoot?.querySelector('input')
+    assert.isNotNull(input)
+    if (input) {
+      await events(input).keyboard.press('Enter')
+    }
+
+    assert.isFalse(submitted, 'form was not submitted when disabled')
+  }).tags(['@md', '@text-field', '@forms'])
+
+  test('does not submit the form on Enter when field is readOnly', async ({ assert }) => {
+    const form = (await fixture(html`
+      <form>
+        <ui-outlined-text-field name="email" value="user@example.com" readonly></ui-outlined-text-field>
+      </form>
+    `)) as HTMLFormElement
+
+    const field = form.querySelector('ui-outlined-text-field')
+    assert.isNotNull(field)
+
+    let submitted = false
+    form.addEventListener('submit', (e: SubmitEvent) => {
+      e.preventDefault()
+      submitted = true
+    })
+
+    const input = field?.shadowRoot?.querySelector('input')
+    assert.isNotNull(input)
+    if (input) {
+      await events(input).keyboard.press('Enter')
+    }
+
+    assert.isFalse(submitted, 'form was not submitted when readOnly')
+  }).tags(['@md', '@text-field', '@forms'])
+
+  test('does not submit the form when event.isComposing is true', async ({ assert }) => {
+    const form = (await fixture(html`
+      <form>
+        <ui-outlined-text-field name="email" value="user@example.com"></ui-outlined-text-field>
+      </form>
+    `)) as HTMLFormElement
+
+    const field = form.querySelector('ui-outlined-text-field')
+    assert.isNotNull(field)
+
+    let submitted = false
+    form.addEventListener('submit', (e: SubmitEvent) => {
+      e.preventDefault()
+      submitted = true
+    })
+
+    const input = field?.shadowRoot?.querySelector('input')
+    input?.dispatchEvent(
+      new KeyboardEvent('keydown', { key: 'Enter', isComposing: true, bubbles: true, cancelable: true })
+    )
+
+    assert.isFalse(submitted, 'form was not submitted during IME composition')
+  }).tags(['@md', '@text-field', '@forms'])
+
+  test('blocks submission and triggers constraint validation when required field is empty', async ({ assert }) => {
+    const form = (await fixture(html`
+      <form>
+        <ui-outlined-text-field name="email" required value=""></ui-outlined-text-field>
+      </form>
+    `)) as HTMLFormElement
+
+    const field = form.querySelector('ui-outlined-text-field') as UiOutlinedTextFieldElement
+    assert.isNotNull(field)
+
+    let submitted = false
+    form.addEventListener('submit', (e: SubmitEvent) => {
+      e.preventDefault()
+      submitted = true
+    })
+
+    const input = field.shadowRoot?.querySelector('input')
+    assert.isNotNull(input)
+    if (input) {
+      await events(input).keyboard.press('Enter')
+    }
+
+    assert.isFalse(submitted, 'form submission was blocked by constraint validation')
+    assert.isTrue(field.invalid, 'field is marked invalid')
+  }).tags(['@md', '@text-field', '@forms'])
+
+  test('does not submit the form on Enter when default submit button is disabled', async ({ assert }) => {
+    const form = (await fixture(html`
+      <form>
+        <ui-outlined-text-field name="search" value="query"></ui-outlined-text-field>
+        <ui-button type="submit" disabled>Search</ui-button>
+      </form>
+    `)) as HTMLFormElement
+
+    const field = form.querySelector('ui-outlined-text-field')
+    assert.isNotNull(field)
+
+    let submitted = false
+    form.addEventListener('submit', (e: SubmitEvent) => {
+      e.preventDefault()
+      submitted = true
+    })
+
+    const input = field?.shadowRoot?.querySelector('input')
+    assert.isNotNull(input)
+    if (input) {
+      await events(input).keyboard.press('Enter')
+    }
+
+    assert.isFalse(submitted, 'form was not submitted when default submit button is disabled')
+  }).tags(['@md', '@text-field', '@forms'])
+
+  test('submits the form on Enter when form has novalidate attribute even if field is empty', async ({ assert }) => {
+    const form = (await fixture(html`
+      <form novalidate>
+        <ui-outlined-text-field name="email" required value=""></ui-outlined-text-field>
+      </form>
+    `)) as HTMLFormElement
+
+    const field = form.querySelector('ui-outlined-text-field')
+    assert.isNotNull(field)
+
+    let submitted = false
+    form.addEventListener('submit', (e: SubmitEvent) => {
+      e.preventDefault()
+      submitted = true
+    })
+
+    const input = field?.shadowRoot?.querySelector('input')
+    assert.isNotNull(input)
+    if (input) {
+      await events(input).keyboard.press('Enter')
+    }
+
+    assert.isTrue(submitted, 'form submission proceeded because form has novalidate')
+  }).tags(['@md', '@text-field', '@forms'])
+
+  test('does not submit on Enter when form has multiple text fields and no submit button', async ({ assert }) => {
+    const form = (await fixture(html`
+      <form>
+        <ui-outlined-text-field name="first" value="John"></ui-outlined-text-field>
+        <ui-outlined-text-field name="last" value="Doe"></ui-outlined-text-field>
+      </form>
+    `)) as HTMLFormElement
+
+    const field = form.querySelector('ui-outlined-text-field')
+    assert.isNotNull(field)
+
+    let submitted = false
+    form.addEventListener('submit', (e: SubmitEvent) => {
+      e.preventDefault()
+      submitted = true
+    })
+
+    const input = field?.shadowRoot?.querySelector('input')
+    assert.isNotNull(input)
+    if (input) {
+      await events(input).keyboard.press('Enter')
+    }
+
+    assert.isFalse(submitted, 'implicit submission suppressed for multi-control form without submit button')
+  }).tags(['@md', '@text-field', '@forms'])
+
+  test('activates external submit button associated via form attribute when pressing Enter', async ({ assert }) => {
+    const container = (await fixture(html`
+      <div>
+        <form id="external-form">
+          <ui-outlined-text-field name="query" value="search text"></ui-outlined-text-field>
+        </form>
+        <ui-button type="submit" form="external-form" name="action" value="external-btn">Submit</ui-button>
+      </div>
+    `)) as HTMLElement
+
+    const form = container.querySelector('form')
+    const field = container.querySelector('ui-outlined-text-field')
+    const button = container.querySelector('ui-button') as UiButtonElement | null
+    assert.isNotNull(form)
+    assert.isNotNull(field)
+    assert.isNotNull(button)
+
+    let submittedEvent: SubmitEvent | undefined
+    let submitter: HTMLButtonElement | UiButtonElement | null = null
+    form?.addEventListener('submit', (e: SubmitEvent) => {
+      e.preventDefault()
+      submittedEvent = e
+      submitter = e.submitter as HTMLButtonElement | UiButtonElement | null
+    })
+
+    const input = field?.shadowRoot?.querySelector('input')
+    assert.isNotNull(input)
+    if (input) {
+      await events(input).keyboard.press('Enter')
+    }
+
+    assert.isNotNull(submittedEvent, 'submit event fired')
+    assert.isNotNull(submitter, 'submitter was present during submit event')
+    assert.equal((submitter as HTMLButtonElement | null)?.value, 'external-btn')
+  }).tags(['@md', '@text-field', '@forms'])
+
+  test('activates external submit button when form and button are inside a shadow root', async ({ assert }) => {
+    const host = (await fixture(html`<div></div>`)) as HTMLDivElement
+    const shadowRoot = host.attachShadow({ mode: 'open' })
+
+    const container = document.createElement('div')
+    container.innerHTML = `
+      <form id="shadow-form">
+        <ui-outlined-text-field name="query" value="shadow text"></ui-outlined-text-field>
+      </form>
+      <ui-button type="submit" form="shadow-form" name="action" value="shadow-btn">Submit</ui-button>
+    `
+    shadowRoot.appendChild(container)
+    await nextFrame()
+
+    const form = shadowRoot.querySelector('form')
+    const field = shadowRoot.querySelector('ui-outlined-text-field')
+    const button = shadowRoot.querySelector('ui-button') as UiButtonElement | null
+    assert.isNotNull(form)
+    assert.isNotNull(field)
+    assert.isNotNull(button)
+
+    let submittedEvent: SubmitEvent | undefined
+    let submitter: HTMLButtonElement | UiButtonElement | null = null
+    form?.addEventListener('submit', (e: SubmitEvent) => {
+      e.preventDefault()
+      submittedEvent = e
+      submitter = e.submitter as HTMLButtonElement | UiButtonElement | null
+    })
+
+    const input = field?.shadowRoot?.querySelector('input')
+    assert.isNotNull(input)
+    if (input) {
+      await events(input).keyboard.press('Enter')
+    }
+
+    assert.isNotNull(submittedEvent, 'submit event fired')
+    assert.isNotNull(submitter, 'submitter was present during submit event')
+    assert.equal((submitter as HTMLButtonElement | null)?.value, 'shadow-btn')
+  }).tags(['@md', '@text-field', '@forms'])
+
+  test('activates external submit button when it precedes in-form button in tree order', async ({ assert }) => {
+    const container = (await fixture(html`
+      <div>
+        <ui-button type="submit" form="order-form-1" name="action" value="first-external">External First</ui-button>
+        <form id="order-form-1">
+          <ui-outlined-text-field name="query" value="search text"></ui-outlined-text-field>
+          <ui-button type="submit" name="action" value="second-internal">Internal Second</ui-button>
+        </form>
+      </div>
+    `)) as HTMLElement
+
+    const form = container.querySelector('form')
+    const field = container.querySelector('ui-outlined-text-field')
+    assert.isNotNull(form)
+    assert.isNotNull(field)
+
+    let submittedEvent: SubmitEvent | undefined
+    let submitter: HTMLButtonElement | UiButtonElement | null = null
+    form?.addEventListener('submit', (e: SubmitEvent) => {
+      e.preventDefault()
+      submittedEvent = e
+      submitter = e.submitter as HTMLButtonElement | UiButtonElement | null
+    })
+
+    const input = field?.shadowRoot?.querySelector('input')
+    assert.isNotNull(input)
+    if (input) {
+      await events(input).keyboard.press('Enter')
+    }
+
+    assert.isNotNull(submittedEvent, 'submit event fired')
+    assert.isNotNull(submitter, 'submitter was present during submit event')
+    assert.equal((submitter as HTMLButtonElement | null)?.value, 'first-external')
+  }).tags(['@md', '@text-field', '@forms'])
+
+  test('activates in-form submit button when it precedes external button in tree order', async ({ assert }) => {
+    const container = (await fixture(html`
+      <div>
+        <form id="order-form-2">
+          <ui-button type="submit" name="action" value="first-internal">Internal First</ui-button>
+          <ui-outlined-text-field name="query" value="search text"></ui-outlined-text-field>
+        </form>
+        <ui-button type="submit" form="order-form-2" name="action" value="second-external">External Second</ui-button>
+      </div>
+    `)) as HTMLElement
+
+    const form = container.querySelector('form')
+    const field = container.querySelector('ui-outlined-text-field')
+    assert.isNotNull(form)
+    assert.isNotNull(field)
+
+    let submittedEvent: SubmitEvent | undefined
+    let submitter: HTMLButtonElement | UiButtonElement | null = null
+    form?.addEventListener('submit', (e: SubmitEvent) => {
+      e.preventDefault()
+      submittedEvent = e
+      submitter = e.submitter as HTMLButtonElement | UiButtonElement | null
+    })
+
+    const input = field?.shadowRoot?.querySelector('input')
+    assert.isNotNull(input)
+    if (input) {
+      await events(input).keyboard.press('Enter')
+    }
+
+    assert.isNotNull(submittedEvent, 'submit event fired')
+    assert.isNotNull(submitter, 'submitter was present during submit event')
+    assert.equal((submitter as HTMLButtonElement | null)?.value, 'first-internal')
+  }).tags(['@md', '@text-field', '@forms'])
 })

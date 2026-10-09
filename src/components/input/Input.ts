@@ -30,6 +30,12 @@ export default abstract class Input extends UiElement {
   }
 
   /**
+   * Indicates whether this input control is multi-line.
+   * Subclasses representing multi-line inputs (e.g. `TextAreaElement`) override this.
+   */
+  protected readonly isMultiline: boolean = false
+
+  /**
    * @attribute
    */
   @property({ type: String, reflect: true }) accessor type: SupportedInputTypes
@@ -486,6 +492,7 @@ export default abstract class Input extends UiElement {
         ;(input as any)[key] = value
       })
       this.pendingSetters.clear()
+      this._updateValidationState()
     }
   }
 
@@ -833,6 +840,174 @@ export default abstract class Input extends UiElement {
     this.value = (event.target as HTMLInputElement).value
     this.retargetEvent(event)
     this.reportValidity()
+  }
+
+  /**
+   * Handles the `keydown` event on the inner `<input>` element.
+   * Performs implicit form submission on single-line text inputs when Enter is pressed.
+   *
+   * @param event The keyboard event.
+   */
+  protected handleInputKeyDown(event: KeyboardEvent): void {
+    if (event.key !== 'Enter' || event.defaultPrevented || event.isComposing) {
+      return
+    }
+
+    if (this.disabled || this.readOnly || this.isMultiline) {
+      return
+    }
+
+    const { form } = this
+    if (!form) {
+      return
+    }
+
+    event.preventDefault()
+
+    const defaultBtn = this.getDefaultSubmitButton(form)
+    if (!this.isValidationSuppressed(form, defaultBtn) && !this.reportValidity()) {
+      return
+    }
+
+    this.submitForm(form, defaultBtn)
+  }
+
+  /**
+   * Finds the default submit button in tree order for the specified form
+   * per HTML Living Standard § 4.10.21.2.
+   *
+   * Searches descendant buttons within the `<form>` element, as well as external
+   * buttons associated via the `form="..."` attribute within the same root node.
+   *
+   * @param form The owning form element.
+   * @returns The default submit button, or null if none exists.
+   */
+  protected getDefaultSubmitButton(form: HTMLFormElement): HTMLElement | null {
+    const selector = 'button:not([type]), [type="submit"]'
+    const buttons = Array.from(form.querySelectorAll<HTMLElement>(selector))
+
+    if (form.id) {
+      const root = form.getRootNode() as Document | ShadowRoot
+      const external = Array.from(
+        root.querySelectorAll<HTMLElement>(`button[form="${form.id}"]:not([type]), [type="submit"][form="${form.id}"]`)
+      ).filter((btn) => !form.contains(btn))
+
+      if (external.length > 0) {
+        buttons.push(...external)
+        buttons.sort((a, b) => {
+          if (a === b) {
+            return 0
+          }
+          return a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_PRECEDING ? 1 : -1
+        })
+      }
+    }
+
+    return (
+      buttons.find((btn) => {
+        const formOwner = 'form' in btn ? (btn as { form?: unknown }).form : null
+        return formOwner === form || !formOwner
+      }) ?? null
+    )
+  }
+
+  /**
+   * Determines whether constraint validation should be bypassed during implicit submission,
+   * such as when `<form novalidate>` is set or the default button has `formnovalidate`.
+   *
+   * @param form The owning form element.
+   * @param defaultBtn The default submit button, if any.
+   * @returns True if validation should be bypassed.
+   */
+  private isValidationSuppressed(form: HTMLFormElement, defaultBtn: HTMLElement | null): boolean {
+    if (form.noValidate) {
+      return true
+    }
+    if (
+      defaultBtn &&
+      'formNoValidate' in defaultBtn &&
+      Boolean((defaultBtn as { formNoValidate?: boolean }).formNoValidate)
+    ) {
+      return true
+    }
+    if (defaultBtn?.hasAttribute('formnovalidate')) {
+      return true
+    }
+    return false
+  }
+
+  /**
+   * Checks whether the form contains multiple submittable controls with a `name` attribute.
+   * Used when no default submit button exists, per HTML Living Standard § 4.10.21.2.
+   *
+   * @param form The owning form element.
+   * @returns True if more than one submittable non-button control is present in the form.
+   */
+  private hasMultipleControls(form: HTMLFormElement): boolean {
+    const elements = form.querySelectorAll<HTMLElement>('[name]')
+    let count = 0
+    for (const el of elements) {
+      if (this.isExcludedFromImplicitCount(el)) {
+        continue
+      }
+      count++
+      if (count > 1) {
+        return true
+      }
+    }
+    return false
+  }
+
+  private isExcludedFromImplicitCount(element: HTMLElement): boolean {
+    const tag = element.localName
+    if (tag === 'button' || tag.endsWith('-button') || tag === 'fieldset' || tag === 'output') {
+      return true
+    }
+    if (element.matches('[type="button"], [type="submit"], [type="reset"], [type="image"], [type="hidden"]')) {
+      return true
+    }
+    if (element instanceof HTMLInputElement && element.type.toLowerCase() === 'hidden') {
+      return true
+    }
+    return false
+  }
+
+  /**
+   * Submits the form implicitly per HTML Living Standard § 4.10.21.2,
+   * activating the default submit button if one exists.
+   *
+   * @param form The owning form element to submit.
+   * @param defaultBtn The pre-computed default submit button, or undefined to query it.
+   */
+  protected submitForm(form: HTMLFormElement, defaultBtn?: HTMLElement | null): void {
+    const btn = defaultBtn !== undefined ? defaultBtn : this.getDefaultSubmitButton(form)
+
+    if (btn) {
+      if (!this.isElementDisabled(btn)) {
+        btn.click()
+      }
+      return
+    }
+
+    if (this.hasMultipleControls(form)) {
+      return
+    }
+
+    try {
+      form.requestSubmit()
+    } catch {
+      // Ignore errors if form submission cannot proceed
+    }
+  }
+
+  private isElementDisabled(element: HTMLElement): boolean {
+    if (element.hasAttribute('disabled')) {
+      return true
+    }
+    if ('disabled' in element && Boolean((element as { disabled?: boolean }).disabled)) {
+      return true
+    }
+    return isDisabled(element)
   }
 
   protected hasCounter(): boolean {

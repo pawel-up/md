@@ -87,4 +87,26 @@ test.group('TextArea', () => {
     assert.isFalse(isValid)
     assert.isTrue(el.invalid)
   }).tags(['@md', '@text-area'])
+
+  test('does not submit the form on Enter keypress in textarea', async ({ assert }) => {
+    const form = (await fixture(html`
+      <form>
+        <ui-text-area name="notes" value="First line"></ui-text-area>
+      </form>
+    `)) as HTMLFormElement
+
+    const el = form.querySelector('ui-text-area') as UiTextAreaElement
+    assert.isNotNull(el)
+
+    let submitted = false
+    form.addEventListener('submit', (e: SubmitEvent) => {
+      e.preventDefault()
+      submitted = true
+    })
+
+    const textarea = el.shadowRoot?.querySelector('textarea')
+    textarea?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }))
+
+    assert.isFalse(submitted, 'textarea does not implicitly submit on Enter')
+  }).tags(['@md', '@text-area', '@forms'])
 })

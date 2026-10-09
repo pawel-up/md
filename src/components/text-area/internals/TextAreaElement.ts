@@ -27,6 +27,8 @@ export default class TextAreaElement extends Input {
   @property({ type: String })
   accessor wrap: 'soft' | 'hard' | undefined
 
+  protected override readonly isMultiline = true
+
   override connectedCallback(): void {
     super.connectedCallback()
     this.setAttribute('aria-multiline', 'true')
