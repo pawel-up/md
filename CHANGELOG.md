@@ -1,3 +1,10 @@
+## [1.4.4](https://github.com/pawel-up/md/compare/v1.4.3...v1.4.4) (2026-10-09)
+
+
+### Bug Fixes
+
+* support form submission on Enter keypress in text fields ([4250a48](https://github.com/pawel-up/md/commit/4250a481b4df32be8d20401a8c57da9c9b8a1f9a))
+
 ## [1.4.3](https://github.com/pawel-up/md/compare/v1.4.2...v1.4.3) (2026-10-09)
 
 
