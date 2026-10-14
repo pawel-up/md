@@ -6,7 +6,11 @@ import {
   type OverlayHost,
   type BeforeCloseCallback,
 } from '../../../src/controllers/OverlayController.js'
-import { OverlayStackManager, type OverlayDismissReason } from '../../../src/controllers/OverlayStackManager.js'
+import {
+  OverlayStackManager,
+  type OverlayDismissReason,
+  type OverlayEntry,
+} from '../../../src/controllers/OverlayStackManager.js'
 
 @customElement('test-overlay-element')
 class TestOverlayElement extends LitElement implements OverlayHost {
@@ -78,6 +82,20 @@ test.group('OverlayController & OverlayStackManager', (group) => {
 
     el.remove()
     assert.equal(manager.size, 0)
+  })
+
+  test('does not re-register overlay when open is set and element is disconnected before update', async ({
+    assert,
+  }) => {
+    const el = await fixture<TestOverlayElement>(html`<test-overlay-element></test-overlay-element>`)
+    assert.equal(manager.size, 0)
+
+    el.open = true
+    el.remove()
+    await el.updateComplete
+
+    assert.equal(manager.size, 0)
+    assert.isFalse(el.overlayController.isTop)
   })
 
   test('maintains LIFO order with multiple overlays', async ({ assert }) => {
@@ -329,5 +347,169 @@ test.group('OverlayController & OverlayStackManager', (group) => {
     assert.isTrue(closed)
     assert.isFalse(el.open)
     assert.equal(manager.size, 0)
+  })
+
+  test('refuses to register an overlay entry whose element is not connected to DOM', async ({ assert }) => {
+    const el = await fixture<TestOverlayElement>(html`<test-overlay-element></test-overlay-element>`)
+    const detachedDiv = document.createElement('div')
+
+    const entry: OverlayEntry = {
+      id: 'detached-entry',
+      element: detachedDiv,
+      controller: el.overlayController,
+      contains: (node: Node) => detachedDiv.contains(node),
+    }
+
+    const index = manager.register(entry)
+    assert.equal(index, -1)
+    assert.equal(manager.size, 0)
+    assert.equal(manager.indexOf('detached-entry'), -1)
+  })
+
+  test('auto-prunes disconnected entries when evaluating manager.top', async ({ assert }) => {
+    const el1 = await fixture<TestOverlayElement>(html`<test-overlay-element open></test-overlay-element>`)
+    await el1.updateComplete
+
+    const div = document.createElement('div')
+    document.body.appendChild(div)
+
+    const entry: OverlayEntry = {
+      id: 'orphan-div',
+      element: div,
+      controller: el1.overlayController,
+      contains: (node: Node) => div.contains(node),
+    }
+
+    const index = manager.register(entry)
+    assert.isAbove(index, -1)
+    assert.equal(manager.top?.id, 'orphan-div')
+
+    // Simulate raw unmount/detachment without unregistering
+    div.remove()
+    assert.isFalse(div.isConnected)
+
+    // manager.top auto-prunes orphan-div and falls back to el1
+    assert.equal(manager.top?.id, el1.overlayController.id)
+    assert.equal(manager.indexOf('orphan-div'), -1)
+  })
+
+  test('auto-prunes orphaned entries and cleans up listeners when all overlays are disconnected', async ({
+    assert,
+  }) => {
+    const el = await fixture<TestOverlayElement>(html`<test-overlay-element></test-overlay-element>`)
+    const div = document.createElement('div')
+    document.body.appendChild(div)
+
+    const entry: OverlayEntry = {
+      id: 'lonely-orphan',
+      element: div,
+      controller: el.overlayController,
+      contains: (node: Node) => div.contains(node),
+    }
+
+    manager.register(entry)
+    assert.equal(manager.size, 1)
+
+    // Remove from DOM without unregistering
+    div.remove()
+    assert.isFalse(div.isConnected)
+
+    // Resolving top should prune the orphan and teardown listeners
+    assert.isUndefined(manager.top)
+    assert.equal(manager.size, 0)
+
+    // Window events should not be intercepted or stopped
+    const pointerEvent = new PointerEvent('pointerdown', { bubbles: true, composed: true, cancelable: true })
+    document.body.dispatchEvent(pointerEvent)
+    assert.isFalse(pointerEvent.defaultPrevented)
+
+    const escapeEvent = new KeyboardEvent('keydown', {
+      key: 'Escape',
+      bubbles: true,
+      composed: true,
+      cancelable: true,
+    })
+    document.body.dispatchEvent(escapeEvent)
+    assert.isFalse(escapeEvent.defaultPrevented)
+  })
+
+  test('removes existing entry if re-registered when element becomes disconnected', async ({ assert }) => {
+    const el = await fixture<TestOverlayElement>(html`<test-overlay-element></test-overlay-element>`)
+    const div = document.createElement('div')
+    document.body.appendChild(div)
+
+    const entry: OverlayEntry = {
+      id: 'existing-entry',
+      element: div,
+      controller: el.overlayController,
+      contains: (node: Node) => div.contains(node),
+    }
+
+    const firstIndex = manager.register(entry)
+    assert.isAbove(firstIndex, -1)
+    assert.equal(manager.size, 1)
+
+    div.remove()
+    const secondIndex = manager.register(entry)
+    assert.equal(secondIndex, -1)
+    assert.equal(manager.size, 0)
+    assert.equal(manager.indexOf('existing-entry'), -1)
+  })
+
+  test('auto-prunes orphan and cleans up listeners directly during Escape keydown event', async ({ assert }) => {
+    const el = await fixture<TestOverlayElement>(html`<test-overlay-element></test-overlay-element>`)
+    const div = document.createElement('div')
+    document.body.appendChild(div)
+
+    const entry: OverlayEntry = {
+      id: 'escape-orphan',
+      element: div,
+      controller: el.overlayController,
+      contains: (node: Node) => div.contains(node),
+    }
+
+    manager.register(entry)
+    assert.equal(manager.size, 1)
+
+    div.remove()
+
+    // Dispatch Escape without calling manager.top first; capture listener triggers auto-prune
+    const escapeEvent = new KeyboardEvent('keydown', {
+      key: 'Escape',
+      bubbles: true,
+      composed: true,
+      cancelable: true,
+    })
+    window.dispatchEvent(escapeEvent)
+
+    assert.isFalse(escapeEvent.defaultPrevented)
+    assert.equal(manager.size, 0)
+    assert.isUndefined(manager.top)
+  })
+
+  test('prunes disconnected entries consistently across size, entries, and indexOf queries', async ({ assert }) => {
+    const el = await fixture<TestOverlayElement>(html`<test-overlay-element></test-overlay-element>`)
+    const div = document.createElement('div')
+    document.body.appendChild(div)
+
+    const entry: OverlayEntry = {
+      id: 'query-orphan',
+      element: div,
+      controller: el.overlayController,
+      contains: (node: Node) => div.contains(node),
+    }
+
+    manager.register(entry)
+    assert.equal(manager.size, 1)
+    assert.equal(manager.entries.length, 1)
+    assert.equal(manager.indexOf('query-orphan'), 0)
+
+    div.remove()
+    assert.isFalse(div.isConnected)
+
+    // Accessing size, entries, or indexOf without touching 'top' automatically prunes orphans
+    assert.equal(manager.size, 0)
+    assert.equal(manager.entries.length, 0)
+    assert.equal(manager.indexOf('query-orphan'), -1)
   })
 })

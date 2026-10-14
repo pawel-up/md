@@ -71,10 +71,28 @@ export class OverlayStackManager {
   }
 
   /**
+   * Prunes orphaned overlay entries whose host elements are no longer connected to the DOM.
+   * Cleans up global window listeners if no overlays remain in the stack.
+   */
+  private prune(): void {
+    let pruned = false
+    for (let i = this.stack.length - 1; i >= 0; i--) {
+      if (!this.stack[i].element.isConnected) {
+        this.stack.splice(i, 1)
+        pruned = true
+      }
+    }
+    if (pruned && this.stack.length === 0) {
+      this.teardownListeners()
+    }
+  }
+
+  /**
    * Returns the top-most active (open) overlay entry in the stack,
    * or undefined if the stack is empty or all overlays are closed.
    */
   get top(): OverlayEntry | undefined {
+    this.prune()
     for (let i = this.stack.length - 1; i >= 0; i--) {
       if (this.stack[i].controller.isOpen) {
         return this.stack[i]
@@ -87,6 +105,7 @@ export class OverlayStackManager {
    * Returns the number of currently registered overlays in the stack.
    */
   get size(): number {
+    this.prune()
     return this.stack.length
   }
 
@@ -94,6 +113,7 @@ export class OverlayStackManager {
    * Returns a copy of the active overlay entries in the stack.
    */
   get entries(): readonly OverlayEntry[] {
+    this.prune()
     return [...this.stack]
   }
 
@@ -104,6 +124,7 @@ export class OverlayStackManager {
    * @returns The zero-based index of the entry, or -1 if not found.
    */
   indexOf(entryOrId: OverlayEntry | string): number {
+    this.prune()
     const targetId = typeof entryOrId === 'string' ? entryOrId : entryOrId.id
     return this.stack.findIndex((item) => item.id === targetId)
   }
@@ -112,12 +133,18 @@ export class OverlayStackManager {
    * Registers an overlay onto the top of the stack.
    *
    * @param entry The OverlayEntry to register.
-   * @returns The new zero-based index of the overlay in the stack.
+   * @returns The new zero-based index of the overlay in the stack, or -1 if the element is not connected.
    */
   register(entry: OverlayEntry): number {
     const existingIndex = this.indexOf(entry.id)
     if (existingIndex >= 0) {
       this.stack.splice(existingIndex, 1)
+    }
+    if (!entry.element.isConnected) {
+      if (this.stack.length === 0) {
+        this.teardownListeners()
+      }
+      return -1
     }
     this.stack.push(entry)
     this.ensureListeners()

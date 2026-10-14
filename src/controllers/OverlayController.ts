@@ -161,6 +161,10 @@ export class OverlayController implements ReactiveController {
    * Lifecycle hook called after the host element updates.
    */
   hostUpdated(): void {
+    if (!this.host.isConnected) {
+      return
+    }
+
     if (this.host.open && !this.wasOpen) {
       this.registerWithStack()
       this.wasOpen = true
@@ -293,6 +297,9 @@ export class OverlayController implements ReactiveController {
    * Registers this overlay entry into the OverlayStackManager.
    */
   private registerWithStack(): void {
+    if (!this.host.isConnected) {
+      return
+    }
     this.manager.register({
       id: this.id,
       element: this.host,
