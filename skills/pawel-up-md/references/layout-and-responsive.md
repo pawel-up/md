@@ -129,14 +129,14 @@ Expanded:   Side-by-side with wider detail pane
 ```html
 <div class="md3-list-detail">
   <aside class="md3-list-detail__list">
-    <ui-list>
-      <ui-list-item type="button" class="active">
-        <div slot="headline">Item 1</div>
-        <div slot="supporting-text">Description</div>
+    <ui-list selectActive>
+      <ui-list-item lines="two" class="select">
+        Item 1
+        <p slot="supporting-text">Description</p>
       </ui-list-item>
-      <ui-list-item type="button">
-        <div slot="headline">Item 2</div>
-        <div slot="supporting-text">Description</div>
+      <ui-list-item lines="two">
+        Item 2
+        <p slot="supporting-text">Description</p>
       </ui-list-item>
     </ui-list>
   </aside>

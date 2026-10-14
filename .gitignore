@@ -65,3 +65,6 @@ lit-plugin.log
 # VitePress
 demo/.vitepress/cache/
 demo/.vitepress/dist/
+
+# Local agent skills
+.agents/skills/

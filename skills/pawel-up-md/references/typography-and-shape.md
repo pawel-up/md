@@ -40,55 +40,58 @@ To use: swap the baseline token for the emphasized version:
 - Baseline: `md.sys.typescale.display-large`
 - Emphasized: `md.sys.typescale.emphasized.display-large`
 
-### CSS Custom Properties
+### CSS Custom Properties (`@pawel-up/md/styles/tokens.css`)
 
-Each type style maps to individual axis tokens:
+Each type style maps to individual axis tokens (note that line-height uses the **`-height`** suffix):
 
 ```css
 /* Example: Body Large */
---md-sys-typescale-body-large-font: 'Roboto', sans-serif;
---md-sys-typescale-body-large-weight: 400;
---md-sys-typescale-body-large-size: 1rem;        /* 16sp */
---md-sys-typescale-body-large-line-height: 1.5rem; /* 24sp */
---md-sys-typescale-body-large-tracking: 0.03125rem; /* 0.5px */
+--md-sys-typescale-body-large-font: var(--md-ref-typeface-brand);
+--md-sys-typescale-body-large-weight: var(--md-ref-typeface-weight-regular);
+--md-sys-typescale-body-large-size: 1rem;        /* 16pt */
+--md-sys-typescale-body-large-height: 1.5rem;    /* 24pt */
+--md-sys-typescale-body-large-tracking: 0.5px;
 
 /* Example: Title Medium */
---md-sys-typescale-title-medium-font: 'Roboto', sans-serif;
---md-sys-typescale-title-medium-weight: 500;
+--md-sys-typescale-title-medium-font: var(--md-ref-typeface-brand);
+--md-sys-typescale-title-medium-weight: var(--md-ref-typeface-weight-medium);
 --md-sys-typescale-title-medium-size: 1rem;
---md-sys-typescale-title-medium-line-height: 1.5rem;
---md-sys-typescale-title-medium-tracking: 0.009375rem;
+--md-sys-typescale-title-medium-height: 1.5rem;
+--md-sys-typescale-title-medium-tracking: 0.15px;
 
 /* Example: Label Large (used for buttons) */
---md-sys-typescale-label-large-font: 'Roboto', sans-serif;
---md-sys-typescale-label-large-weight: 500;
+--md-sys-typescale-label-large-font: var(--md-ref-typeface-brand);
+--md-sys-typescale-label-large-weight: var(--md-ref-typeface-weight-medium);
+--md-sys-typescale-label-large-weight-prominent: var(--md-ref-typeface-weight-bold);
 --md-sys-typescale-label-large-size: 0.875rem;
---md-sys-typescale-label-large-line-height: 1.25rem;
---md-sys-typescale-label-large-tracking: 0.00625rem;
+--md-sys-typescale-label-large-height: 1.25rem;
+--md-sys-typescale-label-large-tracking: 0.1px;
 ```
 
-### Using Type Styles in CSS
+### Using Type Styles in Lit & CSS
 
-Apply using individual properties:
+In Lit components, import `@pawel-up/md/styles/typography.module.js` to get ready-made utility classes (`.display-large`, `.display-medium`, `.display-small`, `.headline-large`, `.headline-medium`, `.headline-small`, `.title-large`, `.title-medium`, `.title-small`, `.body-large`, `.body-medium`, `.body-small`, `.label-large`, `.label-medium`, `.label-small`):
+
+```typescript
+import { LitElement, html } from 'lit'
+import typography from '@pawel-up/md/styles/typography.module.js'
+
+export class SectionHeader extends LitElement {
+  static styles = [typography]
+  override render() {
+    return html`<h2 class="headline-medium">Section Title</h2>`
+  }
+}
+```
+
+Or reference the CSS variables directly:
 
 ```css
 .headline {
   font-family: var(--md-sys-typescale-headline-large-font);
   font-weight: var(--md-sys-typescale-headline-large-weight);
   font-size: var(--md-sys-typescale-headline-large-size);
-  line-height: var(--md-sys-typescale-headline-large-line-height);
-  letter-spacing: var(--md-sys-typescale-headline-large-tracking);
-}
-```
-
-Or use the shorthand font property for convenience (note: requires defining the shorthand token):
-
-```css
-.headline {
-  font: var(--md-sys-typescale-headline-large-weight)
-        var(--md-sys-typescale-headline-large-size) /
-        var(--md-sys-typescale-headline-large-line-height)
-        var(--md-sys-typescale-headline-large-font);
+  line-height: var(--md-sys-typescale-headline-large-height);
   letter-spacing: var(--md-sys-typescale-headline-large-tracking);
 }
 ```

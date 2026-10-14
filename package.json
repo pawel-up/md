@@ -24,7 +24,8 @@
     "build/src/**/*.css",
     "build/custom-elements.json",
     "src",
-    "src/**"
+    "src/**",
+    "skills"
   ],
   "exports": {
     ".": "./build/src/index.js",

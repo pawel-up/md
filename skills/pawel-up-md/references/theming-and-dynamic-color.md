@@ -259,48 +259,39 @@ const high = new SchemeContent(hct, isDark, 1.0);
 
 Higher contrast increases the tonal distance between paired color roles (e.g., `primary` and `on-primary`), making text more legible without fundamentally changing the color feel.
 
-## Component-Level Overrides (web)
+## Component-Level Overrides (`@pawel-up/md`)
 
-Override individual **web** component appearance using component-specific CSS custom properties. **Compose** uses `TextFieldDefaults`, `ButtonDefaults`, `MaterialTheme`, etc.
+Override individual `@pawel-up/md` component appearance using component-specific CSS custom properties:
 
 ```css
-/* Override specific button colors */
-md-filled-button {
-  --md-filled-button-container-color: var(--md-sys-color-tertiary);
-  --md-filled-button-label-text-color: var(--md-sys-color-on-tertiary);
+/* Override button icon size and outline color */
+ui-button {
+  --md-button-icon-size: 20px;
+  --md-button-outline-color: var(--md-sys-color-outline);
 }
 
-/* Override text field shape */
-md-outlined-text-field {
-  --md-outlined-text-field-container-shape: var(--md-sys-shape-corner-medium);
+/* Override outlined text field active label color */
+ui-outlined-text-field {
+  --md-outlined-text-field-label-active-color: var(--md-sys-color-tertiary);
 }
 
-/* Override FAB */
-md-fab {
-  --md-fab-container-color: var(--md-sys-color-tertiary-container);
-  --md-fab-icon-color: var(--md-sys-color-on-tertiary-container);
+/* Override FAB margin and z-index */
+ui-fab {
+  --md-fab-margin: 24px;
+  --md-fab-z-index: 200;
 }
 
-/* Override switch colors */
-md-switch {
-  --md-switch-selected-track-color: var(--md-sys-color-primary);
-  --md-switch-selected-handle-color: var(--md-sys-color-on-primary);
+/* Override dialog dimensions */
+ui-dialog {
+  --ui-dialog-max-width: 640px;
+}
+
+/* Override linear progress appearance */
+ui-progress {
+  --ui-progress-height: 8px;
+  --ui-progress-primary-progress-color: var(--md-sys-color-tertiary);
 }
 ```
-
-### Component Token Naming Pattern
-
-Component tokens follow: `--md-{component}-{element}-{property}`
-
-Examples:
-- `--md-filled-button-container-color`
-- `--md-filled-button-container-shape`
-- `--md-filled-button-label-text-color`
-- `--md-outlined-text-field-outline-color`
-- `--md-outlined-text-field-focus-outline-color`
-- `--md-fab-container-color`
-- `--md-fab-container-shape`
-- `--md-switch-selected-track-color`
 
 ## Dynamic Color from Content
 
@@ -349,17 +340,14 @@ applyTheme(seed);
 Apply different themes to different sections of the UI:
 
 ```css
-/* Default theme */
-:root {
-  --md-sys-color-primary: #6750A4;
-  /* ... */
-}
+/* Default theme via @pawel-up/md/styles/theme.css on html.theme-light / html.theme-dark */
 
 /* Scoped theme for a section */
 .premium-section {
   --md-sys-color-primary: #B69DF8;
+  --md-sys-color-on-primary: #25005A;
   --md-sys-color-primary-container: #3F2D7A;
-  /* Only override what changes */
+  --md-sys-color-on-primary-container: #EADDFF;
 }
 ```
 
@@ -367,14 +355,15 @@ Apply different themes to different sections of the UI:
 <main>
   <!-- Uses default theme -->
   <section class="regular">
-    <ui-button variant="filled">Standard</ui-button>
+    <ui-button color="filled">Standard</ui-button>
   </section>
 
   <!-- Uses premium theme -->
   <section class="premium-section">
-    <ui-button variant="filled">Premium</ui-button>
+    <ui-button color="filled">Premium</ui-button>
   </section>
 </main>
 ```
 
-CSS custom properties cascade, so child elements automatically inherit the closest ancestor's tokens.
+CSS custom properties cascade through Shadow DOM boundaries, so `<ui-*>` elements automatically inherit the closest ancestor's `--md-sys-*` tokens.
+
