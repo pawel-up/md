@@ -1,3 +1,10 @@
+## [1.4.5](https://github.com/pawel-up/md/compare/v1.4.4...v1.4.5) (2026-10-14)
+
+
+### Bug Fixes
+
+* auto-prune disconnected overlay elements and prevent registration of detached hosts ([8211cb7](https://github.com/pawel-up/md/commit/8211cb77615f689fff2ac4ff87529007551af684))
+
 ## [1.4.4](https://github.com/pawel-up/md/compare/v1.4.3...v1.4.4) (2026-10-09)
 
 
