@@ -524,7 +524,7 @@ test.group('TextField', () => {
     assert.isTrue(toggle?.getAttribute('part')?.includes('password-toggle'))
     assert.isTrue(toggle?.getAttribute('part')?.includes('visibility-toggle'))
     const icon = toggle?.querySelector('ui-icon')
-    assert.equal(icon?.getAttribute('icon'), 'visibility')
+    assert.equal(icon?.textContent.trim(), 'visibility')
   }).tags(['@md', '@text-field', '@masked'])
 
   test('toggles visibility and -webkit-text-security in masked mode', async ({ assert }) => {
@@ -558,7 +558,7 @@ test.group('TextField', () => {
     assert.equal(input?.type, 'text')
     assert.equal(toggle.getAttribute('aria-label'), 'Hide text')
     const iconAfter = toggle.querySelector('ui-icon')
-    assert.equal(iconAfter?.getAttribute('icon'), 'visibilityOff')
+    assert.equal(iconAfter?.textContent.trim(), 'visibility_off')
 
     // Click toggle again to hide
     toggle.click()
@@ -570,7 +570,7 @@ test.group('TextField', () => {
     assert.equal(input?.style.getPropertyValue('-webkit-text-security'), 'disc')
     assert.equal(toggle.getAttribute('aria-label'), 'Show text')
     const iconFinal = toggle.querySelector('ui-icon')
-    assert.equal(iconFinal?.getAttribute('icon'), 'visibility')
+    assert.equal(iconFinal?.textContent.trim(), 'visibility')
   }).tags(['@md', '@text-field', '@masked'])
 
   test('updates dynamically when masked property changes at runtime', async ({ assert }) => {
