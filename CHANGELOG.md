@@ -1,3 +1,10 @@
+## [1.4.9](https://github.com/pawel-up/md/compare/v1.4.8...v1.4.9) (2026-10-15)
+
+
+### Bug Fixes
+
+* deprecate icon property on ui-icon ([37bb7a9](https://github.com/pawel-up/md/commit/37bb7a9f2464760f3e9e2e33e6869ddd77b648bf))
+
 ## [1.4.7](https://github.com/pawel-up/md/compare/v1.4.6...v1.4.7) (2026-10-15)
 
 
