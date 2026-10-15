@@ -499,4 +499,162 @@ test.group('TextField', () => {
     assert.isNotNull(submitter, 'submitter was present during submit event')
     assert.equal((submitter as HTMLButtonElement | null)?.value, 'first-internal')
   }).tags(['@md', '@text-field', '@forms'])
+
+  test('has default masked=false and no password toggle', async ({ assert }) => {
+    const field = await basicFixture()
+    assert.isFalse(field.masked)
+    assert.isNull(field.shadowRoot?.querySelector('[part~="visibility-toggle"]'))
+  }).tags(['@md', '@text-field', '@masked'])
+
+  test('enables masked mode via markup attribute and reflects', async ({ assert }) => {
+    const field = (await fixture(
+      html`<ui-filled-text-field label="PIN" masked value="1234"></ui-filled-text-field>`
+    )) as UiFilledTextFieldElement
+    assert.isTrue(field.masked)
+    assert.isTrue(field.hasAttribute('masked'))
+
+    const input = field.shadowRoot?.querySelector('input')
+    assert.isNotNull(input)
+    assert.equal(input?.type, 'text')
+    assert.equal(input?.style.getPropertyValue('-webkit-text-security'), 'disc')
+
+    const toggle = field.shadowRoot?.querySelector('[part~="visibility-toggle"]')
+    assert.isNotNull(toggle)
+    assert.equal(toggle?.getAttribute('aria-label'), 'Show text')
+    assert.isTrue(toggle?.getAttribute('part')?.includes('password-toggle'))
+    assert.isTrue(toggle?.getAttribute('part')?.includes('visibility-toggle'))
+    const icon = toggle?.querySelector('ui-icon')
+    assert.equal(icon?.getAttribute('icon'), 'visibility')
+  }).tags(['@md', '@text-field', '@masked'])
+
+  test('toggles visibility and -webkit-text-security in masked mode', async ({ assert }) => {
+    const field = (await fixture(
+      html`<ui-filled-text-field label="PIN" masked value="1234"></ui-filled-text-field>`
+    )) as UiFilledTextFieldElement
+
+    const input = field.shadowRoot?.querySelector('input')
+    const toggle = field.shadowRoot?.querySelector('[part~="visibility-toggle"]') as HTMLElement
+    assert.isNotNull(input)
+    assert.isNotNull(toggle)
+
+    // Initially masked
+    assert.equal(input?.style.getPropertyValue('-webkit-text-security'), 'disc')
+    assert.isFalse(field.isPasswordVisible)
+    assert.equal(toggle.getAttribute('aria-label'), 'Show text')
+
+    let eventCount = 0
+    field.addEventListener('visibilitychange', () => {
+      eventCount++
+    })
+
+    // Click toggle to reveal
+    toggle.click()
+    await nextFrame()
+    await field.updateComplete
+
+    assert.equal(eventCount, 1)
+    assert.isTrue(field.isPasswordVisible)
+    assert.equal(input?.style.getPropertyValue('-webkit-text-security'), 'none')
+    assert.equal(input?.type, 'text')
+    assert.equal(toggle.getAttribute('aria-label'), 'Hide text')
+    const iconAfter = toggle.querySelector('ui-icon')
+    assert.equal(iconAfter?.getAttribute('icon'), 'visibilityOff')
+
+    // Click toggle again to hide
+    toggle.click()
+    await nextFrame()
+    await field.updateComplete
+
+    assert.equal(eventCount, 2)
+    assert.isFalse(field.isPasswordVisible)
+    assert.equal(input?.style.getPropertyValue('-webkit-text-security'), 'disc')
+    assert.equal(toggle.getAttribute('aria-label'), 'Show text')
+    const iconFinal = toggle.querySelector('ui-icon')
+    assert.equal(iconFinal?.getAttribute('icon'), 'visibility')
+  }).tags(['@md', '@text-field', '@masked'])
+
+  test('updates dynamically when masked property changes at runtime', async ({ assert }) => {
+    const field = await basicFixture()
+    assert.isFalse(field.masked)
+    assert.isNull(field.shadowRoot?.querySelector('[part~="visibility-toggle"]'))
+
+    field.masked = true
+    await nextFrame()
+    await field.updateComplete
+
+    assert.isTrue(field.hasAttribute('masked'))
+    const input = field.shadowRoot?.querySelector('input')
+    assert.equal(input?.style.getPropertyValue('-webkit-text-security'), 'disc')
+    assert.isNotNull(field.shadowRoot?.querySelector('[part~="visibility-toggle"]'))
+
+    field.masked = false
+    await nextFrame()
+    await field.updateComplete
+
+    assert.isFalse(field.hasAttribute('masked'))
+    assert.equal(input?.style.getPropertyValue('-webkit-text-security'), '')
+    assert.isNull(field.shadowRoot?.querySelector('[part~="visibility-toggle"]'))
+  }).tags(['@md', '@text-field', '@masked'])
+
+  test('renders password toggle and switches type for type="password"', async ({ assert }) => {
+    const field = (await fixture(
+      html`<ui-filled-text-field label="Password" type="password" value="secret"></ui-filled-text-field>`
+    )) as UiFilledTextFieldElement
+
+    const input = field.shadowRoot?.querySelector('input')
+    const toggle = field.shadowRoot?.querySelector('[part~="password-toggle"]') as HTMLElement
+    assert.isNotNull(input)
+    assert.isNotNull(toggle)
+
+    assert.equal(input?.type, 'password')
+    assert.isFalse(field.isPasswordVisible)
+    assert.equal(toggle.getAttribute('aria-label'), 'Show password')
+
+    toggle.click()
+    await nextFrame()
+    await field.updateComplete
+
+    assert.isTrue(field.isPasswordVisible)
+    assert.equal(input?.type, 'text')
+    assert.equal(toggle.getAttribute('aria-label'), 'Hide password')
+
+    toggle.click()
+    await nextFrame()
+    await field.updateComplete
+
+    assert.isFalse(field.isPasswordVisible)
+    assert.equal(input?.type, 'password')
+    assert.equal(toggle.getAttribute('aria-label'), 'Show password')
+  }).tags(['@md', '@text-field'])
+
+  test('disables password toggle when field is disabled', async ({ assert }) => {
+    const field = (await fixture(
+      html`<ui-filled-text-field label="PIN" masked disabled value="1234"></ui-filled-text-field>`
+    )) as UiFilledTextFieldElement
+
+    const toggle = field.shadowRoot?.querySelector('[part~="visibility-toggle"]')
+    assert.isNotNull(toggle)
+    assert.isTrue(toggle?.hasAttribute('disabled'))
+  }).tags(['@md', '@text-field', '@masked'])
+
+  test('overrides type="password" to native "text" when masked is true', async ({ assert }) => {
+    const field = (await fixture(
+      html`<ui-filled-text-field label="PIN" type="password" masked value="1234"></ui-filled-text-field>`
+    )) as UiFilledTextFieldElement
+
+    const input = field.shadowRoot?.querySelector('input')
+    assert.isNotNull(input)
+    assert.equal(input?.type, 'text')
+    assert.equal(input?.style.getPropertyValue('-webkit-text-security'), 'disc')
+  }).tags(['@md', '@text-field', '@masked'])
+
+  test('suppresses visibility toggle button when noVisibilityToggle is true', async ({ assert }) => {
+    const field = (await fixture(
+      html`<ui-filled-text-field label="PIN" masked noVisibilityToggle value="1234"></ui-filled-text-field>`
+    )) as UiFilledTextFieldElement
+
+    assert.isTrue(field.noVisibilityToggle)
+    assert.isTrue(field.hasAttribute('novisibilitytoggle'))
+    assert.isNull(field.shadowRoot?.querySelector('[part~="visibility-toggle"]'))
+  }).tags(['@md', '@text-field', '@masked'])
 })

@@ -359,6 +359,8 @@ Form-associated custom elements (`ElementInternals`) implementing MD3 Outlined a
 | `required` | `boolean` | `false` | Marks the field as required for form validation. |
 | `disabled` | `boolean` | `false` | Disables the field. |
 | `readOnly` | `boolean` | `false` | Prevents editing while allowing focus and selection. |
+| `masked` | `boolean` | `false` | When set, visually masks input text using `-webkit-text-security: disc;` (instead of native `type="password"`) and renders visibility controls via `renderPasswordControl()`. Note: provides visual obfuscation only; screen readers treat the control as standard text (`role="textbox"`). |
+| `noVisibilityToggle` | `boolean` | `false` | When set, suppresses the built-in visibility toggle button for password or masked inputs. |
 | `noFloating` | `boolean` | `false` | Prevents the label from floating; hides label once text is entered. |
 | `min` / `max` / `step` | `number \| string` | `''` / `''` / `1` | Numeric/date range constraints. |
 | `minLength` / `maxLength` | `number` | `undefined` / `-1` | Character length constraints (renders character counter when `maxLength > 0`). |
@@ -376,10 +378,15 @@ Form-associated custom elements (`ElementInternals`) implementing MD3 Outlined a
 - `prefix`: Leading icon or affix (`<ui-icon slot="prefix">search</ui-icon>`).
 - `suffix`: Trailing icon or action (`<ui-icon-button slot="suffix" aria-label="Clear">...</ui-icon-button>`).
 
+**CSS Shadow Parts:**
+- `password-toggle`: Built-in visibility toggle button element (`<ui-icon-button>`).
+- `visibility-toggle`: Built-in visibility toggle button element (`<ui-icon-button>`).
+
 **Events:**
 - `change` (`Event`): Fired when value changes or on input edit.
 - `action` (`CustomEvent`): Fired when `Enter` is pressed inside the input.
 - `invalid` (`Event`): Fired when validation fails.
+- `visibilitychange` (`Event`): Fired when the password or masked text visibility is toggled.
 
 **Styling Hooks:**
 - `--md-outlined-text-field-label-active-color` (default: `var(--md-sys-color-primary)`)
@@ -408,6 +415,21 @@ Form-associated custom elements (`ElementInternals`) implementing MD3 Outlined a
     <ui-icon>visibility</ui-icon>
   </ui-icon-button>
 </ui-filled-text-field>
+
+<!-- Masked sensitive field (e.g. PIN) using -webkit-text-security with built-in visibility toggle -->
+<ui-filled-text-field
+  name="pin"
+  label="PIN"
+  masked
+></ui-filled-text-field>
+
+<!-- Masked sensitive field without visibility toggle (e.g. CVV) -->
+<ui-filled-text-field
+  name="cvv"
+  label="CVV"
+  masked
+  noVisibilityToggle
+></ui-filled-text-field>
 ```
 
 ---

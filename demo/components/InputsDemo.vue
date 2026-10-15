@@ -162,6 +162,10 @@
         <ui-filled-text-field label="Enter password" name="pwd-filled" type="password"></ui-filled-text-field>
         <ui-outlined-text-field label="Enter password" name="pwd-outlined" type="password"></ui-outlined-text-field>
 
+        <span class="row-name title-small">Masked</span>
+        <ui-filled-text-field label="Enter PIN" name="masked-filled" masked></ui-filled-text-field>
+        <ui-outlined-text-field label="Enter PIN" name="masked-outlined" masked></ui-outlined-text-field>
+
         <span class="row-name title-small">Color</span>
         <ui-filled-text-field label="Select a color" name="color-filled" type="color"></ui-filled-text-field>
         <ui-outlined-text-field label="Select a color" name="color-outlined" type="color"></ui-outlined-text-field>

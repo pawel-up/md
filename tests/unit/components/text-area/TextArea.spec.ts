@@ -109,4 +109,50 @@ test.group('TextArea', () => {
 
     assert.isFalse(submitted, 'textarea does not implicitly submit on Enter')
   }).tags(['@md', '@text-area', '@forms'])
+
+  test('supports masked mode with visibility toggle and -webkit-text-security', async ({ assert }) => {
+    const el = (await fixture(
+      html`<ui-text-area masked label="Notes" value="sensitive text"></ui-text-area>`
+    )) as UiTextAreaElement
+    assert.isTrue(el.masked)
+    assert.isTrue(el.hasAttribute('masked'))
+
+    const textarea = el.shadowRoot?.querySelector('textarea')
+    const toggle = el.shadowRoot?.querySelector('[part~="visibility-toggle"]') as HTMLElement
+    assert.isNotNull(textarea)
+    assert.isNotNull(toggle)
+    assert.equal(textarea?.style.getPropertyValue('-webkit-text-security'), 'disc')
+    assert.equal(toggle.getAttribute('aria-label'), 'Show text')
+
+    let eventFired = false
+    el.addEventListener('visibilitychange', () => {
+      eventFired = true
+    })
+
+    toggle.click()
+    await nextFrame()
+    await el.updateComplete
+
+    assert.isTrue(eventFired)
+    assert.isTrue(el.isPasswordVisible)
+    assert.equal(textarea?.style.getPropertyValue('-webkit-text-security'), 'none')
+    assert.equal(toggle.getAttribute('aria-label'), 'Hide text')
+
+    toggle.click()
+    await nextFrame()
+    await el.updateComplete
+
+    assert.isFalse(el.isPasswordVisible)
+    assert.equal(textarea?.style.getPropertyValue('-webkit-text-security'), 'disc')
+    assert.equal(toggle.getAttribute('aria-label'), 'Show text')
+  }).tags(['@md', '@text-area', '@masked'])
+
+  test('suppresses visibility toggle button on textarea when noVisibilityToggle is true', async ({ assert }) => {
+    const el = (await fixture(
+      html`<ui-text-area masked noVisibilityToggle label="Notes"></ui-text-area>`
+    )) as UiTextAreaElement
+
+    assert.isTrue(el.noVisibilityToggle)
+    assert.isNull(el.shadowRoot?.querySelector('[part~="visibility-toggle"]'))
+  }).tags(['@md', '@text-area', '@masked'])
 })

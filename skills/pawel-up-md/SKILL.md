@@ -169,7 +169,7 @@ Always import individual component modules using their subpath export (`@pawel-u
 | **Actions** | `<ui-fab>` | `@pawel-up/md/fab/ui-fab.js` | `placement` (`bottom-end`\|`bottom-start`\|`top-start`\|`top-end`\|`inline`), `open`; composable trigger + `slot="menu"` speed-dial actions |
 | **Actions** | `<ui-segmented-button-set>` | `@pawel-up/md/segmented-button/ui-segmented-button-set.js` | `multiselect`; legacy MD3 segmented button container |
 | **Actions** | `<ui-segmented-button>` | `@pawel-up/md/segmented-button/ui-segmented-button.js` | `selected`, `disabled`; slots: `(default)`, `icon` |
-| **Inputs** | `<ui-outlined-text-field>` | `@pawel-up/md/text-field/ui-outlined-text-field.js` | Form-associated input; `label`, `type`, `value`, `supportingText`, `invalid`, `invalidText`, `required`, `noFloating`; slots: `prefix`, `suffix` |
+| **Inputs** | `<ui-outlined-text-field>` | `@pawel-up/md/text-field/ui-outlined-text-field.js` | Form-associated input; `label`, `type`, `value`, `masked`, `noVisibilityToggle`, `supportingText`, `invalid`, `invalidText`, `required`, `noFloating`; slots: `prefix`, `suffix` |
 | **Inputs** | `<ui-filled-text-field>` | `@pawel-up/md/text-field/ui-filled-text-field.js` | Filled variant with identical API and slots (`prefix`, `suffix`) to `<ui-outlined-text-field>` |
 | **Inputs** | `<ui-text-area>` | `@pawel-up/md/text-area/ui-text-area.js` | Form-associated multi-line textarea; `rows`, `cols`, `wrap`, plus all text-field props & `prefix`/`suffix` slots |
 | **Inputs** | `<ui-select>` | `@pawel-up/md/select/ui-select.js` | Form-associated select; `label`, `value`, `name`, `required`, `invalid`, `invalidText`, `supportingText`, `density` (`0` to `-3`), `variant` (`standard`\|`vibrant`) |

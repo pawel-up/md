@@ -2,6 +2,7 @@ import { html, LitElement, nothing, PropertyValues, TemplateResult } from 'lit'
 import { property, queryAssignedElements, state } from 'lit/decorators.js'
 import { classMap } from 'lit/directives/class-map.js'
 import { ifDefined } from 'lit/directives/if-defined.js'
+import type { StyleInfo } from 'lit/directives/style-map.js'
 import { SupportedAutocapitalize, SupportedInputTypes } from '../../types/input.js'
 import { ARIAAutoComplete, ARIAExpanded, ARIARole } from '../../types/role.js'
 import { UiElement } from '../UiElement.js'
@@ -14,6 +15,18 @@ const floatTypes = ['date', 'color', 'datetime-local', 'file', 'month', 'time', 
 /**
  * @slot prefix - A slot in which to render prefixes of the input
  * @slot suffix - A slot in which to render suffixes of the input
+ *
+ * @csspart content - The container wrapping prefix, body, visibility toggle, and suffix.
+ * @csspart body - The container holding the label and native input or textarea.
+ * @csspart label - The resting or floating label text element.
+ * @csspart prefix - The container for the leading slot content.
+ * @csspart suffix - The container for the trailing slot content.
+ * @csspart outline - The container for the outlined border elements.
+ * @csspart outline-label - The label element rendered within the outline notch.
+ * @csspart supporting-text - The container for supporting text, error text, and character counter.
+ * @csspart supporting-text-end - The character counter text element.
+ * @csspart password-toggle - The built-in visibility toggle icon button.
+ * @csspart visibility-toggle - Alias for the built-in visibility toggle icon button.
  */
 export default abstract class Input extends UiElement {
   static override shadowRootOptions = { ...LitElement.shadowRootOptions, delegatesFocus: true }
@@ -193,6 +206,47 @@ export default abstract class Input extends UiElement {
    * @attribute
    */
   @property({ type: Boolean, reflect: true }) accessor readOnly = false
+
+  /**
+   * When set, visually masks the entered text using `-webkit-text-security: disc;`
+   * instead of setting native `type="password"`, and displays password visibility controls.
+   *
+   * Use when:
+   * - Building sensitive fields like PIN codes, OTPs, or CVVs where native browser
+   *   password management / keychain prompts should not be triggered.
+   *
+   * Don't use when:
+   * - You need native password credentials management, in which case use `type="password"`.
+   *
+   * Note:
+   * - `-webkit-text-security` provides visual obfuscation only. Assistive technologies
+   *   (screen readers) treat the underlying control as a text input (`role="textbox"`).
+   *
+   * @example
+   * ```html
+   * <ui-filled-text-field masked label="Enter PIN"></ui-filled-text-field>
+   * ```
+   *
+   * @attribute
+   */
+  @property({ type: Boolean, reflect: true }) accessor masked = false
+
+  /**
+   * When set, suppresses the built-in visibility toggle button for password or masked inputs.
+   *
+   * Use when:
+   * - Designing compact PIN pads, OTP digit inputs, or payment CVV fields where
+   *   revealing the input is prohibited by policy or unnecessary.
+   * - Providing custom external visibility controls in the `suffix` slot.
+   *
+   * @example
+   * ```html
+   * <ui-filled-text-field masked noVisibilityToggle label="PIN"></ui-filled-text-field>
+   * ```
+   *
+   * @attribute
+   */
+  @property({ type: Boolean, reflect: true }) accessor noVisibilityToggle = false
 
   /**
    * Bind the `<input>`'s `autocomplete` property.
@@ -431,6 +485,15 @@ export default abstract class Input extends UiElement {
    * This is private so the password can be viewed only through user interaction.
    */
   #showPassword = false
+
+  /**
+   * Indicates whether the password or masked text is currently revealed.
+   *
+   * @readonly
+   */
+  get isPasswordVisible(): boolean {
+    return this.#showPassword
+  }
 
   get files(): FileList | null {
     return this.getNativeValue('files') as FileList | null
@@ -1034,15 +1097,41 @@ export default abstract class Input extends UiElement {
   #handlePasswordToggle(): void {
     this.#showPassword = !this.#showPassword
     this.requestUpdate()
+    this.dispatchEvent(new Event('visibilitychange', { bubbles: true }))
   }
 
+  /**
+   * Computes the effective input `type` attribute for the native input element.
+   * When `masked` is enabled, returns non-password type (`'text'` if type was `'password'`)
+   * to ensure native password managers are not triggered while `-webkit-text-security: disc;` handles visual masking.
+   */
   protected get effectiveType(): SupportedInputTypes {
-    const { type } = this
+    const { type, masked } = this
+    if (masked) {
+      return type === 'password' ? 'text' : type
+    }
     if (type !== 'password') {
       return type
     }
     const visible = this.#showPassword
     return visible ? 'text' : 'password'
+  }
+
+  /**
+   * Computes the style object to apply to the inner input or textarea control.
+   * Handles text direction and `-webkit-text-security` masking when `masked` is enabled.
+   *
+   * @returns StyleInfo mapping of CSS properties to values for the control.
+   */
+  protected computeInputStyles(): StyleInfo {
+    const style: StyleInfo = {}
+    if (this.textDirection) {
+      style.direction = this.textDirection
+    }
+    if (this.masked) {
+      style['-webkit-text-security'] = this.#showPassword ? 'none' : 'disc'
+    }
+    return style
   }
 
   protected override render(): TemplateResult {
@@ -1161,19 +1250,28 @@ export default abstract class Input extends UiElement {
     >`
   }
 
+  /**
+   * Renders the visibility toggle button for password or masked input controls.
+   *
+   * @returns The template result for the toggle button or `nothing` if not applicable.
+   */
   protected renderPasswordControl(): TemplateResult | typeof nothing {
-    const { type } = this
-    if (type !== 'password') {
+    const { type, masked, noVisibilityToggle } = this
+    if ((type !== 'password' && !masked) || noVisibilityToggle) {
       return nothing
     }
     const visible = this.#showPassword
     const icon = visible ? 'visibilityOff' : 'visibility'
+    const action = visible ? 'Hide' : 'Show'
+    const noun = type === 'password' ? 'password' : 'text'
+    const toggleLabel = `${action} ${noun}`
     return html`
       <ui-icon-button
-        aria-label="Toggle password visibility"
+        aria-label="${toggleLabel}"
         @click="${this.#handlePasswordToggle}"
-        title="Shows or hides the password"
-        part="password-toggle"
+        title="${toggleLabel}"
+        part="password-toggle visibility-toggle"
+        ?disabled=${this.disabled}
       >
         <ui-icon icon="${icon}"></ui-icon>
       </ui-icon-button>
