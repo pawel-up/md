@@ -1,3 +1,10 @@
+## [1.4.7](https://github.com/pawel-up/md/compare/v1.4.6...v1.4.7) (2026-10-15)
+
+
+### Bug Fixes
+
+* add masked property to input components ([24d1c3a](https://github.com/pawel-up/md/commit/24d1c3a86f6c4ba3fcde03e88d0b687f205d7934))
+
 ## [1.4.5](https://github.com/pawel-up/md/compare/v1.4.4...v1.4.5) (2026-10-14)
 
 
