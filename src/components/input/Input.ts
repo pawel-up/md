@@ -1261,7 +1261,7 @@ export default abstract class Input extends UiElement {
       return nothing
     }
     const visible = this.#showPassword
-    const icon = visible ? 'visibilityOff' : 'visibility'
+    const icon = visible ? 'visibility_off' : 'visibility'
     const action = visible ? 'Hide' : 'Show'
     const noun = type === 'password' ? 'password' : 'text'
     const toggleLabel = `${action} ${noun}`
@@ -1273,7 +1273,7 @@ export default abstract class Input extends UiElement {
         part="password-toggle visibility-toggle"
         ?disabled=${this.disabled}
       >
-        <ui-icon icon="${icon}"></ui-icon>
+        <ui-icon>${icon}</ui-icon>
       </ui-icon-button>
     `
   }

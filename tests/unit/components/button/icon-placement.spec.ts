@@ -8,7 +8,7 @@ test.group('Icon placement', () => {
   async function iconFixture(): Promise<UiButtonElement> {
     return fixture(
       html`<ui-button color="filled">
-        <ui-icon slot="icon" icon="add"></ui-icon>
+        <ui-icon slot="icon">add</ui-icon>
         Label
       </ui-button>`
     )
@@ -17,7 +17,7 @@ test.group('Icon placement', () => {
   async function trailingIconFixture(): Promise<UiButtonElement> {
     return fixture(
       html`<ui-button color="filled" trailingIcon>
-        <ui-icon slot="icon" icon="add"></ui-icon>
+        <ui-icon slot="icon">add</ui-icon>
         Label
       </ui-button>`
     )

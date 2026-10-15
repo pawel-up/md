@@ -220,7 +220,7 @@ export class UiDatePickerModal extends LitElement {
               : ''
           }
           <ui-icon-button @click=${this.handleCancel} aria-label="Close" title="Close">
-            <ui-icon icon="close"></ui-icon>
+            <ui-icon>close</ui-icon>
           </ui-icon-button>
         </div>
       </header>
@@ -278,7 +278,7 @@ export class UiDatePickerModal extends LitElement {
   private renderInputMode(): TemplateResult {
     return html`
       <section class="input-mode-placeholder" role="status" aria-live="polite">
-        <ui-icon icon="edit" class="input-mode-icon" aria-hidden="true"></ui-icon>
+        <ui-icon class="input-mode-icon" aria-hidden="true">edit</ui-icon>
         <h3>Manual date input mode</h3>
         <p>This feature can be enhanced with date input fields for direct text entry</p>
         <p><em>Use the calendar toggle button to return to calendar view</em></p>

@@ -19,7 +19,7 @@ test.group('Assist chip', () => {
   async function iconFixture(): Promise<UiChipElement> {
     return fixture(
       html`<ui-chip type="assist">
-        <ui-icon slot="icon" icon="add"></ui-icon>
+        <ui-icon slot="icon">add</ui-icon>
         With icon
       </ui-chip>`
     )

@@ -20,7 +20,7 @@ test.group('a11y', () => {
   async function toggleFixture(): Promise<UiButtonElement> {
     return fixture(
       html`<ui-button color="filled" toggle>
-        <ui-icon slot="icon" icon="add"></ui-icon>
+        <ui-icon slot="icon">add</ui-icon>
         Label
       </ui-button>`
     )
@@ -29,7 +29,7 @@ test.group('a11y', () => {
   async function toggleSelectedFixture(): Promise<UiButtonElement> {
     return fixture(
       html`<ui-button color="filled" toggle selected>
-        <ui-icon slot="icon" icon="add"></ui-icon>
+        <ui-icon slot="icon">add</ui-icon>
         Label
       </ui-button>`
     )

@@ -21,7 +21,7 @@ async function modalFixture(): Promise<UiDialog> {
 async function iconFixture(): Promise<UiDialog> {
   return fixture(
     html` <ui-dialog>
-      <ui-icon slot="icon" icon="deleteOutline"></ui-icon>
+      <ui-icon slot="icon">delete</ui-icon>
       Content
     </ui-dialog>`
   )
@@ -725,7 +725,7 @@ test.group('UiDialog - accessibility', () => {
   test('meets accessibility standards with full content', async ({ assert }) => {
     const element: UiDialog = await fixture(html`
       <ui-dialog modal open>
-        <ui-icon slot="icon" icon="deleteOutline"></ui-icon>
+        <ui-icon slot="icon">delete</ui-icon>
         <span slot="title">Delete confirmation</span>
         <p>Are you sure you want to delete this item?</p>
         <ui-button color="text" slot="button" value="dismiss">Cancel</ui-button>

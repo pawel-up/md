@@ -8,7 +8,7 @@ export default css`
     height: var(--md-icon-size, 24px);
     color: inherit;
     fill: currentColor;
-    font-variation-settings: inherit;
+    font-variation-settings: var(--md-icon-settings, inherit);
     font-weight: 400;
     font-family: var(--md-icon-font, Material Symbols Outlined);
     display: inline-flex;

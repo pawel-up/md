@@ -8,6 +8,9 @@ import { svg, SVGTemplateResult } from 'lit'
 export const iconWrapper = (tpl: SVGTemplateResult, width = 24, height = 24, top = 0, left = 0): SVGTemplateResult =>
   svg`<svg viewBox="${top} ${left} ${width} ${height}" preserveAspectRatio="xMidYMid meet" focusable="false" style="pointer-events: none; display: block; width: 100%; height: 100%;">${tpl}</svg>`
 
+/**
+ * @deprecated Use Material Icons font codes instead.
+ */
 export type IconType =
   | 'add'
   | 'ai'

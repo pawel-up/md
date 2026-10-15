@@ -42,18 +42,18 @@
 
         <span class="row-name title-small">Prefix icon</span>
         <ui-filled-text-field label="Prefix input" name="prefix-filled"
-          ><ui-icon slot="prefix" icon="search"></ui-icon
+          ><ui-icon slot="prefix">search</ui-icon
         ></ui-filled-text-field>
         <ui-outlined-text-field label="Prefix input" name="prefix-outlined"
-          ><ui-icon slot="prefix" icon="search"></ui-icon
+          ><ui-icon slot="prefix">search</ui-icon
         ></ui-outlined-text-field>
 
         <span class="row-name title-small">Suffix icon</span>
         <ui-filled-text-field label="Suffix input" name="suffix-filled"
-          ><ui-icon slot="suffix" icon="close"></ui-icon
+          ><ui-icon slot="suffix">close</ui-icon
         ></ui-filled-text-field>
         <ui-outlined-text-field label="Suffix input" name="suffix-outlined"
-          ><ui-icon slot="suffix" icon="close"></ui-icon
+          ><ui-icon slot="suffix">close</ui-icon
         ></ui-outlined-text-field>
 
         <span class="row-name title-small">Suffix text</span>
@@ -95,14 +95,14 @@
           supportingText="Only alphanumeric values"
           pattern="[a-zA-Z0-9]*"
           invalidText="Invalid value"
-          ><ui-icon slot="suffix" icon="visibility"></ui-icon
+          ><ui-icon slot="suffix">visibility</ui-icon
         ></ui-filled-text-field>
         <ui-outlined-text-field
           label="Supporting counter"
           maxLength="12"
           supportingText="Only alphanumeric values"
           pattern="[a-zA-Z0-9]*"
-          ><ui-icon slot="suffix" icon="visibility"></ui-icon
+          ><ui-icon slot="suffix">visibility</ui-icon
         ></ui-outlined-text-field>
       </div>
     </section>

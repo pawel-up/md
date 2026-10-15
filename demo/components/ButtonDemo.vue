@@ -36,27 +36,27 @@
         <span class="legend-marker">3</span>
         
         <span class="legend-marker">A</span>
-        <ui-button color="elevated" :size="size" :shape="shape"><ui-icon slot="icon" icon="edit"></ui-icon>elevated button</ui-button>
-        <ui-button color="elevated" :size="size" :shape="shape" toggle="true"><ui-icon slot="icon" icon="edit"></ui-icon>elevated unselected</ui-button>
-        <ui-button color="elevated" :size="size" :shape="shape" toggle="true" selected="true"><ui-icon slot="icon" icon="edit"></ui-icon>elevated selected</ui-button>
+        <ui-button color="elevated" :size="size" :shape="shape"><ui-icon slot="icon" >edit</ui-icon>elevated button</ui-button>
+        <ui-button color="elevated" :size="size" :shape="shape" toggle="true"><ui-icon slot="icon" >edit</ui-icon>elevated unselected</ui-button>
+        <ui-button color="elevated" :size="size" :shape="shape" toggle="true" selected="true"><ui-icon slot="icon" >edit</ui-icon>elevated selected</ui-button>
         
         <span class="legend-marker">B</span>
-        <ui-button color="filled" :size="size" :shape="shape"><ui-icon slot="icon" icon="edit"></ui-icon>filled button</ui-button>
-        <ui-button color="filled" :size="size" :shape="shape" toggle="true"><ui-icon slot="icon" icon="edit"></ui-icon>filled unselected</ui-button>
-        <ui-button color="filled" :size="size" :shape="shape" toggle="true" selected="true"><ui-icon slot="icon" icon="edit"></ui-icon>filled selected</ui-button>
+        <ui-button color="filled" :size="size" :shape="shape"><ui-icon slot="icon" >edit</ui-icon>filled button</ui-button>
+        <ui-button color="filled" :size="size" :shape="shape" toggle="true"><ui-icon slot="icon" >edit</ui-icon>filled unselected</ui-button>
+        <ui-button color="filled" :size="size" :shape="shape" toggle="true" selected="true"><ui-icon slot="icon" >edit</ui-icon>filled selected</ui-button>
         
         <span class="legend-marker">C</span>
-        <ui-button color="tonal" :size="size" :shape="shape"><ui-icon slot="icon" icon="edit"></ui-icon>tonal button</ui-button>
-        <ui-button color="tonal" :size="size" :shape="shape" toggle="true"><ui-icon slot="icon" icon="edit"></ui-icon>tonal unselected</ui-button>
-        <ui-button color="tonal" :size="size" :shape="shape" toggle="true" selected="true"><ui-icon slot="icon" icon="edit"></ui-icon>tonal selected</ui-button>
+        <ui-button color="tonal" :size="size" :shape="shape"><ui-icon slot="icon" >edit</ui-icon>tonal button</ui-button>
+        <ui-button color="tonal" :size="size" :shape="shape" toggle="true"><ui-icon slot="icon" >edit</ui-icon>tonal unselected</ui-button>
+        <ui-button color="tonal" :size="size" :shape="shape" toggle="true" selected="true"><ui-icon slot="icon" >edit</ui-icon>tonal selected</ui-button>
         
         <span class="legend-marker">D</span>
-        <ui-button color="outlined" :size="size" :shape="shape"><ui-icon slot="icon" icon="edit"></ui-icon>outlined button</ui-button>
-        <ui-button color="outlined" :size="size" :shape="shape" toggle="true"><ui-icon slot="icon" icon="edit"></ui-icon>outlined unselected</ui-button>
-        <ui-button color="outlined" :size="size" :shape="shape" toggle="true" selected="true"><ui-icon slot="icon" icon="edit"></ui-icon>outlined selected</ui-button>
+        <ui-button color="outlined" :size="size" :shape="shape"><ui-icon slot="icon" >edit</ui-icon>outlined button</ui-button>
+        <ui-button color="outlined" :size="size" :shape="shape" toggle="true"><ui-icon slot="icon" >edit</ui-icon>outlined unselected</ui-button>
+        <ui-button color="outlined" :size="size" :shape="shape" toggle="true" selected="true"><ui-icon slot="icon" >edit</ui-icon>outlined selected</ui-button>
         
         <span class="legend-marker">E</span>
-        <ui-button color="text" :size="size" :shape="shape"><ui-icon slot="icon" icon="edit"></ui-icon>text button</ui-button>
+        <ui-button color="text" :size="size" :shape="shape"><ui-icon slot="icon" >edit</ui-icon>text button</ui-button>
         <span></span>
         <span></span>
       </div>

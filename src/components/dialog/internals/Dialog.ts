@@ -70,7 +70,7 @@ interface DialogEventMap {
  *
  * ```javascript
  * <ui-dialog modal>
- *  <ui-icon slot="icon" icon="delete"></ui-icon>
+ *  <ui-icon slot="icon">delete</ui-icon>
  *
  *  <span slot="title">Delete photos?</span>
  *  <p>This action will permanently remove the selected pictures from your account.</p>

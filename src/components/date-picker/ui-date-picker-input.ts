@@ -328,9 +328,7 @@ export class UiDatePickerInput extends LitElement implements OverlayHost {
   }
 
   private renderCalendarIcon(): TemplateResult {
-    return html`
-      <ui-icon slot="suffix" icon="calendarToday" @click=${this.handleInputClick} class="calendar-icon"></ui-icon>
-    `
+    return html`<ui-icon slot="suffix" @click=${this.handleInputClick} class="calendar-icon">calendar_today</ui-icon>`
   }
 
   private renderDropdown(): TemplateResult | null {

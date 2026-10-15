@@ -218,7 +218,7 @@ export class Snackbar extends LitElement {
     }
     return html`
       <ui-icon-button @click="${this.closeHandler}" class="icon" @action="${cancelEvent}">
-        <ui-icon icon="close"></ui-icon>
+        <ui-icon>close</ui-icon>
       </ui-icon-button>
     `
   }

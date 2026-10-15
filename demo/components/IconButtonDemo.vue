@@ -75,57 +75,57 @@ const handleWidthChange = (e: Event): void => {
 
         <span class="legend-marker">A</span>
         <ui-icon-button color="elevated" :size="size" :shape="shape" :width="width" @click="clickHandler">
-          <ui-icon icon="settings"></ui-icon>
+          <ui-icon>settings</ui-icon>
         </ui-icon-button>
         <ui-icon-button color="elevated" :size="size" :shape="shape" :width="width" toggle="true" @toggle="activeHandler">
-          <ui-icon icon="settings"></ui-icon>
+          <ui-icon>settings</ui-icon>
         </ui-icon-button>
         <ui-icon-button color="elevated" :size="size" :shape="shape" :width="width" toggle="true" selected="true" @toggle="activeHandler">
-          <ui-icon icon="settings"></ui-icon>
+          <ui-icon>settings</ui-icon>
         </ui-icon-button>
 
         <span class="legend-marker">B</span>
         <ui-icon-button color="filled" :size="size" :shape="shape" :width="width" @click="clickHandler">
-          <ui-icon icon="settings"></ui-icon>
+          <ui-icon>settings</ui-icon>
         </ui-icon-button>
         <ui-icon-button color="filled" :size="size" :shape="shape" :width="width" toggle="true" @toggle="activeHandler">
-          <ui-icon icon="settings"></ui-icon>
+          <ui-icon>settings</ui-icon>
         </ui-icon-button>
         <ui-icon-button color="filled" :size="size" :shape="shape" :width="width" toggle="true" selected="true" @toggle="activeHandler">
-          <ui-icon icon="settings"></ui-icon>
+          <ui-icon>settings</ui-icon>
         </ui-icon-button>
 
         <span class="legend-marker">C</span>
         <ui-icon-button color="tonal" :size="size" :shape="shape" :width="width" @click="clickHandler">
-          <ui-icon icon="settings"></ui-icon>
+          <ui-icon>settings</ui-icon>
         </ui-icon-button>
         <ui-icon-button color="tonal" :size="size" :shape="shape" :width="width" toggle="true" @toggle="activeHandler">
-          <ui-icon icon="settings"></ui-icon>
+          <ui-icon>settings</ui-icon>
         </ui-icon-button>
         <ui-icon-button color="tonal" :size="size" :shape="shape" :width="width" toggle="true" selected="true" @toggle="activeHandler">
-          <ui-icon icon="settings"></ui-icon>
+          <ui-icon>settings</ui-icon>
         </ui-icon-button>
 
         <span class="legend-marker">D</span>
         <ui-icon-button color="outlined" :size="size" :shape="shape" :width="width" @click="clickHandler">
-          <ui-icon icon="settings"></ui-icon>
+          <ui-icon>settings</ui-icon>
         </ui-icon-button>
         <ui-icon-button color="outlined" :size="size" :shape="shape" :width="width" toggle="true" @toggle="activeHandler">
-          <ui-icon icon="settings"></ui-icon>
+          <ui-icon>settings</ui-icon>
         </ui-icon-button>
         <ui-icon-button color="outlined" :size="size" :shape="shape" :width="width" toggle="true" selected="true" @toggle="activeHandler">
-          <ui-icon icon="settings"></ui-icon>
+          <ui-icon>settings</ui-icon>
         </ui-icon-button>
 
         <span class="legend-marker">E</span>
         <ui-icon-button color="standard" :size="size" :shape="shape" :width="width" @click="clickHandler">
-          <ui-icon icon="settings"></ui-icon>
+          <ui-icon>settings</ui-icon>
         </ui-icon-button>
         <ui-icon-button color="standard" :size="size" :shape="shape" :width="width" toggle="true" @toggle="activeHandler">
-          <ui-icon icon="settings"></ui-icon>
+          <ui-icon>settings</ui-icon>
         </ui-icon-button>
         <ui-icon-button color="standard" :size="size" :shape="shape" :width="width" toggle="true" selected="true" @toggle="activeHandler">
-          <ui-icon icon="settings"></ui-icon>
+          <ui-icon>settings</ui-icon>
         </ui-icon-button>
       </div>
       <p class="body-medium">A. Elevated, B. Filled, C. Tonal, D. Outlined, E. Standard</p>
@@ -149,24 +149,24 @@ const handleWidthChange = (e: Event): void => {
 
           <span class="legend-marker">A</span>
           <ui-icon-button :color="type" :size="size" :shape="shape" :width="width">
-            <ui-icon icon="settings"></ui-icon>
+            <ui-icon>settings</ui-icon>
           </ui-icon-button>
           <ui-icon-button :color="type" :size="size" :shape="shape" :width="width" toggle="true">
-            <ui-icon icon="settings"></ui-icon>
+            <ui-icon>settings</ui-icon>
           </ui-icon-button>
           <ui-icon-button :color="type" :size="size" :shape="shape" :width="width" toggle="true" selected="true">
-            <ui-icon icon="settings"></ui-icon>
+            <ui-icon>settings</ui-icon>
           </ui-icon-button>
 
           <span class="legend-marker">B</span>
           <ui-icon-button :color="type" :size="size" :shape="shape" :width="width" disabled="true">
-            <ui-icon icon="settings"></ui-icon>
+            <ui-icon>settings</ui-icon>
           </ui-icon-button>
           <ui-icon-button :color="type" :size="size" :shape="shape" :width="width" toggle="true" disabled="true">
-            <ui-icon icon="settings"></ui-icon>
+            <ui-icon>settings</ui-icon>
           </ui-icon-button>
           <ui-icon-button :color="type" :size="size" :shape="shape" :width="width" toggle="true" selected="true" disabled="true">
-            <ui-icon icon="settings"></ui-icon>
+            <ui-icon>settings</ui-icon>
           </ui-icon-button>
         </div>
         <p class="body-medium">A. Enabled, B. Disabled</p>
@@ -183,16 +183,16 @@ const handleWidthChange = (e: Event): void => {
       <p class="body-medium">Provides distinct icons for unselected and selected toggle states:</p>
       <div style="display: flex; gap: 16px; align-items: center; margin-top: 12px;">
         <ui-icon-button color="filled" toggle="true" :size="size" :shape="shape" :width="width">
-          <ui-icon icon="bookmark_border"></ui-icon>
-          <ui-icon slot="selected" icon="bookmark"></ui-icon>
+          <ui-icon>bookmark</ui-icon>
+          <ui-icon slot="selected">bookmark</ui-icon>
         </ui-icon-button>
         <ui-icon-button color="tonal" toggle="true" :size="size" :shape="shape" :width="width">
-          <ui-icon icon="favorite_border"></ui-icon>
-          <ui-icon slot="selected" icon="favorite"></ui-icon>
+          <ui-icon>favorite</ui-icon>
+          <ui-icon slot="selected">favorite</ui-icon>
         </ui-icon-button>
         <ui-icon-button color="standard" toggle="true" :size="size" :shape="shape" :width="width">
-          <ui-icon icon="visibility"></ui-icon>
-          <ui-icon slot="selected" icon="visibility_off"></ui-icon>
+          <ui-icon>visibility</ui-icon>
+          <ui-icon slot="selected">visibility_off</ui-icon>
         </ui-icon-button>
       </div>
     </section>

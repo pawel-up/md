@@ -61,7 +61,7 @@ const horizontalHandler = (e: Event) => {
       <h2 class="title-large">Icon button list</h2>
       <div class="demo-row">
         <ui-dropdown-list @select="list1SelectHandler">
-          <ui-icon-button aria-label="Trigger the menu"><ui-icon icon="moreVert"></ui-icon></ui-icon-button>
+          <ui-icon-button aria-label="Trigger the menu"><ui-icon>more_vert</ui-icon></ui-icon-button>
           <ui-list slot="dropdown" role="menu">
             <ui-list-item role="menuitem" data-item="item 1">Item 1</ui-list-item>
             <ui-list-item role="menuitem" data-item="item 2">Item 2</ui-list-item>
@@ -109,7 +109,7 @@ const horizontalHandler = (e: Event) => {
             :horizontalAlign="horizontalAlign"
             :noOverlap="noOverlap"
           >
-            <ui-icon-button aria-label="Trigger the menu"><ui-icon icon="moreVert"></ui-icon></ui-icon-button>
+            <ui-icon-button aria-label="Trigger the menu"><ui-icon>more_vert</ui-icon></ui-icon-button>
             <ui-list slot="dropdown" role="menu">
               <ui-list-item role="menuitem" data-item="item 1">Item 1</ui-list-item>
               <ui-list-item role="menuitem" data-item="item 2">Item 2</ui-list-item>

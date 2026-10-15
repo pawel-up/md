@@ -685,7 +685,7 @@ export class UiDatePickerCalendar extends LitElement {
               trailingIcon
             >
               ${monthName}
-              <ui-icon icon="arrowDropDown" slot="icon"></ui-icon>
+              <ui-icon slot="icon">arrow_drop_down</ui-icon>
             </ui-button>
             ${this.renderNavButton('next', this.handleNextMonth, 'Next month', 'chevronRight')}
           </div>
@@ -701,7 +701,7 @@ export class UiDatePickerCalendar extends LitElement {
               trailingIcon
             >
               ${this.year}
-              <ui-icon icon="arrowDropDown" slot="icon"></ui-icon>
+              <ui-icon slot="icon">arrow_drop_down</ui-icon>
             </ui-button>
             ${this.renderNavButton('next', this.handleNextYear, 'Next year', 'chevronRight')}
           </div>

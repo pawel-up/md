@@ -340,7 +340,7 @@ export class UiDatePickerModalInput extends LitElement {
       <header class="modal-header">
         <h2 id="modal-title" class="modal-title">${this.title}</h2>
         <ui-icon-button @click=${this.handleCancel} aria-label="Close" title="Close">
-          <ui-icon icon="close"></ui-icon>
+          <ui-icon>close</ui-icon>
         </ui-icon-button>
       </header>
     `
@@ -363,7 +363,7 @@ export class UiDatePickerModalInput extends LitElement {
               required
               aria-describedby="format-help"
             >
-              <ui-icon slot="suffix" icon="calendarToday"></ui-icon>
+              <ui-icon slot="suffix">calendar_today</ui-icon>
             </ui-outlined-text-field>
 
             ${
@@ -379,7 +379,7 @@ export class UiDatePickerModalInput extends LitElement {
                       required
                       aria-describedby="format-help"
                     >
-                      <ui-icon slot="suffix" icon="calendarToday"></ui-icon>
+                      <ui-icon slot="suffix">calendar_today</ui-icon>
                     </ui-outlined-text-field>
                   `
                 : ''

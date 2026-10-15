@@ -30,15 +30,15 @@ import '../../src/components/icons/ui-icon.js'
       <ui-segmented-button-set>
         <ui-segmented-button>
           Option 1
-          <ui-icon slot="icon" icon="add"></ui-icon>
+          <ui-icon slot="icon">add</ui-icon>
         </ui-segmented-button>
         <ui-segmented-button>
           Option 2
-          <ui-icon slot="icon" icon="deleteOutline"></ui-icon>
+          <ui-icon slot="icon">delete</ui-icon>
         </ui-segmented-button>
         <ui-segmented-button>
           Option 3
-          <ui-icon slot="icon" icon="cancel"></ui-icon>
+          <ui-icon slot="icon">cancel</ui-icon>
         </ui-segmented-button>
       </ui-segmented-button-set>
     </div>

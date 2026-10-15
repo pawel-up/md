@@ -237,7 +237,7 @@ export default class UiOption extends UiListItem {
   protected override renderEnd(): TemplateResult {
     return html`
       <div class="${classMap(this.getEndClasses())}">
-        ${this.selected ? html`<ui-icon icon="check" class="selection-icon selection-check"></ui-icon>` : ''}
+        ${this.selected ? html`<ui-icon class="selection-icon selection-check">check</ui-icon>` : ''}
         <slot name="end" @slotchange=${this.handleEndSlotChange}></slot>
         <slot name="end-text" class="trailing-supporting-text" @slotchange=${this.handleEndTextSlotChange}></slot>
       </div>

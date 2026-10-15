@@ -129,7 +129,7 @@ const handleFormSubmit = (e: Event) => {
       <h2 class="title-large">Full UI dialog</h2>
       <ui-button color="filled" @click="openFull">Open</ui-button>
       <ui-dialog :open="fullOpened" @close="fullClosed" modal="true" style="--ui-dialog-max-width: 380px">
-        <ui-icon slot="icon" icon="deleteOutline"></ui-icon>
+        <ui-icon slot="icon">delete</ui-icon>
         <span slot="title">Reset settings?</span>
         <p>This will reset your app preferences back to their default settings. The following accounts will also be signed out:</p>
         <ui-divider></ui-divider>
@@ -149,7 +149,7 @@ const handleFormSubmit = (e: Event) => {
       <p>This dialog contains a lot of content that will overflow the container.</p>
       <ui-button color="filled" @click="openOverflow">Open</ui-button>
       <ui-dialog :open="overflowOpened" @close="overflowClosed" modal="true" style="--ui-dialog-max-width: 400px; --ui-dialog-max-height: 500px;">
-        <ui-icon slot="icon" icon="info"></ui-icon>
+        <ui-icon slot="icon">info</ui-icon>
         <span slot="title">Terms and Conditions</span>
         <div style="overflow-y: auto; max-height: 300px;">
           <h3>1. Introduction</h3>
@@ -206,7 +206,7 @@ const handleFormSubmit = (e: Event) => {
       <ui-button color="filled" @click="openForm">Open Form Dialog</ui-button>
       <form @submit="handleFormSubmit" style="display: contents;">
         <ui-dialog :open="formOpened" @close="formClosed" modal="true" style="--ui-dialog-max-width: 500px;" submitClose="true">
-          <ui-icon slot="icon" icon="info"></ui-icon>
+          <ui-icon slot="icon">info</ui-icon>
           <span slot="title">User Registration</span>
           <div style="display: flex; flex-direction: column; gap: 16px;">
             <label style="display: flex; flex-direction: column; gap: 4px;">
@@ -252,7 +252,7 @@ const handleFormSubmit = (e: Event) => {
       <p>This dialog demonstrates the destructive attribute for dangerous actions.</p>
       <ui-button color="filled" @click="openDestructive">Open destructive dialog</ui-button>
       <ui-dialog :open="destructiveOpened" @close="destructiveClosed" modal="true" confirmLabel="Delete" dismissLabel="Cancel" destructive="true">
-        <ui-icon slot="icon" icon="warning"></ui-icon>
+        <ui-icon slot="icon">warning</ui-icon>
         <span slot="title">Delete Account</span>
         <p>Are you sure you want to permanently delete your account? This action cannot be undone and all your data will be lost.</p>
       </ui-dialog>
@@ -263,7 +263,7 @@ const handleFormSubmit = (e: Event) => {
       <p>This dialog demonstrates a non-modal dialog that is centered in the viewport.</p>
       <ui-button color="filled" @click="openNonModal">Open non-modal dialog</ui-button>
       <ui-dialog :open="nonModalOpened" @close="nonModalClosed" confirmLabel="Got it" dismissLabel="Close">
-        <ui-icon slot="icon" icon="info"></ui-icon>
+        <ui-icon slot="icon">info</ui-icon>
         <span slot="title">Non-Modal Information</span>
         <p>This is a non-modal dialog. Unlike modal dialogs, you can still interact with the content behind this dialog. The dialog is automatically centered in the viewport and maintains the smooth opening animation.</p>
         <p>Non-modal dialogs are useful for displaying information that doesn't require the user's full attention or when you want to allow interaction with the background content.</p>
