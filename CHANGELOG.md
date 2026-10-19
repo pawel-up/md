@@ -1,3 +1,10 @@
+# [1.5.0](https://github.com/pawel-up/md/compare/v1.4.9...v1.5.0) (2026-10-19)
+
+
+### Features
+
+* add the badge component ([f7164fe](https://github.com/pawel-up/md/commit/f7164feed1a2437a46809c23989bb441a5393a76))
+
 ## [1.4.9](https://github.com/pawel-up/md/compare/v1.4.8...v1.4.9) (2026-10-15)
 
 
