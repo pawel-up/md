@@ -38,6 +38,7 @@ export default defineConfig({
       {
         text: 'Components',
         items: [
+          { text: 'Badge', link: '/components/badge' },
           { text: 'Button', link: '/components/button' },
           { text: 'Button Group', link: '/components/button-group' },
           { text: 'Checkbox', link: '/components/checkbox' },

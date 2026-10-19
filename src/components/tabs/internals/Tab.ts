@@ -10,6 +10,17 @@ import type { SizingInfo, TabsPriority } from './Tabs.js'
 import '../../ripple/ui-ripple.js'
 import '../../focus-ring/ui-focus-ring.js'
 
+/**
+ * A Material Design 3 tab component.
+ *
+ * Supports icons, labels, and badges. Position of badges dynamically conforms to M3 specs:
+ * anchored 6dp overlapping the icon when stacked or icon-only, or placed inline with 4dp gap
+ * after the label text.
+ *
+ * @slot icon - The tab icon element.
+ * @slot badge - The tab badge element (typically a `<ui-badge>`).
+ * @slot - The default slot for tab label text.
+ */
 export default class UiTab extends UiElement {
   get disabled(): boolean {
     return isDisabled(this)
@@ -48,11 +59,18 @@ export default class UiTab extends UiElement {
    * This is set automatically when the "icon" slot is populated.
    */
   @state() protected accessor hasIcon
+
   /**
    * Indicates whether the tab only has an icon and no text.
    * This is set automatically when the default slot is populated with only an icon.
    */
   @state() protected accessor iconOnly
+
+  /**
+   * Indicates whether the tab has a slotted badge.
+   * This is set automatically when the "badge" slot is populated.
+   */
+  @state() protected accessor hasBadge = false
 
   @query('ui-ripple') protected accessor ripple!: UiRipple | null
 
@@ -63,6 +81,7 @@ export default class UiTab extends UiElement {
     this.indicated = false
     this.hasIcon = false
     this.iconOnly = true
+    this.hasBadge = false
     this.actionController.cancelKeyboardEvents = true
     this.addEventListener('keydown', this.handleKeyDown.bind(this))
     this.addEventListener('keyup', this.handleKeyUp.bind(this))
@@ -77,12 +96,38 @@ export default class UiTab extends UiElement {
 
   override connectedCallback(): void {
     super.connectedCallback()
+    this.checkSlottedNodes()
     if (!this.hasAttribute('role')) {
       this.setAttribute('role', 'tab')
     }
     if (!this.hasAttribute('aria-selected')) {
       this.setAttribute('aria-selected', 'false')
     }
+  }
+
+  /**
+   * Inspects light-DOM children on initial connection so layout states are known
+   * before the first render.
+   */
+  private checkSlottedNodes(): void {
+    this.hasIcon = this.querySelector('[slot="icon"]') !== null
+    this.hasBadge = this.querySelector('[slot="badge"]') !== null
+    let hasLabel = false
+    for (const child of this.childNodes) {
+      if (child.nodeType === Node.TEXT_NODE && !!(child as Text).wholeText.match(/\S/)) {
+        hasLabel = true
+        break
+      }
+      if (child.nodeType === Node.ELEMENT_NODE) {
+        const el = child as HTMLElement
+        const slotAttr = el.getAttribute('slot')
+        if (!slotAttr) {
+          hasLabel = true
+          break
+        }
+      }
+    }
+    this.iconOnly = !hasLabel
   }
 
   protected override willUpdate(cp: PropertyValues<this>): void {
@@ -148,12 +193,50 @@ export default class UiTab extends UiElement {
    * Sets the `_hasIcon` state property when the "icon" slot change event is dispatched.
    */
   protected handleIconSlotChange(e: Event): void {
-    const slot = e.target as HTMLSlotElement
-    this.hasIcon = !!slot.assignedNodes().length
+    const slot = e.target as HTMLSlotElement | null
+    if (!slot) {
+      return
+    }
+    this.hasIcon = slot.assignedNodes().length > 0
+  }
+
+  /**
+   * Sets the `hasBadge` state property when the "badge" slot change event is dispatched.
+   */
+  protected handleBadgeSlotChange(e: Event): void {
+    const slot = e.target as HTMLSlotElement | null
+    if (!slot) {
+      return
+    }
+    const nodes = slot.assignedNodes()
+    this.hasBadge = nodes.some((node) => {
+      if (node.nodeType === Node.ELEMENT_NODE) {
+        return true
+      }
+      return node.nodeType === Node.TEXT_NODE && !!(node as Text).wholeText.match(/\S/)
+    })
+  }
+
+  /**
+   * Determines whether the badge should be placed over the icon (stacked or icon-only mode)
+   * or inline next to the label (inline mode).
+   */
+  get isBadgeOnIcon(): boolean {
+    return this.hasIcon && (this.iconOnly || this.priority === 'primary')
+  }
+
+  /**
+   * Indicates whether the tab has slotted badge content.
+   */
+  get hasSlottedBadge(): boolean {
+    return this.hasBadge
   }
 
   protected handleSlotChange(e: Event): void {
-    const slot = e.target as HTMLSlotElement
+    const slot = e.target as HTMLSlotElement | null
+    if (!slot) {
+      return
+    }
     // Check if there's any label text or elements. If not, then there is only
     // an icon.
     for (const node of slot.assignedNodes()) {
@@ -191,6 +274,7 @@ export default class UiTab extends UiElement {
       'surface': true,
       'has-icon': this.hasIcon,
       'has-label': !this.iconOnly,
+      'has-badge': this.hasBadge,
       'stacked': isPrimary,
     }
     return html`
@@ -198,7 +282,12 @@ export default class UiTab extends UiElement {
       <div class="${classMap(containerClasses)}">
         <div class="tab-content">
           ${this.renderIcon()}
-          <slot @slotchange="${this.handleSlotChange}"></slot>
+          <span class="label-wrapper">
+            <span class="label">
+              <slot @slotchange="${this.handleSlotChange}"></slot>
+            </span>
+            ${!this.isBadgeOnIcon ? this.renderBadge() : nothing}
+          </span>
           ${isPrimary ? this.renderIndicator() : nothing}
         </div>
       </div>
@@ -220,7 +309,16 @@ export default class UiTab extends UiElement {
   }
 
   protected renderIcon(): TemplateResult {
-    return html` <slot name="icon" @slotchange="${this.handleIconSlotChange}"></slot> `
+    return html`
+      <span class="icon">
+        <slot name="icon" @slotchange="${this.handleIconSlotChange}"></slot>
+        ${this.isBadgeOnIcon ? this.renderBadge() : nothing}
+      </span>
+    `
+  }
+
+  protected renderBadge(): TemplateResult {
+    return html`<slot name="badge" class="badge-slot" @slotchange="${this.handleBadgeSlotChange}"></slot>`
   }
 
   protected renderIndicator(): TemplateResult | typeof nothing {

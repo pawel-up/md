@@ -1063,6 +1063,13 @@ Horizontal navigation tabs with animated active indicator and automatic horizont
 **Attributes & Properties (`<ui-tab>`):**
 - `selected` (`boolean`, default `false`): Marks the tab as active.
 - `disabled` (`boolean`, default `false`): Disables the tab.
+- `hasSlottedBadge` (readonly `boolean`): Indicates whether a badge is currently slotted.
+- `isBadgeOnIcon` (readonly `boolean`): Indicates whether the badge is anchored over the icon (stacked / icon-only) or inline trailing the label (4dp gap).
+
+**Slots (`<ui-tab>`):**
+- `icon`: The icon element.
+- `badge`: The badge element (typically `<ui-badge>`). Automatically placed according to M3 specs: anchored with 6dp overlap on stacked or icon-only tabs, or positioned inline trailing the label with a 4dp gap.
+- `(default)`: Tab label text.
 
 **Events (`<ui-tabs>`):**
 - `change` (`CustomEvent`): Dispatched when the active tab changes. Read `(e.target as UiTabs).activeTabIndex` or `activeTab`.
@@ -1074,22 +1081,23 @@ Horizontal navigation tabs with animated active indicator and automatic horizont
 
 **Example Usage:**
 ```html
-<ui-tabs
-  priority="primary"
-  autoActivate
-  @change="${(e: Event) => (this.activeIndex = (e.target as any).activeTabIndex)}"
->
+<ui-tabs priority="primary" autoActivate @change="${this.handleTabChange}">
+  <!-- Primary stacked tab with badge over icon (6dp overlap) -->
   <ui-tab selected>
-    <ui-icon>flight</ui-icon>
+    <ui-icon slot="icon">flight</ui-icon>
     Flights
+    <ui-badge slot="badge">3</ui-badge>
   </ui-tab>
+  <!-- Primary label-only tab with inline badge (4dp gap) -->
   <ui-tab>
-    <ui-icon>hotel</ui-icon>
     Hotels
+    <ui-badge slot="badge">99+</ui-badge>
   </ui-tab>
+  <!-- Dot badge on tab -->
   <ui-tab>
-    <ui-icon>explore</ui-icon>
+    <ui-icon slot="icon">explore</ui-icon>
     Explore
+    <ui-badge slot="badge" dot></ui-badge>
   </ui-tab>
 </ui-tabs>
 ```
@@ -1160,6 +1168,45 @@ import '@pawel-up/md/date/ui-date-time.js'
 <ui-collapse ?open="${this.detailsOpen}">
   <div style="padding: 16px;">Collapsible content panel</div>
 </ui-collapse>
+```
+
+---
+
+### Badge (`<ui-badge>`)
+
+Material Design 3 badge component for displaying notifications, counts, or status information on navigation items, tabs, and icons.
+
+**Imports:**
+```typescript
+import '@pawel-up/md/badge/ui-badge.js'
+```
+
+- **`<ui-badge>`**: Renders a small dot indicator (6dp × 6dp) or large badge (16dp height pill) with counts or labels via slotted content. Preserves author content as-is without forced truncation.
+  - **Attributes / Properties**:
+    - `dot` (`boolean`): Forces small 6×6dp dot indicator variant.
+    - `attached` (`boolean`): Positions the badge absolutely at the top-trailing corner of its relative container.
+  - **Slots**:
+    - `(default)`: Badge content (e.g. numeric count or short text). When empty, badge renders in small dot mode.
+  - **CSS Hooks**: `--ui-badge-color`, `--ui-badge-label-color`, `--ui-badge-shape-small` (`3px`), `--ui-badge-shape-large` (`8px`), `--ui-badge-size-small` (`6px`), `--ui-badge-size-large` (`16px`), `--ui-badge-offset-x`, `--ui-badge-offset-y`.
+  - **CSS Parts**: `badge`, `label`.
+
+**Example Usage:**
+```html
+<!-- Small dot badge -->
+<ui-badge></ui-badge>
+
+<!-- Large badge with count -->
+<ui-badge>4</ui-badge>
+
+<!-- Author-specified overflow format -->
+<ui-badge>99+</ui-badge>
+<ui-badge>999+</ui-badge>
+
+<!-- Attached to an icon -->
+<div style="position: relative; display: inline-flex;">
+  <ui-icon>mail</ui-icon>
+  <ui-badge attached>3</ui-badge>
+</div>
 ```
 
 ---

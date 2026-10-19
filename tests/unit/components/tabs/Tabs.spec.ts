@@ -4,6 +4,7 @@ import { UiTabElement } from '../../../../src/components/tabs/ui-tab.js'
 
 import '../../../../src/components/tabs/ui-tabs.js'
 import '../../../../src/components/tabs/ui-tab.js'
+import '../../../../src/components/badge/ui-badge.js'
 
 test.group('Tabs', () => {
   async function basicFixture(): Promise<UiTabsElement> {
@@ -200,4 +201,112 @@ test.group('Tabs', () => {
       assert.closeTo(sizing.left, expectedLeft, 0.01)
     }
   }).tags(['@md', '@tabs'])
+
+  test('places badge over icon in primary stacked tab', async ({ assert }) => {
+    const tab = (await fixture(html`
+      <ui-tab priority="primary">
+        <span slot="icon">✈️</span>
+        Flights
+        <ui-badge slot="badge">3</ui-badge>
+      </ui-tab>
+    `)) as UiTabElement
+    await tab.updateComplete
+
+    assert.isTrue(tab.hasSlottedBadge)
+    assert.isTrue(tab.isBadgeOnIcon)
+
+    const iconBadgeSlot = tab.shadowRoot?.querySelector('.icon .badge-slot')
+    assert.isNotNull(iconBadgeSlot, 'badge slot rendered inside icon container')
+
+    const labelBadgeSlot = tab.shadowRoot?.querySelector('.label-wrapper .badge-slot')
+    assert.isNull(labelBadgeSlot, 'badge slot not rendered in label wrapper')
+  }).tags(['@md', '@tabs', '@badge'])
+
+  test('places badge inline after label in primary label-only tab', async ({ assert }) => {
+    const tab = (await fixture(html`
+      <ui-tab priority="primary">
+        Flights
+        <ui-badge slot="badge">3</ui-badge>
+      </ui-tab>
+    `)) as UiTabElement
+    await tab.updateComplete
+
+    assert.isTrue(tab.hasSlottedBadge)
+    assert.isFalse(tab.isBadgeOnIcon)
+
+    const labelBadgeSlot = tab.shadowRoot?.querySelector('.label-wrapper .badge-slot')
+    assert.isNotNull(labelBadgeSlot, 'badge slot rendered inside label wrapper')
+
+    const iconBadgeSlot = tab.shadowRoot?.querySelector('.icon .badge-slot')
+    assert.isNull(iconBadgeSlot, 'badge slot not rendered inside icon')
+  }).tags(['@md', '@tabs', '@badge'])
+
+  test('places badge inline after label in secondary icon+label tab', async ({ assert }) => {
+    const tab = (await fixture(html`
+      <ui-tab priority="secondary">
+        <span slot="icon">📄</span>
+        Overview
+        <ui-badge slot="badge">3</ui-badge>
+      </ui-tab>
+    `)) as UiTabElement
+    await tab.updateComplete
+
+    assert.isTrue(tab.hasSlottedBadge)
+    assert.isFalse(tab.isBadgeOnIcon)
+
+    const labelBadgeSlot = tab.shadowRoot?.querySelector('.label-wrapper .badge-slot')
+    assert.isNotNull(labelBadgeSlot, 'badge slot rendered inside label wrapper')
+
+    const iconBadgeSlot = tab.shadowRoot?.querySelector('.icon .badge-slot')
+    assert.isNull(iconBadgeSlot, 'badge slot not rendered inside icon')
+  }).tags(['@md', '@tabs', '@badge'])
+
+  test('places badge over icon in icon-only tab', async ({ assert }) => {
+    const tab = (await fixture(html`
+      <ui-tab>
+        <span slot="icon">✈️</span>
+        <ui-badge slot="badge">3</ui-badge>
+      </ui-tab>
+    `)) as UiTabElement
+    await tab.updateComplete
+
+    assert.isTrue(tab.hasSlottedBadge)
+    assert.isTrue(tab.isBadgeOnIcon)
+
+    const iconBadgeSlot = tab.shadowRoot?.querySelector('.icon .badge-slot')
+    assert.isNotNull(iconBadgeSlot, 'badge slot rendered inside icon container')
+  }).tags(['@md', '@tabs', '@badge'])
+
+  test('dynamically factors inline badge into primary tab indicator sizing', async ({ assert }) => {
+    const tabWithoutBadge = (await fixture(html`<ui-tab priority="primary">Flights</ui-tab>`)) as UiTabElement
+    await tabWithoutBadge.updateComplete
+
+    const tabWithBadge = (await fixture(html`
+      <ui-tab priority="primary">
+        Flights
+        <ui-badge slot="badge">999+</ui-badge>
+      </ui-tab>
+    `)) as UiTabElement
+    await tabWithBadge.updateComplete
+
+    const sizingWithout = tabWithoutBadge.getIndicatorSizing()
+    const sizingWith = tabWithBadge.getIndicatorSizing()
+
+    assert.isAbove(sizingWith.width, sizingWithout.width, 'indicator width expands to cover inline badge')
+  }).tags(['@md', '@tabs', '@badge'])
+
+  test('supports small dot badge indicator on tab', async ({ assert }) => {
+    const tab = (await fixture(html`
+      <ui-tab>
+        <span slot="icon">🔔</span>
+        <ui-badge slot="badge" dot></ui-badge>
+      </ui-tab>
+    `)) as UiTabElement
+    await tab.updateComplete
+
+    assert.isTrue(tab.hasSlottedBadge)
+    const badge = tab.querySelector('ui-badge')
+    assert.isNotNull(badge)
+    assert.isTrue(badge?.isDot)
+  }).tags(['@md', '@tabs', '@badge'])
 })

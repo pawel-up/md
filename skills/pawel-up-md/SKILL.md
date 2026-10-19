@@ -6,7 +6,7 @@ description: "MANDATORY: You MUST trigger this skill whenever the user mentions 
 
 # @pawel-up/md — Material Design 3 Web Components
 
-This skill guides the implementation of Google's Material Design 3 (MD3 / Material You) using the `@pawel-up/md` Web Components library built on Lit (`lit`). It covers the design token system, global stylesheets, styling hooks, all 43 custom elements, programmatic controllers, and composite UI patterns.
+This skill guides the implementation of Google's Material Design 3 (MD3 / Material You) using the `@pawel-up/md` Web Components library built on Lit (`lit`). It covers the design token system, global stylesheets, styling hooks, all 44 custom elements, programmatic controllers, and composite UI patterns.
 
 ## Philosophy
 
@@ -152,6 +152,7 @@ Customize individual component instances without piercing Shadow DOM using these
 | `ui-circular-progress` | `--ui-circular-progress-size` (`48px`), `--ui-circular-progress-active-indicator-width` (`10`), `--ui-circular-progress-active-indicator-color`, `--ui-circular-progress-track-color`, `--ui-circular-progress-four-color-active-indicator-one-color` (and `-two-color`, `-three-color`, `-four-color`) |
 | `ui-collapse` | `--ui-collapse-transition-duration` (`300ms`) |
 | `ui-divider` | `--ui-divider-padding`, `--ui-divider-vertical-separation` |
+| `ui-badge` | `--ui-badge-color`, `--ui-badge-label-color`, `--ui-badge-shape-small` (`3px`), `--ui-badge-shape-large` (`8px`), `--ui-badge-size-small` (`6px`), `--ui-badge-size-large` (`16px`), `--ui-badge-offset-x`, `--ui-badge-offset-y` |
 | `ui-focus-ring` | `--md-focus-ring-color`, `--md-focus-ring-width` (`3px`), `--md-focus-ring-active-width` (`8px`), `--md-focus-ring-outward-offset` (`2px`), `--md-focus-ring-inward-offset` (`0px`), `--md-focus-ring-shape`, `--md-focus-ring-duration` (`600ms`) |
 | `ui-ripple` | `--md-ripple-hover-state-layer-color`, `--md-ripple-hover-state-layer-opacity`, `--md-ripple-pressed-state-layer-color`, `--md-ripple-pressed-state-layer-opacity`, `--md-ripple-focus-state-layer-color`, `--md-ripple-focus-state-layer-opacity`, `--md-ripple-state-layer-shape` |
 
@@ -198,6 +199,7 @@ Always import individual component modules using their subpath export (`@pawel-u
 | **Data Display** | `<ui-listbox>` | `@pawel-up/md/listbox/ui-listbox.js` | Accessible `role="listbox"` container; `selector`, `selectActive`, `collapsible`, `density` |
 | **Data Display** | `<ui-collapse>` | `@pawel-up/md/collapse/ui-collapse.js` | Animated expand/collapse container; `open`, `horizontal`, `noAnimation`, `disabled` |
 | **Data Display** | `<ui-divider>` | `@pawel-up/md/divider/ui-divider.js` | `type` (`full`\|`inset`\|`middle`), `vertical` |
+| **Data Display** | `<ui-badge>` | `@pawel-up/md/badge/ui-badge.js` | `dot`, `attached`; slotted content only; small dot (6×6dp) and large badge (16dp) status/count indicator |
 | **Data Display** | `<ui-date-time>` | `@pawel-up/md/date/ui-date-time.js` | Semantic `<time>` formatting via `Intl.DateTimeFormat`; `date`, `locales`, `year`, `month`, `day`, `hour`, `minute`, `second`, `weekday`, `timeZone` |
 | **Data Display** | `<ui-icon>` | `@pawel-up/md/icons/ui-icon.js` | Material Symbols font ligature icon (`<ui-icon>add</ui-icon>`); requires Material Symbols stylesheet in host page |
 | **Navigation** | `<ui-tabs>` | `@pawel-up/md/tabs/ui-tabs.js` | Tab bar with animated indicator & overflow scroll buttons; `priority` (`primary`\|`secondary`), `autoActivate` |

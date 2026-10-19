@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import '../../src/components/tabs/ui-tab.js'
 import '../../src/components/tabs/ui-tabs.js'
 import '../../src/components/icons/ui-icon.js'
+import '../../src/components/badge/ui-badge.js'
 
 const selected1 = ref('travel1')
 const selected2 = ref('hotel2')
@@ -11,9 +12,23 @@ const selected4 = ref('cars4')
 const selected5 = ref('travel5')
 const selected6 = ref('travel6')
 const selected7 = ref('travel7')
+const selectedBadge1 = ref('badgeFlights1')
+const selectedBadge2 = ref('badgeFlights2')
+const selectedBadge3 = ref('badgeOverview3')
+const selectedBadge4 = ref('badgeOverview4')
 
 const state: Record<string, any> = {
-  selected1, selected2, selected3, selected4, selected5, selected6, selected7
+  selected1,
+  selected2,
+  selected3,
+  selected4,
+  selected5,
+  selected6,
+  selected7,
+  selectedBadge1,
+  selectedBadge2,
+  selectedBadge3,
+  selectedBadge4,
 }
 
 const handleTabsChange = (e: Event) => {
@@ -198,6 +213,108 @@ const handleTabsChange = (e: Event) => {
         <p id="hotel7" :hidden="selected7 !== 'hotel7'">Hotel page</p>
         <p id="travelHotel7" :hidden="selected7 !== 'travelHotel7'">Hotel & travel page</p>
         <p id="cars7" :hidden="selected7 !== 'cars7'">Cars page</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="demo-section">
+    <h2 class="display-large">Tabs with badges</h2>
+    <p>
+      Tabs support badges conforming strictly to Material Design 3 specifications:
+      anchored with a 6dp overlap on stacked or icon-only tabs, or placed inline trailing the label with a 4dp gap.
+    </p>
+
+    <h3 class="title-medium">Primary stacked tabs with badge over icon</h3>
+    <div class="frame">
+      <ui-tabs data-property="selectedBadge1" @change="handleTabsChange">
+        <ui-tab aria-controls="badgeFlights1" selected="true">
+          <ui-icon slot="icon"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M8.5 22v-1.5l2-1.5v-5.5L2 16v-2l8.5-5V3.5q0-.625.438-1.062Q11.375 2 12 2t1.062.438q.438.437.438 1.062V9l8.5 5v2l-8.5-2.5V19l2 1.5V22L12 21Z"/></svg></ui-icon>
+          Flights
+          <ui-badge slot="badge">3</ui-badge>
+        </ui-tab>
+        <ui-tab aria-controls="badgeTrips1">
+          <ui-icon slot="icon"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M1 19V4h2v10h8V6h8q1.65 0 2.825 1.175Q23 8.35 23 10v9h-2v-3H3v3Zm6-6q-1.25 0-2.125-.875T4 10q0-1.25.875-2.125T7 7q1.25 0 2.125.875T10 10q0 1.25-.875 2.125T7 13Zm6 1h8v-4q0-.825-.587-1.413Q19.825 8 19 8h-6Zm-6-3q.425 0 .713-.288Q8 10.425 8 10t-.287-.713Q7.425 9 7 9t-.713.287Q6 9.575 6 10t.287.712Q6.575 11 7 11Zm0-1Zm6-2v6Z"/></svg></ui-icon>
+          Trips
+        </ui-tab>
+        <ui-tab aria-controls="badgeExplore1">
+          <ui-icon slot="icon"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M12 22q-2.075 0-3.9-.788-1.825-.787-3.175-2.137-1.35-1.35-2.137-3.175Q2 14.075 2 12t.788-3.9q.787-1.825 2.137-3.175 1.35-1.35 3.175-2.137Q9.925 2 12 2t3.9.788q1.825.787 3.175 2.137 1.35 1.35 2.137 3.175Q22 9.925 22 12t-.788 3.9q-.787 1.825-2.137 3.175-1.35 1.35-3.175 2.137Q14.075 22 12 22Zm-1.8-6.1 5.9-2.9-2.9-5.9-5.9 2.9ZM12 13q.425 0 .713-.288Q13 12.425 13 12t-.287-.713Q12.425 11 12 11t-.713.287Q11 11.575 11 12t.287.712Q11.575 13 12 13Z"/></svg></ui-icon>
+          Explore
+          <ui-badge slot="badge" dot></ui-badge>
+        </ui-tab>
+        <ui-tab aria-controls="badgeBuy1">
+          <ui-icon slot="icon"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M7 22q-.825 0-1.412-.587Q5 20.825 5 20t.588-1.413Q6.175 18 7 18t1.413.587Q9 19.175 9 20t-.587 1.413Q7.825 22 7 22Zm10 0q-.825 0-1.412-.587Q15 20.825 15 20t.588-1.413Q16.175 18 17 18t1.413.587Q19 19.175 19 20t-.587 1.413Q17.825 22 17 22ZM6.15 6l2.4 5h7l2.75-5ZM5.2 4h16.55q.675 0 1.013.563.337.562-.013 1.137l-3.55 6.4q-.275.5-.725.7-.45.2-1.025.2H8.1L7 15h12v2H7q-1.125 0-1.7-.887-.575-.888-.15-1.913L6.6 11.6 3 4H1V2h3.25Z"/></svg></ui-icon>
+          Buy
+          <ui-badge slot="badge">32</ui-badge>
+        </ui-tab>
+      </ui-tabs>
+      <div class="page">
+        <p id="badgeFlights1" :hidden="selectedBadge1 !== 'badgeFlights1'">Flights page (with badge 3)</p>
+        <p id="badgeTrips1" :hidden="selectedBadge1 !== 'badgeTrips1'">Trips page</p>
+        <p id="badgeExplore1" :hidden="selectedBadge1 !== 'badgeExplore1'">Explore page (with dot badge)</p>
+        <p id="badgeBuy1" :hidden="selectedBadge1 !== 'badgeBuy1'">Buy page (with badge 32)</p>
+      </div>
+    </div>
+
+    <h3 class="title-medium">Primary label-only tabs with inline badge (4dp gap)</h3>
+    <div class="frame">
+      <ui-tabs data-property="selectedBadge2" @change="handleTabsChange">
+        <ui-tab aria-controls="badgeFlights2" selected="true">
+          Flights
+          <ui-badge slot="badge">3</ui-badge>
+        </ui-tab>
+        <ui-tab aria-controls="badgeTrips2">
+          Trips
+        </ui-tab>
+        <ui-tab aria-controls="badgeExplore2">
+          Explore
+          <ui-badge slot="badge">999+</ui-badge>
+        </ui-tab>
+        <ui-tab aria-controls="badgeBuy2">
+          Buy
+          <ui-badge slot="badge" dot></ui-badge>
+        </ui-tab>
+      </ui-tabs>
+      <div class="page">
+        <p id="badgeFlights2" :hidden="selectedBadge2 !== 'badgeFlights2'">Flights page</p>
+        <p id="badgeTrips2" :hidden="selectedBadge2 !== 'badgeTrips2'">Trips page</p>
+        <p id="badgeExplore2" :hidden="selectedBadge2 !== 'badgeExplore2'">Explore page</p>
+        <p id="badgeBuy2" :hidden="selectedBadge2 !== 'badgeBuy2'">Buy page</p>
+      </div>
+    </div>
+
+    <h3 class="title-medium">Secondary label-only tabs with inline badge (4dp gap)</h3>
+    <div class="frame">
+      <ui-tabs priority="secondary" data-property="selectedBadge3" @change="handleTabsChange">
+        <ui-tab aria-controls="badgeOverview3" selected="true">
+          Overview
+          <ui-badge slot="badge">3</ui-badge>
+        </ui-tab>
+        <ui-tab aria-controls="badgeSpecs3">
+          Specifications
+        </ui-tab>
+      </ui-tabs>
+      <div class="page">
+        <p id="badgeOverview3" :hidden="selectedBadge3 !== 'badgeOverview3'">Overview content</p>
+        <p id="badgeSpecs3" :hidden="selectedBadge3 !== 'badgeSpecs3'">Specifications content</p>
+      </div>
+    </div>
+
+    <h3 class="title-medium">Secondary icon + label tabs with inline badge (8dp icon gap, 4dp badge gap)</h3>
+    <div class="frame">
+      <ui-tabs priority="secondary" data-property="selectedBadge4" @change="handleTabsChange">
+        <ui-tab aria-controls="badgeOverview4" selected="true">
+          <ui-icon slot="icon"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg></ui-icon>
+          Overview
+          <ui-badge slot="badge">3</ui-badge>
+        </ui-tab>
+        <ui-tab aria-controls="badgeSpecs4">
+          <ui-icon slot="icon"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg></ui-icon>
+          Specifications
+        </ui-tab>
+      </ui-tabs>
+      <div class="page">
+        <p id="badgeOverview4" :hidden="selectedBadge4 !== 'badgeOverview4'">Overview content</p>
+        <p id="badgeSpecs4" :hidden="selectedBadge4 !== 'badgeSpecs4'">Specifications content</p>
       </div>
     </div>
   </section>
