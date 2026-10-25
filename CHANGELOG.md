@@ -1,3 +1,10 @@
+## [1.5.2](https://github.com/pawel-up/md/compare/v1.5.1...v1.5.2) (2026-10-25)
+
+
+### Bug Fixes
+
+* add accessibility tests ([3ffa94a](https://github.com/pawel-up/md/commit/3ffa94a051dc014b60b7c203c6203e35ad2422a2))
+
 # [1.5.0](https://github.com/pawel-up/md/compare/v1.4.9...v1.5.0) (2026-10-19)
 
 
