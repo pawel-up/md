@@ -1,6 +1,7 @@
 import { test, fixture, html, nextFrame } from '@pawel-up/lupa/testing'
 import '../../../../src/components/list/ui-list.js'
 import '../../../../src/components/list/ui-list-item.js'
+import '../../../../src/components/listbox/ui-listbox.js'
 import { UiListElement } from '../../../../src/components/list/ui-list.js'
 import { UiListItemElement } from '../../../../src/components/list/ui-list-item.js'
 
@@ -284,4 +285,32 @@ test.group('UiListItem and UiList - Density Scaling', () => {
     assert.equal(window.getComputedStyle(surface1).height, '48px')
     assert.equal(window.getComputedStyle(surface2).height, '64px')
   })
+
+  test('ui-list and ui-list-item are accessible', async ({ assert }) => {
+    const list = await fixture<UiListElement>(html`
+      <ui-list role="list" aria-label="Items">
+        <ui-list-item>Single line item</ui-list-item>
+        <ui-list-item lines="two">
+          Two line item
+          <span slot="supporting-text">Supporting text</span>
+        </ui-list-item>
+        <ui-list-item disabled>Disabled item</ui-list-item>
+      </ui-list>
+    `)
+    await list.updateComplete
+    await nextFrame()
+    await assert.isAccessible(list)
+  }).tags(['@md', '@list', '@a11y'])
+
+  test('ui-listbox is accessible', async ({ assert }) => {
+    const listbox = await fixture(html`
+      <ui-listbox aria-label="Choices">
+        <ui-list-item>Choice 1</ui-list-item>
+        <ui-list-item>Choice 2</ui-list-item>
+        <ui-list-item disabled>Choice 3</ui-list-item>
+      </ui-listbox>
+    `)
+    await nextFrame()
+    await assert.isAccessible(listbox)
+  }).tags(['@md', '@listbox', '@a11y'])
 })

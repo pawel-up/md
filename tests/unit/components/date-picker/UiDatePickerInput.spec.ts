@@ -1,5 +1,7 @@
 import { test, fixture, html } from '@pawel-up/lupa/testing'
 import '../../../../src/components/date-picker/ui-date-picker-input.js'
+import '../../../../src/components/date-picker/ui-date-picker-modal.js'
+import '../../../../src/components/date-picker/ui-date-picker-modal-input.js'
 import { UiDatePickerInput } from '../../../../src/components/date-picker/ui-date-picker-input.js'
 import { OverlayStackManager } from '../../../../src/controllers/OverlayStackManager.js'
 
@@ -208,4 +210,24 @@ test.group('UiDatePickerInput - OverlayController Integration', (group) => {
     assert.isFalse(el.open, 'date picker should be closed on Escape')
     assert.isTrue(underlyingEl.open, 'underlying overlay should remain open')
   })
+
+  test('date-picker-input is accessible when closed and open', async ({ assert }) => {
+    const el = await fixture<UiDatePickerInput>(html`<ui-date-picker-input label="Birth date"></ui-date-picker-input>`)
+    await el.updateComplete
+    await assert.isAccessible(el)
+
+    el.open = true
+    await el.updateComplete
+    await assert.isAccessible(el)
+  }).tags(['@md', '@date-picker', '@a11y'])
+
+  test('date-picker-modal is accessible when open', async ({ assert }) => {
+    const modal = await fixture(html`<ui-date-picker-modal open></ui-date-picker-modal>`)
+    await assert.isAccessible(modal)
+  }).tags(['@md', '@date-picker', '@a11y'])
+
+  test('date-picker-modal-input is accessible when open', async ({ assert }) => {
+    const modalInput = await fixture(html`<ui-date-picker-modal-input open></ui-date-picker-modal-input>`)
+    await assert.isAccessible(modalInput)
+  }).tags(['@md', '@date-picker', '@a11y'])
 })

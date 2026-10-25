@@ -309,4 +309,52 @@ test.group('Tabs', () => {
     assert.isNotNull(badge)
     assert.isTrue(badge?.isDot)
   }).tags(['@md', '@tabs', '@badge'])
+
+  test('primary tabs are accessible', async ({ assert }) => {
+    const tabs = await basicFixture()
+    await tabs.updateComplete
+    await assert.isAccessible(tabs)
+  }).tags(['@md', '@tabs', '@a11y'])
+
+  test('secondary tabs are accessible', async ({ assert }) => {
+    const tabs = await fixture(html`
+      <ui-tabs priority="secondary" aria-label="Secondary navigation">
+        <ui-tab selected>Overview</ui-tab>
+        <ui-tab>Specifications</ui-tab>
+        <ui-tab disabled>Reviews</ui-tab>
+      </ui-tabs>
+    `)
+    await assert.isAccessible(tabs)
+  }).tags(['@md', '@tabs', '@a11y'])
+
+  test('tabs with icons and badges are accessible', async ({ assert }) => {
+    const tabs = await fixture(html`
+      <ui-tabs aria-label="Travel options">
+        <ui-tab selected>
+          <span slot="icon" aria-hidden="true">✈️</span>
+          Flights
+          <ui-badge slot="badge">3</ui-badge>
+        </ui-tab>
+        <ui-tab>
+          <span slot="icon" aria-hidden="true">🏨</span>
+          Hotels
+        </ui-tab>
+      </ui-tabs>
+    `)
+    await assert.isAccessible(tabs)
+  }).tags(['@md', '@tabs', '@a11y'])
+
+  test('overflowing tabs with scroll buttons are accessible', async ({ assert }) => {
+    const tabs = (await fixture(html`
+      <ui-tabs style="width: 200px;" aria-label="Overflowing tabs">
+        <ui-tab style="min-width: 100px;" selected>Tab 1</ui-tab>
+        <ui-tab style="min-width: 100px;">Tab 2</ui-tab>
+        <ui-tab style="min-width: 100px;">Tab 3</ui-tab>
+      </ui-tabs>
+    `)) as UiTabsElement
+    await tabs.updateComplete
+    await new Promise((resolve) => setTimeout(resolve, 50))
+    await tabs.updateComplete
+    await assert.isAccessible(tabs)
+  }).tags(['@md', '@tabs', '@a11y'])
 })

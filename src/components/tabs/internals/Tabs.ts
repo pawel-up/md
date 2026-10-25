@@ -510,14 +510,23 @@ export default class UiTabs extends LitElement {
     `
   }
 
+  /**
+   * Renders pointer-only scroll buttons when tabs overflow.
+   * Marked `aria-hidden="true"` and `tabindex="-1"` because `role="tablist"` only permits
+   * `role="tab"` children in the accessibility tree and keyboard users scroll tabs via arrow keys.
+   */
   protected renderScrollButton(direction: 'left' | 'right'): TemplateResult | typeof nothing {
     const isLeft = direction === 'left'
     const show = isLeft ? this.showLeftArrow : this.showRightArrow
     if (!show) return nothing
 
     return html`
-      <div class="scroll-button ${direction}">
-        <ui-icon-button @click="${isLeft ? this.scrollTabsLeft : this.scrollTabsRight}">
+      <div class="scroll-button ${direction}" aria-hidden="true">
+        <ui-icon-button
+          tabindex="-1"
+          aria-label="${isLeft ? 'Scroll left' : 'Scroll right'}"
+          @click="${isLeft ? this.scrollTabsLeft : this.scrollTabsRight}"
+        >
           <ui-icon>${isLeft ? chevronLeft : chevronRight}</ui-icon>
         </ui-icon-button>
       </div>

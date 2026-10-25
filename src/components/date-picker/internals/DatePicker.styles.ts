@@ -65,6 +65,11 @@ export const calendarStyles = css`
 
   /* Calendar grid */
   .days {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .week-row {
     display: grid;
     grid-template-columns: repeat(7, 40px);
     gap: 0;

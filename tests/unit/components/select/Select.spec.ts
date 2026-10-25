@@ -1823,4 +1823,16 @@ test.group('Density and variant propagation', () => {
       assert.equal(height, expected, `three-line option height at density ${density} should be ${expected}`)
     }
   })
+
+  test('is accessible when not opened', async ({ assert }) => {
+    const select = await basicFixture()
+    await assert.isAccessible(select)
+  }).tags(['@md', '@select', '@a11y'])
+
+  test('is accessible when opened', async ({ assert }) => {
+    const select = await basicFixture()
+    select.open = true
+    await select.updateComplete
+    await assert.isAccessible(select)
+  }).tags(['@md', '@select', '@a11y'])
 })

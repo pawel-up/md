@@ -360,3 +360,23 @@ test.group('DateTime: itemprop attribute', () => {
     assert.isTrue(spy.calledOnce)
   }).tags(['@date-time'])
 })
+
+test.group('DateTime: Accessibility', () => {
+  test('is accessible with default and formatted date values', async ({ assert }) => {
+    const el = await fixture<HTMLElement>(html`
+      <div>
+        <ui-date-time locales="en-US" time-zone="UTC" date="2010-12-10T11:05:45.000Z"></ui-date-time>
+        <ui-date-time
+          locales="en-US"
+          time-zone="UTC"
+          date="2010-12-10T11:05:45.000Z"
+          weekday="long"
+          year="numeric"
+          month="long"
+          day="numeric"
+        ></ui-date-time>
+      </div>
+    `)
+    await assert.isAccessible(el)
+  }).tags(['@date-time', '@a11y'])
+})

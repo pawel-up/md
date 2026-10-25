@@ -45,11 +45,6 @@ export default class TextAreaElement extends Input {
 
   protected override readonly isMultiline = true
 
-  override connectedCallback(): void {
-    super.connectedCallback()
-    this.setAttribute('aria-multiline', 'true')
-  }
-
   protected override renderInput(): TemplateResult {
     const placeholderValue = this.placeholder || undefined
     const maxLengthValue = this.maxLength > -1 ? this.maxLength : undefined
@@ -63,8 +58,8 @@ export default class TextAreaElement extends Input {
     const ariaControlsValue = this.ariaControls || undefined
     const ariaDescribedByValue = this.getAriaDescribedBy() || undefined
     const ariaExpandedValue = this.ariaExpanded || undefined
-    const ariaLabelValue = this.ariaLabel || this.label || undefined
-    const ariaLabelledByValue = this.ariaLabelledBy || undefined
+    const ariaLabelValue = this.getInputAriaLabel()
+    const ariaLabelledByValue = this.getInputAriaLabelledBy()
 
     return html`
       <textarea
@@ -99,6 +94,7 @@ export default class TextAreaElement extends Input {
         aria-invalid=${this.getError()}
         aria-label=${ifDefined(ariaLabelValue)}
         aria-labelledby=${ifDefined(ariaLabelledByValue)}
+        aria-multiline="true"
       ></textarea>
     `
   }

@@ -680,7 +680,7 @@ export class UiDatePickerCalendar extends LitElement {
               color="text"
               size="xs"
               @click=${this.handleMonthClick}
-              aria-label="Select month"
+              aria-label="Select month, ${monthName}"
               aria-expanded=${this.showMonthDropdown}
               trailingIcon
             >
@@ -696,7 +696,7 @@ export class UiDatePickerCalendar extends LitElement {
               color="text"
               size="xs"
               @click=${this.handleYearClick}
-              aria-label="Select year"
+              aria-label="Select year, ${this.year}"
               aria-expanded=${this.showYearDropdown}
               trailingIcon
             >
@@ -796,9 +796,10 @@ export class UiDatePickerCalendar extends LitElement {
     }
 
     const isFocused = this.focusedDate && isSameDay(day.date, this.focusedDate)
+    const isCellSelected = selectionState.isSelected || selectionState.isRangeStart || selectionState.isRangeEnd
 
     return html`
-      <div class=${classMap(classes)} role="gridcell">
+      <div class=${classMap(classes)} role="gridcell" aria-selected=${isCellSelected ? 'true' : 'false'}>
         <ui-button
           class="day-button"
           color=${color}
@@ -806,7 +807,7 @@ export class UiDatePickerCalendar extends LitElement {
           data-date=${day.date.toISOString().split('T')[0]}
           tabindex=${isFocused && !(day.isDisabled || this.isDateDisabled(day.date)) ? '0' : '-1'}
           aria-label=${formatDate(day.date, this.locale)}
-          aria-selected=${selectionState.isSelected || selectionState.isRangeStart || selectionState.isRangeEnd}
+          aria-pressed=${isCellSelected ? 'true' : 'false'}
           @click=${() => this.handleDayClick(day)}
           ?disabled=${day.isDisabled || this.isDateDisabled(day.date)}
         >
@@ -819,7 +820,14 @@ export class UiDatePickerCalendar extends LitElement {
   private renderDays(): TemplateResult {
     if (!this.calendarData) return html``
 
-    return html`<div class="days">${this.calendarData.days.map((day) => this.renderDay(day))}</div>`
+    const weeks: CalendarDay[][] = []
+    for (let i = 0; i < this.calendarData.days.length; i += 7) {
+      weeks.push(this.calendarData.days.slice(i, i + 7))
+    }
+
+    return html`<div class="days" role="rowgroup">
+      ${weeks.map((week) => html`<div class="week-row" role="row">${week.map((day) => this.renderDay(day))}</div>`)}
+    </div>`
   }
 
   private renderActions(): TemplateResult | typeof nothing {
@@ -987,7 +995,7 @@ export class UiDatePickerCalendar extends LitElement {
     // Show dropdown views instead of calendar when dropdowns are open
     if (this.showMonthDropdown) {
       return html`
-        <div class="calendar" role="grid" aria-label="Month selection for ${this.year}">
+        <div class="calendar" role="group" aria-label="Month selection for ${this.year}">
           ${this.renderNavigation()} ${this.renderMonthDropdown()}
         </div>
       `
@@ -995,7 +1003,7 @@ export class UiDatePickerCalendar extends LitElement {
 
     if (this.showYearDropdown) {
       return html`
-        <div class="calendar" role="grid" aria-label="Year selection">
+        <div class="calendar" role="group" aria-label="Year selection">
           ${this.renderNavigation()} ${this.renderYearDropdown()}
         </div>
       `
@@ -1003,15 +1011,17 @@ export class UiDatePickerCalendar extends LitElement {
 
     // Default calendar view
     return html`
-      <div
-        class="calendar"
-        role="grid"
-        aria-label="Calendar for ${this.monthNames[this.month]} ${this.year}"
-        aria-roledescription="Calendar grid"
-        tabindex="0"
-        @keydown=${this.handleKeyDown}
-      >
-        ${this.renderNavigation()} ${this.renderWeekdays()} ${this.renderDays()} ${this.renderActions()}
+      <div class="calendar" role="group" aria-label="Date picker" tabindex="0" @keydown=${this.handleKeyDown}>
+        ${this.renderNavigation()}
+        <div
+          class="calendar-grid"
+          role="grid"
+          aria-label="Calendar for ${this.monthNames[this.month]} ${this.year}"
+          aria-roledescription="Calendar grid"
+        >
+          ${this.renderWeekdays()} ${this.renderDays()}
+        </div>
+        ${this.renderActions()}
       </div>
     `
   }

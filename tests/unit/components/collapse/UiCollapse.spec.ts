@@ -245,4 +245,10 @@ test.group('a11y', (group) => {
   test('passes automated tests when closed', async ({ assert }) => {
     await assert.isAccessible(collapse)
   }).tags(['@a11y', '@collapse'])
+
+  test('passes automated tests when opened', async ({ assert }) => {
+    collapse.open = true
+    await collapse.updateComplete
+    await assert.isAccessible(collapse)
+  }).tags(['@a11y', '@collapse'])
 })

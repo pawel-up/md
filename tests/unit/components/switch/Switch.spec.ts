@@ -60,4 +60,41 @@ test.group('Switch', () => {
     const formData = new FormData(form)
     assert.equal(formData.get('notifications'), 'enabled')
   }).tags(['@md', '@switch'])
+
+  test('is accessible with aria-label', async ({ assert }) => {
+    const sw = await fixture(html`<ui-switch aria-label="Notifications"></ui-switch>`)
+    await assert.isAccessible(sw)
+  }).tags(['@md', '@switch', '@a11y'])
+
+  test('is accessible with a for attribute', async ({ assert }) => {
+    const sw = await fixture(html`<label for="sw">Notifications</label><ui-switch id="sw"></ui-switch>`)
+    await assert.isAccessible(sw)
+  }).tags(['@md', '@switch', '@a11y'])
+
+  test('is accessible when surrounded by a label', async ({ assert }) => {
+    const sw = await fixture(
+      html`<label id="sw-lbl"><ui-switch aria-labelledby="sw-lbl"></ui-switch>Notifications</label>`
+    )
+    await assert.isAccessible(sw)
+  }).tags(['@md', '@switch', '@a11y'])
+
+  test('is accessible when checked', async ({ assert }) => {
+    const sw = await fixture(html`<ui-switch aria-label="Notifications" checked></ui-switch>`)
+    await assert.isAccessible(sw)
+  }).tags(['@md', '@switch', '@a11y'])
+
+  test('is accessible when required', async ({ assert }) => {
+    const sw = await fixture(html`<ui-switch aria-label="Notifications" required></ui-switch>`)
+    await assert.isAccessible(sw)
+  }).tags(['@md', '@switch', '@a11y'])
+
+  test('is accessible when disabled', async ({ assert }) => {
+    const sw = await fixture(html`<ui-switch aria-label="Notifications" disabled></ui-switch>`)
+    await assert.isAccessible(sw)
+  }).tags(['@md', '@switch', '@a11y'])
+
+  test('is accessible with icons', async ({ assert }) => {
+    const sw = await fixture(html`<ui-switch aria-label="Notifications" onIcon offIcon checked></ui-switch>`)
+    await assert.isAccessible(sw)
+  }).tags(['@md', '@switch', '@a11y'])
 })

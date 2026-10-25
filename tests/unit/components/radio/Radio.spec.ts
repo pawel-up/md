@@ -110,4 +110,45 @@ test.group('Radio', () => {
     assert.equal(r2.getAttribute('tabindex'), '0')
     assert.isFalse(r3.hasAttribute('tabindex'))
   }).tags(['@md', '@radio'])
+
+  test('is accessible with aria-label', async ({ assert }) => {
+    const radio = await fixture(html`<ui-radio aria-label="Option 1"></ui-radio>`)
+    await assert.isAccessible(radio)
+  }).tags(['@md', '@radio', '@a11y'])
+
+  test('is accessible with a for attribute', async ({ assert }) => {
+    const radio = await fixture(html`<label for="r1">Option 1</label><ui-radio id="r1"></ui-radio>`)
+    await assert.isAccessible(radio)
+  }).tags(['@md', '@radio', '@a11y'])
+
+  test('is accessible when surrounded by a label', async ({ assert }) => {
+    const label = await fixture(html`<label id="r-lbl"><ui-radio aria-labelledby="r-lbl"></ui-radio>Option 1</label>`)
+    await assert.isAccessible(label)
+  }).tags(['@md', '@radio', '@a11y'])
+
+  test('is accessible when checked', async ({ assert }) => {
+    const radio = await fixture(html`<ui-radio aria-label="Option 1" checked></ui-radio>`)
+    await assert.isAccessible(radio)
+  }).tags(['@md', '@radio', '@a11y'])
+
+  test('is accessible when required', async ({ assert }) => {
+    const radio = await fixture(html`<ui-radio aria-label="Option 1" required></ui-radio>`)
+    await assert.isAccessible(radio)
+  }).tags(['@md', '@radio', '@a11y'])
+
+  test('is accessible when disabled', async ({ assert }) => {
+    const radio = await fixture(html`<ui-radio aria-label="Option 1" disabled></ui-radio>`)
+    await assert.isAccessible(radio)
+  }).tags(['@md', '@radio', '@a11y'])
+
+  test('is accessible in a radio group', async ({ assert }) => {
+    const group = await fixture(html`
+      <div role="radiogroup" aria-label="Options">
+        <ui-radio name="group1" value="1" aria-label="Option 1"></ui-radio>
+        <ui-radio name="group1" value="2" aria-label="Option 2" checked></ui-radio>
+        <ui-radio name="group1" value="3" aria-label="Option 3" disabled></ui-radio>
+      </div>
+    `)
+    await assert.isAccessible(group)
+  }).tags(['@md', '@radio', '@a11y'])
 })

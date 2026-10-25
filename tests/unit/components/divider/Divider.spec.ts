@@ -24,4 +24,17 @@ test.group('Divider', () => {
     assert.isTrue(divider.vertical)
     assert.equal(divider.type, DividerType.inset)
   }).tags(['@md', '@divider'])
+
+  test('is accessible in horizontal and vertical configurations', async ({ assert }) => {
+    const container = await fixture<HTMLElement>(html`
+      <div>
+        <p>Above</p>
+        <ui-divider></ui-divider>
+        <p>Middle</p>
+        <ui-divider vertical type="inset"></ui-divider>
+        <p>Below</p>
+      </div>
+    `)
+    await assert.isAccessible(container)
+  }).tags(['@md', '@divider', '@a11y'])
 })

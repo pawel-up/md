@@ -853,4 +853,35 @@ test.group('Button Group', () => {
       assert.equal(b2.tabIndex, 0)
     }
   }).tags(['@md', '@button-group', '@a11y'])
+
+  test('is accessible in standard and connected variants', async ({ assert }) => {
+    const standard = await fixture<UiButtonGroupElement>(html`
+      <ui-button-group aria-label="Formatting actions">
+        <ui-button>Cut</ui-button>
+        <ui-button>Copy</ui-button>
+        <ui-button>Paste</ui-button>
+      </ui-button-group>
+    `)
+    await assert.isAccessible(standard)
+
+    const connected = await fixture<UiButtonGroupElement>(html`
+      <ui-button-group type="connected" aria-label="View mode">
+        <ui-button toggle selected>Day</ui-button>
+        <ui-button toggle>Week</ui-button>
+        <ui-button toggle disabled>Month</ui-button>
+      </ui-button-group>
+    `)
+    await assert.isAccessible(connected)
+  }).tags(['@md', '@button-group', '@a11y'])
+
+  test('is accessible in multiple selection mode', async ({ assert }) => {
+    const multi = await fixture<UiButtonGroupElement>(html`
+      <ui-button-group type="connected" multiple aria-label="Text style">
+        <ui-button toggle selected>Bold</ui-button>
+        <ui-button toggle selected>Italic</ui-button>
+        <ui-button toggle>Underline</ui-button>
+      </ui-button-group>
+    `)
+    await assert.isAccessible(multi)
+  }).tags(['@md', '@button-group', '@a11y'])
 })

@@ -657,4 +657,63 @@ test.group('TextField', () => {
     assert.isTrue(field.hasAttribute('novisibilitytoggle'))
     assert.isNull(field.shadowRoot?.querySelector('[part~="visibility-toggle"]'))
   }).tags(['@md', '@text-field', '@masked'])
+
+  test('filled text field is accessible with label', async ({ assert }) => {
+    const field = await basicFixture()
+    await assert.isAccessible(field)
+  }).tags(['@md', '@text-field', '@a11y'])
+
+  test('outlined text field is accessible with label', async ({ assert }) => {
+    const field = await outlinedFixture()
+    await assert.isAccessible(field)
+  }).tags(['@md', '@text-field', '@a11y'])
+
+  test('is accessible with aria-label and no visual label', async ({ assert }) => {
+    const field = await fixture<HTMLElement & { updateComplete: Promise<boolean> }>(
+      html`<ui-outlined-text-field aria-label="Search"></ui-outlined-text-field>`
+    )
+    await assert.isAccessible(field)
+
+    field.setAttribute('aria-label', 'Updated search query')
+    await field.updateComplete
+    const innerInput = field.shadowRoot?.querySelector('input')
+    assert.equal(innerInput?.getAttribute('aria-label'), 'Updated search query')
+  }).tags(['@md', '@text-field', '@a11y'])
+
+  test('is accessible when populated, required, and with supporting text', async ({ assert }) => {
+    const field = await fixture(
+      html`<ui-filled-text-field
+        label="Username"
+        value="alice"
+        required
+        supportingText="Enter your handle"
+        maxLength="20"
+      ></ui-filled-text-field>`
+    )
+    await assert.isAccessible(field)
+  }).tags(['@md', '@text-field', '@a11y'])
+
+  test('is accessible when disabled', async ({ assert }) => {
+    const field = await fixture(
+      html`<ui-outlined-text-field label="Username" value="alice" disabled></ui-outlined-text-field>`
+    )
+    await assert.isAccessible(field)
+  }).tags(['@md', '@text-field', '@a11y'])
+
+  test('is accessible when invalid with error text', async ({ assert }) => {
+    const field = await fixture(
+      html`<ui-outlined-text-field label="Email" invalid invalidText="Invalid email address"></ui-outlined-text-field>`
+    )
+    await assert.isAccessible(field)
+  }).tags(['@md', '@text-field', '@a11y'])
+
+  test('is accessible with password toggle and masked mode', async ({ assert }) => {
+    const container = await fixture(html`
+      <div>
+        <ui-filled-text-field label="Password" type="password" value="secret"></ui-filled-text-field>
+        <ui-outlined-text-field label="PIN" masked value="1234"></ui-outlined-text-field>
+      </div>
+    `)
+    await assert.isAccessible(container)
+  }).tags(['@md', '@text-field', '@a11y'])
 })

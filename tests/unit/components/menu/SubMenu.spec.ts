@@ -637,4 +637,21 @@ test.group('SubMenu overlay lifecycle & dismissal', () => {
     sub2.dispatchEvent(new CustomEvent('select', { detail: { index: 0 } }))
     assert.equal(handlerSpy.callCount, 1, 'event from current submenu should trigger handler')
   })
+
+  test('menu with submenu is accessible when closed and open', async ({ assert }) => {
+    const container = await withParentMenuFixture()
+    const parentMenu = container.querySelector('#parent-menu') as Menu
+    const triggerItem = container.querySelector('#trigger-item') as UiMenuItem
+    parentMenu.setAttribute('aria-label', 'Main Menu')
+    await nextFrame()
+
+    await assert.isAccessible(container)
+
+    parentMenu.show()
+    await nextFrame()
+    triggerItem.openSubMenu()
+    await nextFrame()
+
+    await assert.isAccessible(container)
+  })
 })

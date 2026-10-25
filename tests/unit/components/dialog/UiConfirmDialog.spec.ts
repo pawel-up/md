@@ -128,4 +128,23 @@ test.group('UiConfirmDialog', () => {
     const confirmButton = element.shadowRoot!.querySelector('ui-button[value="confirm"]')
     assert.isFalse(confirmButton!.hasAttribute('destructive'))
   })
+
+  test('is accessible when closed, open, and destructive', async ({ assert }) => {
+    const element = await withContentFixture()
+    await element.updateComplete
+    await assert.isAccessible(element)
+
+    element.open = true
+    await element.updateComplete
+    await assert.isAccessible(element)
+
+    const destructive = await fixture<UiConfirmDialog>(html`
+      <ui-confirm-dialog open destructive confirmLabel="Delete" dismissLabel="Keep">
+        <span slot="title">Delete Item</span>
+        <p>This action cannot be undone.</p>
+      </ui-confirm-dialog>
+    `)
+    await destructive.updateComplete
+    await assert.isAccessible(destructive)
+  }).tags(['@md', '@confirm-dialog', '@a11y'])
 })

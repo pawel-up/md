@@ -143,4 +143,19 @@ test.group('Snackbar', () => {
 
     assert.isTrue(el.open)
   }).tags(['@md', '@snackbar'])
+
+  test('is accessible with message, action, and close button', async ({ assert }) => {
+    const basic = await basicFixture()
+    basic.open = true
+    await nextFrame()
+    await assert.isAccessible(basic)
+
+    const withActionAndClose = (await fixture(
+      html`<ui-snackbar open action="Undo" close .closeAriaLabel=${'Dismiss notification'}>Item archived</ui-snackbar>`
+    )) as UiSnackbar
+    await nextFrame()
+    const closeBtn = withActionAndClose.shadowRoot?.querySelector('ui-icon-button.icon')
+    assert.equal(closeBtn?.getAttribute('aria-label'), 'Dismiss notification')
+    await assert.isAccessible(withActionAndClose)
+  }).tags(['@md', '@snackbar', '@a11y'])
 })

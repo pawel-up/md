@@ -38,8 +38,8 @@ export default class TextField extends Input {
     const ariaControlsValue = this.ariaControls || undefined
     const ariaDescribedByValue = this.getAriaDescribedBy() || undefined
     const ariaExpandedValue = this.ariaExpanded || undefined
-    const ariaLabelValue = this.ariaLabel || this.label || undefined
-    const ariaLabelledByValue = this.ariaLabelledBy || undefined
+    const ariaLabelValue = this.getInputAriaLabel()
+    const ariaLabelledByValue = this.getInputAriaLabelledBy()
 
     return html`
       <input

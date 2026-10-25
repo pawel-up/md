@@ -149,7 +149,9 @@ export default class Menu extends UiList implements OverlayHost {
 
   override connectedCallback(): void {
     super.connectedCallback()
-    this.setAttribute('role', 'menu')
+    if (!this.hasAttribute('role')) {
+      this.setAttribute('role', 'menu')
+    }
     this.setAttribute('tabindex', '-1')
     if (!this.hasAttribute('popover')) {
       this.setAttribute('popover', this.defaultPopover)
@@ -170,7 +172,7 @@ export default class Menu extends UiList implements OverlayHost {
       setDisabled(this, this.disabled)
     }
 
-    if (changedProperties.has('multiSelect')) {
+    if (changedProperties.has('multiSelect') || changedProperties.has('selectOnActivate')) {
       this.queryMenuItems().forEach((item) => {
         item.updateSelectionState()
         item.requestUpdate()
@@ -310,6 +312,9 @@ export default class Menu extends UiList implements OverlayHost {
     this.updateChildrenVisibility()
     this.syncDensity()
     this.syncVariant()
+    for (const item of items) {
+      item.updateSelectionState?.()
+    }
     this.dispatchEvent(
       new CustomEvent<UiListItemsChange>('itemschange', { bubbles: false, composed: false, detail: { items } })
     )

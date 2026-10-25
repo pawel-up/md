@@ -385,4 +385,25 @@ test.group('UiDropdownList - OverlayController Integration', (group) => {
     assert.isFalse(el.open)
     assert.equal(closeReason, 'confirm')
   })
+
+  test('is accessible when closed and open', async ({ assert }) => {
+    const el = await fixture<UiDropdownListElement>(html`
+      <ui-dropdown-list>
+        <ui-button id="trigger">Open Menu</ui-button>
+        <ui-list slot="dropdown" role="menu">
+          <ui-list-item role="menuitem">Item 1</ui-list-item>
+          <ui-list-item role="menuitem">Item 2</ui-list-item>
+          <ui-list-item role="menuitem" disabled>Item 3</ui-list-item>
+        </ui-list>
+      </ui-dropdown-list>
+    `)
+    await el.updateComplete
+    await nextFrame()
+    await assert.isAccessible(el)
+
+    el.open = true
+    await el.updateComplete
+    await nextFrame()
+    await assert.isAccessible(el)
+  }).tags(['@md', '@dropdown-list', '@a11y'])
 })

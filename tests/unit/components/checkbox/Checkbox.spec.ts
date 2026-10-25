@@ -98,4 +98,36 @@ test.group('Checkbox', () => {
 
     assert.isFalse(rippleSurface.classList.contains('hovered'))
   }).tags(['@md', '@checkbox'])
+
+  test('is accessible with aria-label', async ({ assert }) => {
+    const checkbox = await fixture(html`<ui-checkbox aria-label="Test"></ui-checkbox>`)
+    await assert.isAccessible(checkbox)
+  }).tags(['@md', '@checkbox', '@a11y'])
+
+  test('is accessible with a for attribute', async ({ assert }) => {
+    const checkbox = await fixture(html`<label for="cb">Test label</label><ui-checkbox id="cb"></ui-checkbox>`)
+    await assert.isAccessible(checkbox)
+  }).tags(['@md', '@checkbox', '@a11y'])
+
+  test('is accessible when surrounded by a label', async ({ assert }) => {
+    const checkbox = await fixture(
+      html`<label id="cb-lbl"><ui-checkbox aria-labelledby="cb-lbl"></ui-checkbox>Test label</label>`
+    )
+    await assert.isAccessible(checkbox)
+  }).tags(['@md', '@checkbox', '@a11y'])
+
+  test('is accessible when checked', async ({ assert }) => {
+    const checkbox = await fixture(html`<ui-checkbox aria-label="Test" checked></ui-checkbox>`)
+    await assert.isAccessible(checkbox)
+  }).tags(['@md', '@checkbox', '@a11y'])
+
+  test('is accessible when required', async ({ assert }) => {
+    const checkbox = await fixture(html`<ui-checkbox aria-label="Test" required></ui-checkbox>`)
+    await assert.isAccessible(checkbox)
+  }).tags(['@md', '@checkbox', '@a11y'])
+
+  test('is accessible when disabled', async ({ assert }) => {
+    const checkbox = await fixture(html`<ui-checkbox aria-label="Test" disabled></ui-checkbox>`)
+    await assert.isAccessible(checkbox)
+  }).tags(['@md', '@checkbox', '@a11y'])
 })

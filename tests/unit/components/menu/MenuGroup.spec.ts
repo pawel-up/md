@@ -253,4 +253,24 @@ test.group('Menu Variants and Density', () => {
     assert.equal(item2.density, '-3')
     assert.equal(item2.variant, 'vibrant')
   })
+
+  test('grouped menu and multiselect menu are accessible when closed and open', async ({ assert }) => {
+    const { menu } = await groupedMenuFixture()
+    menu.setAttribute('aria-label', 'Edit Menu')
+    await assert.isAccessible(menu)
+
+    menu.open = true
+    await nextFrame()
+    await assert.isAccessible(menu)
+
+    const multiMenu = await fixture<UiMenu>(html`
+      <ui-menu multiselect aria-label="Options">
+        <ui-menu-item selected>Option 1</ui-menu-item>
+        <ui-menu-item>Option 2</ui-menu-item>
+      </ui-menu>
+    `)
+    multiMenu.show()
+    await nextFrame()
+    await assert.isAccessible(multiMenu)
+  })
 })

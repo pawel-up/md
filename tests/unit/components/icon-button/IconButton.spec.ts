@@ -201,4 +201,24 @@ test.group('IconButton', () => {
     assert.isFalse(selectedSlot.hasAttribute('hidden'))
     assert.isTrue(defaultSlot.hasAttribute('hidden'))
   }).tags(['@md', '@icon-button'])
+
+  test('is accessible with aria-label', async ({ assert }) => {
+    const btn = await fixture(html`<ui-icon-button aria-label="Favorite"><span>★</span></ui-icon-button>`)
+    await assert.isAccessible(btn)
+  }).tags(['@md', '@icon-button', '@a11y'])
+
+  test('is accessible when disabled', async ({ assert }) => {
+    const btn = await fixture(html`<ui-icon-button aria-label="Favorite" disabled><span>★</span></ui-icon-button>`)
+    await assert.isAccessible(btn)
+  }).tags(['@md', '@icon-button', '@a11y'])
+
+  test('is accessible as a toggle button when unselected and selected', async ({ assert }) => {
+    const unselected = await fixture(html`<ui-icon-button aria-label="Bookmark" toggle><span>☆</span></ui-icon-button>`)
+    await assert.isAccessible(unselected)
+
+    const selected = await fixture(
+      html`<ui-icon-button aria-label="Bookmark" toggle selected><span>★</span></ui-icon-button>`
+    )
+    await assert.isAccessible(selected)
+  }).tags(['@md', '@icon-button', '@a11y'])
 })

@@ -106,4 +106,13 @@ test.group('SnackNotifications', (group) => {
     assert.isUndefined(snack2.open)
     assert.isNull(snack2.parentElement)
   }).tags(['@md', '@notification'])
+
+  test('rendered notification snackbar is accessible', async ({ assert }) => {
+    const snack = SnackNotifications.notify('Accessible notification', {
+      actionLabel: 'Dismiss',
+      close: true,
+    })
+    await aTimeout()
+    await assert.isAccessible(snack)
+  }).tags(['@md', '@notification', '@a11y'])
 })

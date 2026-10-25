@@ -113,7 +113,7 @@ export default class UiChip extends UiElement {
 
   protected override willUpdate(cp: PropertyValues<this>): void {
     if (cp.has('disabled')) {
-      setDisabled(this, cp.get('disabled'))
+      setDisabled(this, this.disabled)
     }
   }
 

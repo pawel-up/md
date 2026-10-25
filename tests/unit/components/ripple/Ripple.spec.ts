@@ -60,4 +60,14 @@ test.group('Ripple', () => {
     assert.isFalse(surface.classList.contains('focused'))
     assert.isFalse(surface.classList.contains('pressed'))
   }).tags(['@md', '@ripple'])
+
+  test('is accessible inside a button host', async ({ assert }) => {
+    const container = await fixture<HTMLElement>(html`
+      <button type="button" style="position: relative;">
+        Click me
+        <ui-ripple></ui-ripple>
+      </button>
+    `)
+    await assert.isAccessible(container)
+  }).tags(['@md', '@ripple', '@a11y'])
 })

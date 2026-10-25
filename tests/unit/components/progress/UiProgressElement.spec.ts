@@ -180,3 +180,25 @@ test.group('wavy and thick variants', () => {
     assert.equal(styles.height, '8px')
   })
 })
+
+test.group('Accessibility', () => {
+  test('is accessible in determinate linear mode with aria-label', async ({ assert }) => {
+    const el = await fixture<UiProgress>(html`<ui-progress value="50" max="100" aria-label="Loading"></ui-progress>`)
+    await assert.isAccessible(el)
+  }).tags(['@a11y'])
+
+  test('is accessible in indeterminate linear mode with aria-label', async ({ assert }) => {
+    const el = await fixture<UiProgress>(html`<ui-progress indeterminate aria-label="Loading"></ui-progress>`)
+    await assert.isAccessible(el)
+  }).tags(['@a11y'])
+
+  test('is accessible in wavy determinate and indeterminate modes', async ({ assert }) => {
+    const el = await fixture<HTMLElement>(html`
+      <div>
+        <ui-progress wavy value="50" max="100" aria-label="Uploading"></ui-progress>
+        <ui-progress wavy indeterminate thick aria-label="Processing"></ui-progress>
+      </div>
+    `)
+    await assert.isAccessible(el)
+  }).tags(['@a11y'])
+})

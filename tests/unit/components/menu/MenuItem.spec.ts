@@ -281,6 +281,27 @@ test.group('Accessibility', () => {
     await nextFrame()
     assert.equal(menuItem.getAttribute('aria-expanded'), 'false')
   })
+
+  test('is accessible inside a menu when default, selected, and disabled', async ({ assert }) => {
+    const menu = await fixture<HTMLElement & { show: () => void }>(html`
+      <ui-menu aria-label="Actions">
+        <ui-menu-item>Default Item</ui-menu-item>
+        <ui-menu-item selected showSelectionIcon>Selected Item</ui-menu-item>
+        <ui-menu-item disabled>Disabled Item</ui-menu-item>
+      </ui-menu>
+    `)
+    await assert.isAccessible(menu)
+
+    menu.show()
+    await nextFrame()
+    await assert.isAccessible(menu)
+
+    const items = menu.querySelectorAll('ui-menu-item')
+    assert.equal(items[0].getAttribute('role'), 'menuitemradio')
+    assert.equal(items[0].getAttribute('aria-checked'), 'false')
+    assert.equal(items[1].getAttribute('role'), 'menuitemradio')
+    assert.equal(items[1].getAttribute('aria-checked'), 'true')
+  })
 })
 
 test.group('Disabled state', () => {
@@ -467,16 +488,20 @@ test.group('Selection functionality', () => {
     assert.isFalse(element.classList.contains('select'))
   })
 
-  test('should update aria-selected when selected changes', async ({ assert }) => {
+  test('should update role and aria-checked when selected changes', async ({ assert }) => {
     const element = await basicFixture()
 
     element.selected = true
     await nextFrame()
-    assert.equal(element.getAttribute('aria-selected'), 'true')
+    assert.equal(element.getAttribute('role'), 'menuitemradio')
+    assert.equal(element.getAttribute('aria-checked'), 'true')
+    assert.isNull(element.getAttribute('aria-selected'))
 
     element.selected = false
     await nextFrame()
-    assert.equal(element.getAttribute('aria-selected'), 'false')
+    assert.equal(element.getAttribute('role'), 'menuitem')
+    assert.isNull(element.getAttribute('aria-checked'))
+    assert.isNull(element.getAttribute('aria-selected'))
   })
 
   test('should initialize selection state on connection', async ({ assert }) => {
@@ -484,7 +509,8 @@ test.group('Selection functionality', () => {
     await nextFrame()
 
     assert.isTrue(element.classList.contains('select'))
-    assert.equal(element.getAttribute('aria-selected'), 'true')
+    assert.equal(element.getAttribute('role'), 'menuitemradio')
+    assert.equal(element.getAttribute('aria-checked'), 'true')
   })
 
   test('should update selection state when selected property changes', async ({ assert }) => {
@@ -630,43 +656,50 @@ test.group('Selection events', () => {
 })
 
 test.group('Accessibility for selection', () => {
-  test('should always have aria-selected attribute', async ({ assert }) => {
+  test('should not set aria-selected or aria-checked on default non-selectable menuitem', async ({ assert }) => {
     const element = await basicFixture()
     await nextFrame()
 
-    assert.isNotNull(element.getAttribute('aria-selected'))
+    assert.equal(element.getAttribute('role'), 'menuitem')
+    assert.isNull(element.getAttribute('aria-selected'))
+    assert.isNull(element.getAttribute('aria-checked'))
   })
 
-  test('should have aria-selected="false" by default', async ({ assert }) => {
-    const element = await basicFixture()
+  test('should set role="menuitemradio" and aria-checked="false" when showSelectionIcon is set', async ({ assert }) => {
+    const element: UiMenuItem = await fixture(html`<ui-menu-item showSelectionIcon>Selectable Item</ui-menu-item>`)
     await nextFrame()
 
-    assert.equal(element.getAttribute('aria-selected'), 'false')
+    assert.equal(element.getAttribute('role'), 'menuitemradio')
+    assert.equal(element.getAttribute('aria-checked'), 'false')
+    assert.isNull(element.getAttribute('aria-selected'))
   })
 
-  test('should have aria-selected="true" when selected', async ({ assert }) => {
+  test('should have role="menuitemradio" and aria-checked="true" when selected', async ({ assert }) => {
     const element = await selectedFixture()
     await nextFrame()
 
-    assert.equal(element.getAttribute('aria-selected'), 'true')
+    assert.equal(element.getAttribute('role'), 'menuitemradio')
+    assert.equal(element.getAttribute('aria-checked'), 'true')
+    assert.isNull(element.getAttribute('aria-selected'))
   })
 
-  test('should maintain proper aria-selected state when toggling selection', async ({ assert }) => {
-    const element = await basicFixture()
+  test('should maintain proper role and aria-checked state when toggling selection', async ({ assert }) => {
+    const element: UiMenuItem = await fixture(html`<ui-menu-item showSelectionIcon>Selectable Item</ui-menu-item>`)
     await nextFrame()
 
     // Initially false
-    assert.equal(element.getAttribute('aria-selected'), 'false')
+    assert.equal(element.getAttribute('role'), 'menuitemradio')
+    assert.equal(element.getAttribute('aria-checked'), 'false')
 
     // Select
     element.selected = true
     await nextFrame()
-    assert.equal(element.getAttribute('aria-selected'), 'true')
+    assert.equal(element.getAttribute('aria-checked'), 'true')
 
     // Deselect
     element.selected = false
     await nextFrame()
-    assert.equal(element.getAttribute('aria-selected'), 'false')
+    assert.equal(element.getAttribute('aria-checked'), 'false')
   })
 })
 
@@ -678,7 +711,7 @@ test.group('Selection state interaction with other properties', () => {
     await nextFrame()
 
     assert.isTrue(element.selected)
-    assert.equal(element.getAttribute('aria-selected'), 'true')
+    assert.equal(element.getAttribute('aria-checked'), 'true')
     assert.isTrue(element.classList.contains('select'))
   })
 
@@ -701,7 +734,7 @@ test.group('Selection state interaction with other properties', () => {
     assert.isTrue(element.showSelectionIcon)
     assert.equal(element.value, 'complex-item')
     assert.isTrue(element.disabled)
-    assert.equal(element.getAttribute('aria-selected'), 'true')
+    assert.equal(element.getAttribute('aria-checked'), 'true')
     assert.isTrue(element.classList.contains('select'))
 
     const checkIcon = element.shadowRoot!.querySelector('.selection-check')

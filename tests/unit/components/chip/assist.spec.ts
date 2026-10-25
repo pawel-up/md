@@ -5,6 +5,7 @@ import sinon from 'sinon'
 import { UiChipElement } from '../../../../src/components/chip/ui-chip.js'
 
 import '../../../../src/components/chip/ui-chip.js'
+import '../../../../src/components/chip/ui-chip-set.js'
 import '../../../../src/components/icons/ui-icon.js'
 
 test.group('Assist chip', () => {
@@ -101,4 +102,29 @@ test.group('Assist chip', () => {
     const containerStyles = getComputedStyle(surface)
     assert.equal(containerStyles.boxShadow, 'none', 'has no box shadow')
   }).tags(['@md', '@chip', '@assist-chip'])
+
+  test('is accessible when enabled, disabled, elevated, and with icon', async ({ assert }) => {
+    const basic = await basicFixture()
+    await assert.isAccessible(basic)
+
+    const disabled = await disabledFixture()
+    await assert.isAccessible(disabled)
+
+    const icon = await iconFixture()
+    await assert.isAccessible(icon)
+
+    const elevated = await elevatedFixture()
+    await assert.isAccessible(elevated)
+  }).tags(['@md', '@chip', '@assist-chip', '@a11y'])
+
+  test('suggestion chip and chip set are accessible', async ({ assert }) => {
+    const chipSet = await fixture(html`
+      <ui-chip-set aria-label="Suggestions">
+        <ui-chip type="suggestion">Suggestion 1</ui-chip>
+        <ui-chip type="assist">Assist 1</ui-chip>
+        <ui-chip type="input">Input 1</ui-chip>
+      </ui-chip-set>
+    `)
+    await assert.isAccessible(chipSet)
+  }).tags(['@md', '@chip', '@a11y'])
 })

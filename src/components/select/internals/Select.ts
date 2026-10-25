@@ -378,6 +378,7 @@ export default class UiSelect extends UiElement {
     this.setAttribute('role', 'combobox')
     this.setAttribute('aria-haspopup', 'listbox')
     this.setAttribute('aria-controls', 'menu')
+    this.setAttribute('aria-expanded', String(this.open))
     if (!this.disabled) {
       this.setAttribute('tabindex', '0')
     }
@@ -456,6 +457,7 @@ export default class UiSelect extends UiElement {
       setDisabled(this, this.disabled)
     }
     if (changedProperties.has('open')) {
+      this.setAttribute('aria-expanded', String(this.open))
       this.handleOpenChange()
     }
     if (changedProperties.has('density')) {
@@ -1021,6 +1023,7 @@ export default class UiSelect extends UiElement {
       id="menu"
       class="menu"
       part="menu"
+      role="listbox"
       style=${styleMap(styles)}
       .positionAnchor=${this.shadowRoot?.querySelector<HTMLElement>('.input') || undefined}
       popover="auto"

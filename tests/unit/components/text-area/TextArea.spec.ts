@@ -155,4 +155,42 @@ test.group('TextArea', () => {
     assert.isTrue(el.noVisibilityToggle)
     assert.isNull(el.shadowRoot?.querySelector('[part~="visibility-toggle"]'))
   }).tags(['@md', '@text-area', '@masked'])
+
+  test('is accessible with label', async ({ assert }) => {
+    const el = await basicFixture()
+    await assert.isAccessible(el)
+  }).tags(['@md', '@text-area', '@a11y'])
+
+  test('is accessible with aria-label', async ({ assert }) => {
+    const el = await fixture(html`<ui-text-area aria-label="Comments"></ui-text-area>`)
+    await assert.isAccessible(el)
+  }).tags(['@md', '@text-area', '@a11y'])
+
+  test('is accessible when populated and required', async ({ assert }) => {
+    const el = await fixture(
+      html`<ui-text-area
+        label="Bio"
+        value="Developer"
+        required
+        supportingText="Max 200 chars"
+        maxLength="200"
+      ></ui-text-area>`
+    )
+    await assert.isAccessible(el)
+  }).tags(['@md', '@text-area', '@a11y'])
+
+  test('is accessible when disabled', async ({ assert }) => {
+    const el = await fixture(html`<ui-text-area label="Bio" value="Developer" disabled></ui-text-area>`)
+    await assert.isAccessible(el)
+  }).tags(['@md', '@text-area', '@a11y'])
+
+  test('is accessible when invalid', async ({ assert }) => {
+    const el = await fixture(html`<ui-text-area label="Bio" invalid invalidText="Bio is required"></ui-text-area>`)
+    await assert.isAccessible(el)
+  }).tags(['@md', '@text-area', '@a11y'])
+
+  test('is accessible in masked mode', async ({ assert }) => {
+    const el = await fixture(html`<ui-text-area label="Secret Notes" masked value="secret"></ui-text-area>`)
+    await assert.isAccessible(el)
+  }).tags(['@md', '@text-area', '@a11y'])
 })

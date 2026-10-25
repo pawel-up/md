@@ -95,9 +95,50 @@ export default class UiMenuItem extends UiListItem {
       this.setupSubmenuConnection()
     }
 
-    if (changedProperties.has('selected')) {
-      this.updateSelectionState()
+    if (changedProperties.has('selected') || changedProperties.has('showSelectionIcon')) {
+      this.syncScopeSelectionState()
     }
+  }
+
+  /**
+   * Synchronizes selection state across sibling menu items within the same selection scope
+   * (either the enclosing `ui-menu-group` or the parent `ui-menu` / `ui-sub-menu`).
+   */
+  protected syncScopeSelectionState(): void {
+    const scope = this.closest('ui-menu-group, ui-menu, ui-sub-menu')
+    if (!scope) {
+      this.updateSelectionState()
+      return
+    }
+    const items = Array.from(scope.querySelectorAll<UiMenuItem>(':scope > ui-menu-item'))
+    if (items.length === 0) {
+      this.updateSelectionState()
+      return
+    }
+    for (const item of items) {
+      item.updateSelectionState()
+    }
+  }
+
+  /**
+   * Determines whether this menu item belongs to a single-select radio group context.
+   *
+   * @param parentMenu The enclosing menu or sub-menu, if any.
+   * @returns True if this item should expose `role="menuitemradio"`.
+   */
+  protected isSingleSelectRadio(parentMenu: Menu | null): boolean {
+    if (this.hasSubMenu) {
+      return false
+    }
+    if (this.selected || this.showSelectionIcon || parentMenu?.selectOnActivate) {
+      return true
+    }
+    const scope = this.closest('ui-menu-group, ui-menu, ui-sub-menu')
+    if (!scope) {
+      return false
+    }
+    const siblings = Array.from(scope.querySelectorAll<UiMenuItem>(':scope > ui-menu-item'))
+    return siblings.some((item) => item.selected || item.showSelectionIcon)
   }
 
   /**
@@ -136,18 +177,20 @@ export default class UiMenuItem extends UiListItem {
   public updateSelectionState(): void {
     const parentMenu = this.closest('ui-menu, ui-sub-menu') as Menu | null
     const isMultiSelect = Boolean(parentMenu?.multiSelect)
+    const isSingleSelectable = this.isSingleSelectRadio(parentMenu)
 
-    if (isMultiSelect) {
+    if (isMultiSelect && !this.hasSubMenu) {
       this.setAttribute('role', 'menuitemcheckbox')
+      this.setAttribute('aria-checked', String(this.selected))
+      this.removeAttribute('aria-selected')
+    } else if (isSingleSelectable) {
+      this.setAttribute('role', 'menuitemradio')
       this.setAttribute('aria-checked', String(this.selected))
       this.removeAttribute('aria-selected')
     } else {
       this.setAttribute('role', 'menuitem')
-      if (this.selected) {
-        this.setAttribute('aria-selected', 'true')
-      } else {
-        this.setAttribute('aria-selected', 'false')
-      }
+      this.removeAttribute('aria-checked')
+      this.removeAttribute('aria-selected')
     }
 
     if (this.selected) {

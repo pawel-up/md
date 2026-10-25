@@ -30,6 +30,11 @@ const floatTypes = ['date', 'color', 'datetime-local', 'file', 'month', 'time', 
  */
 export default abstract class Input extends UiElement {
   static override shadowRootOptions = { ...LitElement.shadowRootOptions, delegatesFocus: true }
+
+  static override get observedAttributes(): string[] {
+    return [...super.observedAttributes, 'aria-label', 'aria-labelledby']
+  }
+
   #_userInteracted: boolean
 
   // static override shadowRootOptions: ShadowRootInit = {mode: 'open', delegatesFocus: true};
@@ -520,6 +525,13 @@ export default abstract class Input extends UiElement {
       this.setAttribute('tabindex', '0')
     }
     this.handleSlotChange()
+  }
+
+  override attributeChangedCallback(name: string, oldValue: string | null, newValue: string | null): void {
+    super.attributeChangedCallback(name, oldValue, newValue)
+    if ((name === 'aria-label' || name === 'aria-labelledby') && oldValue !== newValue) {
+      this.requestUpdate()
+    }
   }
 
   /**
@@ -1092,6 +1104,35 @@ export default abstract class Input extends UiElement {
       return this.counterId
     }
     return ''
+  }
+
+  /**
+   * Computes the effective `aria-label` for the inner `<input>` or `<textarea>` control.
+   *
+   * @returns The accessible label string, or `undefined` if none is set.
+   */
+  protected getInputAriaLabel(): string | undefined {
+    return (
+      this.getAttribute('data-aria-label') ||
+      this.ariaLabel ||
+      this.getAttribute('aria-label') ||
+      this.label ||
+      undefined
+    )
+  }
+
+  /**
+   * Computes the effective `aria-labelledby` for the inner `<input>` or `<textarea>` control.
+   *
+   * @returns The space-separated ID reference list, or `undefined` if none is set.
+   */
+  protected getInputAriaLabelledBy(): string | undefined {
+    return (
+      this.getAttribute('data-aria-labelledby') ||
+      this.ariaLabelledBy ||
+      this.getAttribute('aria-labelledby') ||
+      undefined
+    )
   }
 
   #handlePasswordToggle(): void {

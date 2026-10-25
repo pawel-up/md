@@ -77,6 +77,14 @@ export class Snackbar extends LitElement {
   @property({ type: Boolean }) accessor close: boolean | undefined
 
   /**
+   * Accessible label for the close icon button when `close` is enabled.
+   *
+   * @default 'Close'
+   * @attribute
+   */
+  @property({ type: String }) accessor closeAriaLabel = 'Close'
+
+  /**
    * Whether the message is being rendered.
    *
    * @attribute
@@ -217,7 +225,12 @@ export class Snackbar extends LitElement {
       return nothing
     }
     return html`
-      <ui-icon-button @click="${this.closeHandler}" class="icon" @action="${cancelEvent}">
+      <ui-icon-button
+        @click="${this.closeHandler}"
+        class="icon"
+        @action="${cancelEvent}"
+        aria-label="${this.closeAriaLabel}"
+      >
         <ui-icon>close</ui-icon>
       </ui-icon-button>
     `

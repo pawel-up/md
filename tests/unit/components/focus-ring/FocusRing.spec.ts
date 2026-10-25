@@ -193,4 +193,14 @@ test.group('FocusRing', () => {
     await nextFrame()
     assert.isFalse(ring.visible)
   }).tags(['@md', '@focus-ring'])
+
+  test('is accessible when attached to an interactive control', async ({ assert }) => {
+    const container = await fixture<HTMLElement>(html`
+      <div>
+        <button id="btn">Action</button>
+        <ui-focus-ring for="btn" visible></ui-focus-ring>
+      </div>
+    `)
+    await assert.isAccessible(container)
+  }).tags(['@md', '@focus-ring', '@a11y'])
 })

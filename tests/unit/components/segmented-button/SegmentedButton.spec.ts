@@ -171,4 +171,26 @@ test.group('SegmentedButtonSet', () => {
     set.setButtonSelected(0, true)
     assert.isFalse(set.isButtonSelected(0))
   }).tags(['@md', '@segmented-button'])
+
+  test('is accessible in single-select mode', async ({ assert }) => {
+    const set = await fixture(html`
+      <ui-segmented-button-set aria-label="Size options">
+        <ui-segmented-button selected>Small</ui-segmented-button>
+        <ui-segmented-button>Medium</ui-segmented-button>
+        <ui-segmented-button disabled>Large</ui-segmented-button>
+      </ui-segmented-button-set>
+    `)
+    await assert.isAccessible(set)
+  }).tags(['@md', '@segmented-button', '@a11y'])
+
+  test('is accessible in multi-select mode', async ({ assert }) => {
+    const set = await fixture(html`
+      <ui-segmented-button-set multiselect aria-label="Filter options">
+        <ui-segmented-button selected>Price</ui-segmented-button>
+        <ui-segmented-button selected>Rating</ui-segmented-button>
+        <ui-segmented-button>Distance</ui-segmented-button>
+      </ui-segmented-button-set>
+    `)
+    await assert.isAccessible(set)
+  }).tags(['@md', '@segmented-button', '@a11y'])
 })
